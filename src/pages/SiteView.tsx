@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { bicsAPI } from '../services/api';
+import { bicsAPI, saqPersonnelAPI } from '../services/api';
 import { BicsRecord } from '../types';
 import { Eye, ChevronLeft, ChevronRight, FileText, Edit, ChevronDown, Trash2, Download, Upload } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -21,6 +21,7 @@ const SiteView: React.FC = () => {
   const [selectedProjectStatus, setSelectedProjectStatus] = useState<string>('');
   const [selectedProjectScheme, setSelectedProjectScheme] = useState<string>('');
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
+  const [personnelList, setPersonnelList] = useState<string[]>([]);
   const [expandedViewSections, setExpandedViewSections] = useState<{ [key: string]: boolean }>({});
   const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<BicsRecord | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -29,6 +30,14 @@ const SiteView: React.FC = () => {
   const location = useLocation();
   const { showNotification } = useNotification();
   const { user } = useAuth();
+
+  useEffect(() => {
+    saqPersonnelAPI.getList({ limit: 1000 }).then(res => {
+      if (res.success && res.data) {
+        setPersonnelList(res.data.personnel.map((p: any) => p.personnel_name));
+      }
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetchRecords();
@@ -221,24 +230,6 @@ const SiteView: React.FC = () => {
       setImporting(false);
     }
   };
-
-  const personnelList = [
-    'ADMARASIGAN',
-    'APMORILLA',
-    'CBTABINGA',
-    'CLTRABUCO',
-    'DFCAGADAS',
-    'ELALIBO',
-    'JDALVAREZ',
-    'JMBALAG',
-    'KDTAMONDONG',
-    'LMTAMAYO',
-    'LSAGAPITO',
-    'LTTEOVISIO',
-    'MIDDELACRUZ',
-    'MLCARANDANG',
-    'NMNARCISO'
-  ];
 
   const epcBatchList = [
     'BATCH - 55',
