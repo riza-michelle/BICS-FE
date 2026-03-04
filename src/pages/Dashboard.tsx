@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { bicsAPI } from '../services/api';
-import { DashboardStats } from '../types';
+import { DashboardStats, PoStatusSummary } from '../types';
 import {
   BarChart3,
   TrendingUp,
@@ -16,6 +16,7 @@ import * as XLSX from 'xlsx-js-style';
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [poStatusSummary, setPoStatusSummary] = useState<PoStatusSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   const { showNotification } = useNotification();
@@ -23,9 +24,15 @@ const Dashboard: React.FC = () => {
 
   const loadDashboardStats = useCallback(async () => {
     try {
-      const response = await bicsAPI.getDashboardStats();
-      if (response.success && response.data) {
-        setStats(response.data);
+      const [statsResponse, poResponse] = await Promise.all([
+        bicsAPI.getDashboardStats(),
+        bicsAPI.getPoStatusSummary(),
+      ]);
+      if (statsResponse.success && statsResponse.data) {
+        setStats(statsResponse.data);
+      }
+      if (poResponse.success && poResponse.data) {
+        setPoStatusSummary(poResponse.data);
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
@@ -1296,6 +1303,193 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleExportByPoStatus = async (poStatus: string) => {
+    setExporting(true);
+    const isBlank = poStatus === '';
+    const displayLabel = isBlank ? 'No Status' : poStatus;
+    try {
+      const response = await bicsAPI.getRecords({
+        page: 1,
+        limit: 10000,
+        ...(isBlank ? { po_status_blank: true } : { po_status: poStatus })
+      });
+
+      if (!response.success || !response.data || response.data.records.length === 0) {
+        showNotification('error', `No records found for PO Status: ${displayLabel}`);
+        setExporting(false);
+        return;
+      }
+
+      const records = response.data.records;
+
+      const exportData = records.map(record => ({
+        'EPC BATCH': record.epc_batch || '',
+        'VENDOR': record.vendor || '',
+        'SNAP ID/BLDG TAG': record.snap_id_bldg_tag || '',
+        'PCN': record.pcn || '',
+        'BICS PERSONNEL': record.bcsi_aor || '',
+        'PROJECT SCHEME': record.project_scheme || '',
+        'BID': record.bid || '',
+        'SITE NAME': record.site_name || '',
+        'BUILDING NAME': record.building_name || '',
+        'ADDRESS': record.address || '',
+        'BRGY': record.brgy || '',
+        'CITY/MUNICIPALITY': record.city_municipality || '',
+        'PROVINCE': record.province || '',
+        'COORDINATES': record.coordinates || '',
+        'DISTRICT': record.district || '',
+        'ZONE': record.zone || '',
+        'AREA': record.area || '',
+        'MARKET SEGMENT': record.market_segment || '',
+        'BUILDING STATUS': record.building_status || '',
+        'USAGE': record.usage_type || '',
+        'FLOORS': record.floors || '',
+        'UNITS': record.units || '',
+        'DEVELOPER': record.developer || '',
+        'TOP DEVELOPER': record.top_dev || '',
+        'NAME': record.contact_name || '',
+        'DESIGNATION': record.designation || '',
+        'CONTACT NUMBER': record.contact_number || '',
+        'EMAIL ADDRESS': record.email_add || '',
+        'RELATIONSHIP MANAGER': record.rm || '',
+        'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+        'PROJECT STATUS': record.project_status || '',
+        'PROJECT STAGE': record.project_stage || '',
+        'PROJECT MILESTONE': record.project_milestone || '',
+        'WORKING LINES': record.working_lines || '',
+        'ROLLOUT PORTS': record.rollout_ports || '',
+        'MRC': record.mrc || '',
+        'SAQ MILESTONE': record.saq_milestone || '',
+        'COMMERCIAL SCHEME': record.commercial_scheme || '',
+        'COL TOR STATUS': record.col_tor_status || '',
+        'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
+        'MOA ACQUIRED BY': record.moa_acquired_by || '',
+        'MOA UPLOADING STATUS': record.moa_uploading_status || '',
+        'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
+        'VALIDATED BY': record.validated_by || '',
+        'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
+        'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
+        'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
+        'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
+        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
+        'PRODUCTIVITY': record.productivity || '',
+        'MOA STATUS': record.moa_status || '',
+        'PO STATUS': record.po_status || '',
+        'PROFILE STATUS': record.profile_status || '',
+        'REF ID': record.ref_id || '',
+        'REFERENCE #': record.reference_number || '',
+        'PROJECT PHASE': record.project_phase || '',
+        'BUDGET STATUS': record.budget_status || '',
+        'IMPLEMENTATION STATUS': record.implementation_status || '',
+        'SIGNIFICANT REMARKS': record.significant_remarks || '',
+        'PREV BATCH': record.prev_batch || '',
+        'FL ID': record.fl_id || '',
+        'MIGRATED LINES': record.migrated_lines || '',
+        'BASH': record.quick_bashing || '',
+      }));
+
+      const currentDateTime = new Date().toLocaleString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      const titleData = [
+        [`BICS - PO Status: ${displayLabel}`],
+        [`Export Date: ${currentDateTime}`],
+        [`Total Records: ${records.length}`],
+        [`Exported By: ${user?.username || 'Unknown'}`],
+        [],
+      ];
+
+      const worksheet = XLSX.utils.aoa_to_sheet(titleData);
+      XLSX.utils.sheet_add_json(worksheet, exportData, { origin: 'A6' });
+
+      const headers = Object.keys(exportData[0]);
+      const lastColumn = XLSX.utils.encode_col(headers.length - 1);
+      worksheet['!autofilter'] = { ref: `A6:${lastColumn}${exportData.length + 6}` };
+      worksheet['!freeze'] = { xSplit: 0, ySplit: 6, topLeftCell: 'A7' };
+
+      worksheet['!cols'] = headers.map((header, colIndex) => {
+        const maxLen = Math.max(
+          header.length,
+          exportData.reduce((max, row) => Math.max(max, String(row[header as keyof typeof row] || '').length), 0),
+          colIndex === 0 ? `BICS - PO Status: ${displayLabel}`.length : 0
+        );
+        const w = header === 'ADDRESS' || header === 'SIGNIFICANT REMARKS' ? Math.min(maxLen, 50) : Math.min(maxLen, 30);
+        return { wch: Math.max(w, colIndex === 0 ? 15 : 12) };
+      });
+
+      const titleStyle = { font: { bold: true, sz: 16, color: { rgb: "FFFFFF" } }, fill: { fgColor: { rgb: "1F4788" } }, alignment: { horizontal: "left", vertical: "center" } };
+      const metaStyle = { font: { sz: 10, color: { rgb: "333333" } }, fill: { fgColor: { rgb: "E8F0FE" } }, alignment: { horizontal: "left", vertical: "center" } };
+      if (!worksheet['A1']) worksheet['A1'] = { t: 's', v: '' };
+      worksheet['A1'].s = titleStyle;
+      ['A2', 'A3', 'A4'].forEach(cell => {
+        if (!worksheet[cell]) worksheet[cell] = { t: 's', v: '' };
+        worksheet[cell].s = metaStyle;
+      });
+
+      const sectionColors: { [key: string]: string } = {
+        'EPC BATCH': '1F4788', 'VENDOR': '1F4788', 'SNAP ID/BLDG TAG': '1F4788', 'PCN': '1F4788', 'BICS PERSONNEL': '1F4788', 'PROJECT SCHEME': '1F4788', 'BID': '1F4788',
+        'SITE NAME': '0D7377', 'BUILDING NAME': '0D7377', 'ADDRESS': '0D7377', 'BRGY': '0D7377', 'CITY/MUNICIPALITY': '0D7377', 'PROVINCE': '0D7377', 'COORDINATES': '0D7377', 'DISTRICT': '0D7377', 'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
+        'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1', 'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
+        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706', 'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
+        'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857', 'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
+        'SAQ MILESTONE': '4338CA', 'COMMERCIAL SCHEME': '4338CA', 'COL TOR STATUS': '4338CA', 'SIGNED TOR/MOA DATE': '4338CA', 'MOA ACQUIRED BY': '4338CA', 'MOA UPLOADING STATUS': '4338CA',
+        'VALIDATED DATE': 'B91C1C', 'VALIDATED BY': 'B91C1C', 'SITE VISITED DATE': 'B91C1C', 'TARGET DATE PROFILING': 'B91C1C', 'TARGET DATE MOA TO ACQUIRE': 'B91C1C', 'DATE OF RECENT ENGAGEMENT': 'B91C1C', 'SITE ENTRY DATE': 'B91C1C',
+        'PRODUCTIVITY': '0891B2', 'MOA STATUS': '0891B2', 'PO STATUS': '0891B2', 'PROFILE STATUS': '0891B2', 'REF ID': '0891B2', 'REFERENCE #': '0891B2', 'PROJECT PHASE': '0891B2', 'BUDGET STATUS': '0891B2', 'IMPLEMENTATION STATUS': '0891B2',
+        'SIGNIFICANT REMARKS': '4B5563',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+      };
+
+      headers.forEach((header, colIndex) => {
+        const cellAddress = XLSX.utils.encode_cell({ r: 5, c: colIndex });
+        if (!worksheet[cellAddress]) worksheet[cellAddress] = { t: 's', v: '' };
+        worksheet[cellAddress].s = {
+          font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
+          fill: { fgColor: { rgb: sectionColors[header] || "2E5C8A" } },
+          alignment: { horizontal: "center", vertical: "center", wrapText: false },
+          border: { top: { style: "thin", color: { rgb: "000000" } }, bottom: { style: "thin", color: { rgb: "000000" } }, left: { style: "thin", color: { rgb: "000000" } }, right: { style: "thin", color: { rgb: "000000" } } }
+        };
+      });
+
+      for (let rowIndex = 6; rowIndex < exportData.length + 6; rowIndex++) {
+        const isEvenRow = (rowIndex - 6) % 2 === 0;
+        const record = exportData[rowIndex - 6];
+        headers.forEach((header, colIndex) => {
+          const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+          if (!worksheet[cellAddress]) worksheet[cellAddress] = { t: 's', v: '' };
+          worksheet[cellAddress].s = {
+            font: { sz: 10, color: { rgb: "000000" }, bold: false },
+            fill: { fgColor: { rgb: isEvenRow ? "FFFFFF" : "F8F9FA" } },
+            alignment: { horizontal: "left", vertical: "center", wrapText: false },
+            border: { top: { style: "thin", color: { rgb: "DDDDDD" } }, bottom: { style: "thin", color: { rgb: "DDDDDD" } }, left: { style: "thin", color: { rgb: "DDDDDD" } }, right: { style: "thin", color: { rgb: "DDDDDD" } } }
+          };
+        });
+      }
+
+      worksheet['!rows'] = [{ hpt: 25 }, { hpt: 16 }, { hpt: 16 }, { hpt: 16 }, { hpt: 5 }, { hpt: 22 }];
+      for (let i = 6; i < exportData.length + 6; i++) {
+        if (!worksheet['!rows']) worksheet['!rows'] = [];
+        if (!worksheet['!rows'][i]) worksheet['!rows'][i] = {};
+        worksheet['!rows'][i].hpt = 16;
+      }
+
+      worksheet['!views'] = [{ showGridLines: true, showRowColHeaders: true, rightToLeft: false, zoomScale: 70, zoomScaleNormal: 70, zoomScalePageLayoutView: 70 }];
+      worksheet['!margins'] = { left: 0.5, right: 0.5, top: 0.75, bottom: 0.75, header: 0.3, footer: 0.3 };
+      worksheet['!pageSetup'] = { orientation: 'landscape', scale: 100, fitToWidth: 1, fitToHeight: 0, paperSize: 9 };
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, displayLabel.replace(/\s+/g, '_'));
+      const currentDate = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `BICS_PO_${displayLabel.replace(/\s+/g, '_')}_${currentDate}.xlsx`);
+      showNotification('success', `Exported ${records.length} records for PO Status: ${displayLabel}`);
+    } catch (error: any) {
+      console.error('Error exporting PO status records:', error);
+      showNotification('error', 'Failed to export records');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleExportByAgingDays = async (minDays: number) => {
     setExporting(true);
     try {
@@ -2501,6 +2695,60 @@ const Dashboard: React.FC = () => {
                   </div>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PO Status Summary */}
+        <div className="mb-4">
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+            <div className="px-4 py-3 border-b border-gray-200">
+              <div className="flex items-center">
+                <FileText className="h-4 w-4 text-gray-500 mr-2" />
+                <h2 className="text-base font-semibold text-gray-900">PO Status Summary</h2>
+              </div>
+            </div>
+            <div className="p-6">
+              {poStatusSummary.length === 0 ? (
+                <p className="text-sm text-gray-500">No PO status data available.</p>
+              ) : (
+                <div className="flex gap-4">
+                  {poStatusSummary.map((item, idx) => {
+                    const isNoStatus = item.status === 'No Status';
+                    const palettes = [
+                      { bg: '#fff7ed', border: '#fed7aa', text: '#ea580c', countColor: '#c2410c' },
+                      { bg: '#f0fdf4', border: '#bbf7d0', text: '#16a34a', countColor: '#15803d' },
+                      { bg: '#eff6ff', border: '#bfdbfe', text: '#2563eb', countColor: '#1d4ed8' },
+                      { bg: '#faf5ff', border: '#e9d5ff', text: '#9333ea', countColor: '#7e22ce' },
+                    ];
+                    const p = isNoStatus
+                      ? { bg: '#f9fafb', border: '#e5e7eb', text: '#6b7280', countColor: '#374151' }
+                      : palettes[idx % palettes.length];
+                    return (
+                      <button
+                        key={item.status}
+                        onClick={() => handleExportByPoStatus(isNoStatus ? '' : item.status)}
+                        disabled={exporting}
+                        className="flex-1 rounded-lg p-4 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left"
+                        style={{ backgroundColor: p.bg, border: `1px solid ${p.border}` }}
+                        onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.96)')}
+                        onMouseLeave={e => (e.currentTarget.style.filter = '')}
+                      >
+                        <div className="flex flex-col">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium uppercase tracking-wide" style={{ color: p.text }}>
+                              {item.status}
+                            </span>
+                            <Download className="h-4 w-4" style={{ color: p.text }} />
+                          </div>
+                          <span className="text-3xl font-bold" style={{ color: p.countColor }}>{item.count}</span>
+                          <span className="text-xs mt-1" style={{ color: p.text }}>Click to export records</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
