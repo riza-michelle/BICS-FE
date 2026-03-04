@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { relationshipManagerAPI } from '../services/api';
 import { RelationshipManager } from '../types';
-import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, X, Users } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, X, Users, Upload, Download } from 'lucide-react';
+import * as XLSX from 'xlsx-js-style';
 import { useNotification } from '../context/NotificationContext';
 
 const RelationshipManagerPage: React.FC = () => {
@@ -18,6 +19,10 @@ const RelationshipManagerPage: React.FC = () => {
     relationship_manager: '',
     relationship_manager_group: ''
   });
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{ inserted: number; skipped: number; errors: { row: number; message: string }[] } | null>(null);
   const { showNotification } = useNotification();
 
   useEffect(() => {
@@ -30,7 +35,7 @@ const RelationshipManagerPage: React.FC = () => {
     try {
       const response = await relationshipManagerAPI.getList({
         page: currentPage,
-        limit: 10,
+        limit: 50,
         search: searchTerm,
       });
 
@@ -149,6 +154,60 @@ const RelationshipManagerPage: React.FC = () => {
     }
   };
 
+  const handleOpenUploadModal = () => {
+    setUploadFile(null);
+    setUploadResult(null);
+    setShowUploadModal(true);
+  };
+
+  const handleCloseUploadModal = () => {
+    setShowUploadModal(false);
+    setUploadFile(null);
+    setUploadResult(null);
+  };
+
+  const handleUploadSubmit = async () => {
+    if (!uploadFile) {
+      showNotification('error', 'Please select a file');
+      return;
+    }
+    setUploading(true);
+    try {
+      const response = await relationshipManagerAPI.importExcel(uploadFile);
+      if (response.success) {
+        setUploadResult(response.data);
+        fetchRelationshipManagers();
+      } else {
+        showNotification('error', response.message || 'Upload failed');
+      }
+    } catch (error: any) {
+      showNotification('error', error.response?.data?.message || 'Error uploading file');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    const headers = ['Relationship Manager', 'Relationship Manager Group'];
+    const ws = XLSX.utils.aoa_to_sheet([headers]);
+
+    // Style the header row
+    headers.forEach((_, colIdx) => {
+      const cellRef = XLSX.utils.encode_cell({ r: 0, c: colIdx });
+      ws[cellRef].s = {
+        font: { bold: true, color: { rgb: 'FFFFFF' } },
+        fill: { fgColor: { rgb: '1E40AF' } },
+        alignment: { horizontal: 'center' }
+      };
+    });
+
+    ws['!cols'] = [{ wch: 30 }, { wch: 35 }];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Relationship Managers');
+    XLSX.writeFile(wb, 'relationship_manager_template.xlsx');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -171,13 +230,22 @@ const RelationshipManagerPage: React.FC = () => {
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
             </div>
-            <button
-              onClick={() => handleOpenModal()}
-              className="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Add Relationship Manager
-            </button>
+            <div className="flex items-center space-x-2 ml-4">
+              <button
+                onClick={handleOpenUploadModal}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Upload className="h-5 w-5 mr-2" />
+                Bulk Upload
+              </button>
+              <button
+                onClick={() => handleOpenModal()}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Add Relationship Manager
+              </button>
+            </div>
           </div>
         </div>
 
@@ -276,8 +344,8 @@ const RelationshipManagerPage: React.FC = () => {
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> to{' '}
-                    <span className="font-medium">{Math.min(currentPage * 10, totalRecords)}</span> of{' '}
+                    Showing <span className="font-medium">{(currentPage - 1) * 50 + 1}</span> to{' '}
+                    <span className="font-medium">{Math.min(currentPage * 50, totalRecords)}</span> of{' '}
                     <span className="font-medium">{totalRecords}</span> results
                   </p>
                 </div>
@@ -372,6 +440,116 @@ const RelationshipManagerPage: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold">Bulk Upload Relationship Managers</h2>
+              <button
+                onClick={handleCloseUploadModal}
+                className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {!uploadResult ? (
+                <>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Upload an Excel file with columns: <strong>Relationship Manager</strong> and <strong>Relationship Manager Group</strong>.
+                    Existing entries will be skipped.
+                  </p>
+
+                  <button
+                    onClick={handleDownloadTemplate}
+                    className="mb-4 inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    <Download className="h-4 w-4 mr-1.5" />
+                    Download Template
+                  </button>
+
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                    <label className="cursor-pointer">
+                      <span className="text-sm text-blue-600 font-medium hover:underline">
+                        {uploadFile ? uploadFile.name : 'Click to select an Excel file'}
+                      </span>
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls"
+                        className="hidden"
+                        onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                    {!uploadFile && (
+                      <p className="text-xs text-gray-400 mt-1">.xlsx or .xls, max 5MB</p>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={handleCloseUploadModal}
+                      className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUploadSubmit}
+                      disabled={!uploadFile || uploading}
+                      className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {uploading ? 'Uploading...' : 'Upload'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <div className="flex items-center space-x-4 mb-3">
+                      <div className="bg-green-100 rounded-lg px-4 py-2 text-center">
+                        <p className="text-2xl font-bold text-green-700">{uploadResult.inserted}</p>
+                        <p className="text-xs text-green-600">Added</p>
+                      </div>
+                      <div className="bg-yellow-100 rounded-lg px-4 py-2 text-center">
+                        <p className="text-2xl font-bold text-yellow-700">{uploadResult.skipped}</p>
+                        <p className="text-xs text-yellow-600">Skipped</p>
+                      </div>
+                      {uploadResult.errors.length > 0 && (
+                        <div className="bg-red-100 rounded-lg px-4 py-2 text-center">
+                          <p className="text-2xl font-bold text-red-700">{uploadResult.errors.length}</p>
+                          <p className="text-xs text-red-600">Errors</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {uploadResult.errors.length > 0 && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3 max-h-40 overflow-y-auto">
+                        <p className="text-xs font-medium text-red-700 mb-1">Row errors:</p>
+                        {uploadResult.errors.map((err, i) => (
+                          <p key={i} className="text-xs text-red-600">Row {err.row}: {err.message}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      onClick={handleCloseUploadModal}
+                      className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

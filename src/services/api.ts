@@ -564,6 +564,15 @@ export const relationshipManagerAPI = {
     const response = await api.delete(`/relationship-manager/delete/${id}`);
     return response.data;
   },
+
+  importExcel: async (file: File): Promise<ApiResponse<any>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/relationship-manager/import-excel', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };
 
 // Validated By API
