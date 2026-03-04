@@ -21,6 +21,7 @@ const SiteView: React.FC = () => {
   const [selectedProjectStatus, setSelectedProjectStatus] = useState<string>('');
   const [selectedProjectScheme, setSelectedProjectScheme] = useState<string>('');
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [personnelList, setPersonnelList] = useState<string[]>([]);
   const [expandedViewSections, setExpandedViewSections] = useState<{ [key: string]: boolean }>({});
   const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<BicsRecord | null>(null);
@@ -42,7 +43,7 @@ const SiteView: React.FC = () => {
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedAgingDays]);
+  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedAgingDays, searchQuery]);
 
   // Check for notification from navigation state
   useEffect(() => {
@@ -76,6 +77,7 @@ const SiteView: React.FC = () => {
       const response = await bicsAPI.getRecords({
         page: currentPage,
         limit: 50,
+        search: searchQuery || undefined,
         bcsi_aor: selectedPersonnel || undefined,
         epc_batch: selectedEpcBatch || undefined,
         project_status: selectedProjectStatus || undefined,
@@ -785,6 +787,15 @@ const SiteView: React.FC = () => {
                 <option value="31-60">31-60 days</option>
                 <option value="61+">61+ days (Overdue)</option>
               </select>
+            </div>
+            <div className="w-48 shrink-0">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                placeholder="Search..."
+                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
+              />
             </div>
           </div>
         </div>
