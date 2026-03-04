@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthResponse, ApiResponse, DashboardStats, PoStatusSummary, RecordsResponse, BicsRecord, EngagementSummary, MoaListResponse, UsersListResponse, User, EpcBatchListResponse, EpcBatch, VendorListResponse, Vendor, SaqPersonnelListResponse, SaqPersonnel, FcoPersonnelListResponse, FcoPersonnel, TopDeveloperListResponse, TopDeveloper, RelationshipManagerListResponse, RelationshipManager, ValidatedByListResponse, ValidatedBy, CobInventoryListResponse, CobInventory, EpcBatchOption, SaqPersonnelOption } from '../types';
+import { AuthResponse, ApiResponse, DashboardStats, RecordsResponse, BicsRecord, EngagementSummary, MoaListResponse, UsersListResponse, User, EpcBatchListResponse, EpcBatch, VendorListResponse, Vendor, SaqPersonnelListResponse, SaqPersonnel, FcoPersonnelListResponse, FcoPersonnel, TopDeveloperListResponse, TopDeveloper, RelationshipManagerListResponse, RelationshipManager, ValidatedByListResponse, ValidatedBy, CobInventoryListResponse, CobInventory, EpcBatchOption, SaqPersonnelOption } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
@@ -108,11 +108,6 @@ export const bicsAPI = {
     return response.data;
   },
 
-  getPoStatusSummary: async (): Promise<ApiResponse<PoStatusSummary[]>> => {
-    const response = await api.get('/bics/po-status-summary');
-    return response.data;
-  },
-
   getEngagementSummary: async (days?: number): Promise<ApiResponse<EngagementSummary[]>> => {
     const response = await api.get('/bics/engagement-summary', {
       params: { days: days || 30 }
@@ -127,8 +122,6 @@ export const bicsAPI = {
     status?: string;
     moa_status?: string;
     moa_status_blank?: boolean;
-    po_status?: string;
-    po_status_blank?: boolean;
     project_status?: string;
     bcsi_aor?: string;
     epc_batch?: string;

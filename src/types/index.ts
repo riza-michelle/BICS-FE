@@ -142,11 +142,6 @@ export interface DashboardStats {
   moa_no_status: number;
 }
 
-export interface PoStatusSummary {
-  status: string;
-  count: number;
-}
-
 export interface EngagementSummary {
   personnel: string;
   total_engagements: number;
