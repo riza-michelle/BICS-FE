@@ -1453,6 +1453,7 @@ const Dashboard: React.FC = () => {
 
       for (let rowIndex = 6; rowIndex < exportData.length + 6; rowIndex++) {
         const isEvenRow = (rowIndex - 6) % 2 === 0;
+        const record = exportData[rowIndex - 6];
         headers.forEach((header, colIndex) => {
           const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
           if (!worksheet[cellAddress]) worksheet[cellAddress] = { t: 's', v: '' };
