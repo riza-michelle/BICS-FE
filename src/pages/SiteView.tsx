@@ -76,7 +76,7 @@ const SiteView: React.FC = () => {
 
       const response = await bicsAPI.getRecords({
         page: currentPage,
-        limit: 50,
+        limit: 100,
         search: searchQuery || undefined,
         bcsi_aor: selectedPersonnel || undefined,
         epc_batch: selectedEpcBatch || undefined,
@@ -990,8 +990,8 @@ const SiteView: React.FC = () => {
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-xs text-gray-700">
-                    Showing <span className="font-medium">{(currentPage - 1) * 50 + 1}</span> to{' '}
-                    <span className="font-medium">{Math.min(currentPage * 50, totalRecords)}</span> of{' '}
+                    Showing <span className="font-medium">{(currentPage - 1) * 100 + 1}</span> to{' '}
+                    <span className="font-medium">{Math.min(currentPage * 100, totalRecords)}</span> of{' '}
                     <span className="font-medium">{totalRecords}</span> results
                   </p>
                 </div>
