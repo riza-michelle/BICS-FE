@@ -308,7 +308,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Admin' | 'User';
+    role?: 'Super Admin' | 'Admin' | 'User';
   }): Promise<ApiResponse<User>> => {
     const response = await api.post('/users/create', userData);
     return response.data;
@@ -320,7 +320,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Admin' | 'User';
+    role?: 'Super Admin' | 'Admin' | 'User';
   }): Promise<ApiResponse<User>> => {
     const response = await api.put(`/users/update/${id}`, userData);
     return response.data;

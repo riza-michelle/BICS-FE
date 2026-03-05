@@ -20,7 +20,7 @@ const Users: React.FC = () => {
     email: '',
     fullname: '',
     contact_number: '',
-    role: 'User' as 'Admin' | 'User'
+    role: 'User' as 'Super Admin' | 'Admin' | 'User'
   });
   const { showNotification } = useNotification();
 
@@ -65,7 +65,7 @@ const Users: React.FC = () => {
         email: user.email || '',
         fullname: user.fullname || '',
         contact_number: user.contact_number || '',
-        role: user.role || 'User'
+        role: (user.role || 'User') as 'Super Admin' | 'Admin' | 'User'
       });
     } else {
       setEditingUser(null);
@@ -272,7 +272,9 @@ const Users: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'Admin'
+                          user.role === 'Super Admin'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : user.role === 'Admin'
                             ? 'bg-purple-100 text-purple-800'
                             : 'bg-gray-100 text-gray-800'
                         }`}>
@@ -449,12 +451,13 @@ const Users: React.FC = () => {
                 </label>
                 <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Admin' | 'User' })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Super Admin' | 'Admin' | 'User' })}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="User">User</option>
                   <option value="Admin">Admin</option>
+                  <option value="Super Admin">Super Admin</option>
                 </select>
               </div>
 

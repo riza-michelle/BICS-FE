@@ -5,9 +5,10 @@ import { useAuth } from '../context/AuthContext';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = false }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = false, superAdminOnly = false }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
@@ -23,8 +24,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = f
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check if route requires admin access
-  if (adminOnly && user?.role !== 'Admin') {
+  // Super Admin only routes
+  if (superAdminOnly && user?.role !== 'Super Admin') {
+    return <Navigate to="/data-entry" replace />;
+  }
+
+  // Admin or Super Admin routes
+  if (adminOnly && user?.role !== 'Admin' && user?.role !== 'Super Admin') {
     return <Navigate to="/data-entry" replace />;
   }
 

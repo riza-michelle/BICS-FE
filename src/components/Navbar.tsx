@@ -50,8 +50,8 @@ const Navbar: React.FC = () => {
             </div>
 
             <div className="ml-10 flex items-baseline space-x-4">
-              {/* Dashboard - Only visible to Admin */}
-              {user?.role === 'Admin' && (
+              {/* Dashboard - Only visible to Admin and Super Admin */}
+              {(user?.role === 'Admin' || user?.role === 'Super Admin') && (
                 <Link
                   to="/dashboard"
                   className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
@@ -137,8 +137,8 @@ const Navbar: React.FC = () => {
                 <span>CDRF Routing</span>
               </Link>
 
-              {/* Configurations Dropdown - Only visible to Admin */}
-              {user?.role === 'Admin' && (
+              {/* Configurations Dropdown - Only visible to Super Admin */}
+              {user?.role === 'Super Admin' && (
                 <div className="relative" ref={configurationsDropdownRef}>
                   <button
                     onClick={() => setIsConfigurationsOpen(!isConfigurationsOpen)}
