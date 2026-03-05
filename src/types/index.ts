@@ -139,7 +139,7 @@ export interface DashboardStats {
   moa_for_profiling: number;
   moa_for_nego: number;
   moa_with_moa: number;
-  moa_no_status: number;
+  moa_no_need: number;
 }
 
 export interface EngagementSummary {

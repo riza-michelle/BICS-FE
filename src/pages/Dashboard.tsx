@@ -2483,19 +2483,19 @@ const [loading, setLoading] = useState(true);
                 </button>
 
                 <button
-                  onClick={() => handleExportByMoaStatus('')}
+                  onClick={() => handleExportByMoaStatus('NO NEED')}
                   disabled={exporting}
                   className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-left"
                 >
                   <div className="flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                        No Status
+                        No Need
                       </span>
                       <Download className="h-4 w-4 text-gray-500" />
                     </div>
                     <span className="text-3xl font-bold text-gray-700">
-                      {stats?.moa_no_status || 0}
+                      {stats?.moa_no_need || 0}
                     </span>
                     <span className="text-xs text-gray-500 mt-1">Click to export records</span>
                   </div>
