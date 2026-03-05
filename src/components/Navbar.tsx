@@ -137,8 +137,8 @@ const Navbar: React.FC = () => {
                 <span>CDRF Routing</span>
               </Link>
 
-              {/* Configurations Dropdown - Only visible to Super Admin */}
-              {user?.role === 'Super Admin' && (
+              {/* Configurations Dropdown - Only visible to Admin and Super Admin */}
+              {(user?.role === 'Admin' || user?.role === 'Super Admin') && (
                 <div className="relative" ref={configurationsDropdownRef}>
                   <button
                     onClick={() => setIsConfigurationsOpen(!isConfigurationsOpen)}
