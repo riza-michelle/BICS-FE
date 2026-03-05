@@ -98,7 +98,7 @@ function App() {
               <Route
                 path="/users"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <Users />
                   </ProtectedRoute>
                 }
@@ -106,7 +106,7 @@ function App() {
               <Route
                 path="/user-logs"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <UserLogs />
                   </ProtectedRoute>
                 }
@@ -114,7 +114,7 @@ function App() {
               <Route
                 path="/epc-batch"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <EpcBatch />
                   </ProtectedRoute>
                 }
@@ -122,7 +122,7 @@ function App() {
               <Route
                 path="/vendor"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <Vendor />
                   </ProtectedRoute>
                 }
@@ -130,7 +130,7 @@ function App() {
               <Route
                 path="/saq-personnel"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <SaqPersonnel />
                   </ProtectedRoute>
                 }
@@ -138,7 +138,7 @@ function App() {
               <Route
                 path="/fco-personnel"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <FcoPersonnel />
                   </ProtectedRoute>
                 }
@@ -146,7 +146,7 @@ function App() {
               <Route
                 path="/top-developer"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <TopDeveloper />
                   </ProtectedRoute>
                 }
@@ -154,7 +154,7 @@ function App() {
               <Route
                 path="/relationship-manager"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <RelationshipManager />
                   </ProtectedRoute>
                 }
@@ -162,7 +162,7 @@ function App() {
               <Route
                 path="/validated-by"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute superAdminOnly>
                     <ValidatedBy />
                   </ProtectedRoute>
                 }
