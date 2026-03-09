@@ -628,7 +628,7 @@ const UserLogs: React.FC = () => {
               <Download className="h-4 w-4" />
               {exportLoading ? 'Exporting...' : 'Export All Logs'}
             </button>
-            {user?.role === 'Admin' && (
+            {user?.role === 'Super Admin' && (
               <button
                 onClick={handleDeleteAllLogs}
                 className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
