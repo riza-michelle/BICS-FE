@@ -88,10 +88,6 @@ const [loading, setLoading] = useState(true);
         'TOP DEVELOPER': record.top_dev || '',
 
         // Contact Information
-        'NAME': record.contact_name || '',
-        'DESIGNATION': record.designation || '',
-        'CONTACT NUMBER': record.contact_number || '',
-        'EMAIL ADDRESS': record.email_add || '',
         'RELATIONSHIP MANAGER': record.rm || '',
         'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
 
@@ -148,7 +144,13 @@ const [loading, setLoading] = useState(true);
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
         'MIGRATED LINES': record.migrated_lines || '',
-        'BASH': record.quick_bashing || '',
+        'QUICK BASHING': record.quick_bashing || '',
+
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -156,7 +158,6 @@ const [loading, setLoading] = useState(true);
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'MDU/ONU': record.mdu_onu || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
-        'READY TO SELL PORTS': record.ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -167,14 +168,8 @@ const [loading, setLoading] = useState(true);
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
         'FTTB CIP': record.fttb_cip || '',
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'FTTB ACTUAL TA DATE': record.fttb_actual_ta_date ? new Date(record.fttb_actual_ta_date).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
-        // HWS Information
-        'HWS PO RELEASE': record.hws_po_release ? new Date(record.hws_po_release).toLocaleDateString() : '',
-        'HWS CIP': record.hws_cip || '',
-        'HWS TARGET COMPLETION': record.hws_target_completion ? new Date(record.hws_target_completion).toLocaleDateString() : '',
-        'HWS ACTUAL COMPLETION': record.hws_actual_completion ? new Date(record.hws_actual_completion).toLocaleDateString() : '',
       }));
 
       // Create title row with metadata
@@ -272,7 +267,6 @@ const [loading, setLoading] = useState(true);
         'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
         'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1',
         'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
-        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706',
         'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
         'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857',
         'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
@@ -287,14 +281,14 @@ const [loading, setLoading] = useState(true);
         'REPLACEMENT SITE': 'DB2777', 'DATE ENDORSE REPLACEMENT': 'DB2777', 'DATE ACCEPTED': 'DB2777',
         'DATE REJECTED': 'DB2777', 'GO/NOGO': 'DB2777', 'REPLACEMENTS GROUPINGS': 'DB2777',
         'TAGGING TEMP': 'DB2777', 'REPLACEMENT REQUEST': 'DB2777',
-        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'QUICK BASHING': 'D97706',
+        'BASH-PREWORKS (LOUIE)': '7C3AED', 'BASH-NETWORK (JARROD)': '7C3AED', 'BASH-HALLWAY (VIDAL)': '7C3AED', 'BASH-MIGRATION (JAYR)': '7C3AED',
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': '059669', 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': '059669',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': '059669', 'MDU/ONU': '059669', 'ACTUAL REMAINING PORTS': '059669',
-        'READY TO SELL PORTS': '059669', 'POTENTIAL REVENUE GROWTH': '059669',
+        'POTENTIAL REVENUE GROWTH': '059669',
         'SCHEME DESIGN': '7C3AED', 'FCO AOR': '7C3AED',
         'FTTB PO RELEASE': '0284C7', 'FTTB CIP': '0284C7', 'FTTB TARGET COMPLETION': '0284C7',
-        'FTTB ACTUAL TA DATE': '0284C7', 'ROLLOUT SOLUTION': '0284C7',
-        'HWS PO RELEASE': 'E11D48', 'HWS CIP': 'E11D48', 'HWS TARGET COMPLETION': 'E11D48', 'HWS ACTUAL COMPLETION': 'E11D48',
+        'ROLLOUT SOLUTION': '0284C7',
       };
 
       headers.forEach((header, colIndex) => {
@@ -497,10 +491,6 @@ const [loading, setLoading] = useState(true);
         'TOP DEVELOPER': record.top_dev || '',
 
         // Contact Information
-        'NAME': record.contact_name || '',
-        'DESIGNATION': record.designation || '',
-        'CONTACT NUMBER': record.contact_number || '',
-        'EMAIL ADDRESS': record.email_add || '',
         'RELATIONSHIP MANAGER': record.rm || '',
         'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
 
@@ -557,7 +547,13 @@ const [loading, setLoading] = useState(true);
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
         'MIGRATED LINES': record.migrated_lines || '',
-        'BASH': record.quick_bashing || '',
+        'QUICK BASHING': record.quick_bashing || '',
+
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -565,7 +561,6 @@ const [loading, setLoading] = useState(true);
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'MDU/ONU': record.mdu_onu || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
-        'READY TO SELL PORTS': record.ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -576,14 +571,8 @@ const [loading, setLoading] = useState(true);
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
         'FTTB CIP': record.fttb_cip || '',
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'FTTB ACTUAL TA DATE': record.fttb_actual_ta_date ? new Date(record.fttb_actual_ta_date).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
-        // HWS Information
-        'HWS PO RELEASE': record.hws_po_release ? new Date(record.hws_po_release).toLocaleDateString() : '',
-        'HWS CIP': record.hws_cip || '',
-        'HWS TARGET COMPLETION': record.hws_target_completion ? new Date(record.hws_target_completion).toLocaleDateString() : '',
-        'HWS ACTUAL COMPLETION': record.hws_actual_completion ? new Date(record.hws_actual_completion).toLocaleDateString() : '',
       }));
 
       const currentDateTime = new Date().toLocaleString('en-US', {
@@ -692,7 +681,6 @@ const [loading, setLoading] = useState(true);
         'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
         'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1',
         'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
-        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706',
         'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
         'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857',
         'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
@@ -707,14 +695,14 @@ const [loading, setLoading] = useState(true);
         'REPLACEMENT SITE': 'DB2777', 'DATE ENDORSE REPLACEMENT': 'DB2777', 'DATE ACCEPTED': 'DB2777',
         'DATE REJECTED': 'DB2777', 'GO/NOGO': 'DB2777', 'REPLACEMENTS GROUPINGS': 'DB2777',
         'TAGGING TEMP': 'DB2777', 'REPLACEMENT REQUEST': 'DB2777',
-        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'QUICK BASHING': 'D97706',
+        'BASH-PREWORKS (LOUIE)': '7C3AED', 'BASH-NETWORK (JARROD)': '7C3AED', 'BASH-HALLWAY (VIDAL)': '7C3AED', 'BASH-MIGRATION (JAYR)': '7C3AED',
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': '059669', 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': '059669',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': '059669', 'MDU/ONU': '059669', 'ACTUAL REMAINING PORTS': '059669',
-        'READY TO SELL PORTS': '059669', 'POTENTIAL REVENUE GROWTH': '059669',
+        'POTENTIAL REVENUE GROWTH': '059669',
         'SCHEME DESIGN': '7C3AED', 'FCO AOR': '7C3AED',
         'FTTB PO RELEASE': '0284C7', 'FTTB CIP': '0284C7', 'FTTB TARGET COMPLETION': '0284C7',
-        'FTTB ACTUAL TA DATE': '0284C7', 'ROLLOUT SOLUTION': '0284C7',
-        'HWS PO RELEASE': 'E11D48', 'HWS CIP': 'E11D48', 'HWS TARGET COMPLETION': 'E11D48', 'HWS ACTUAL COMPLETION': 'E11D48',
+        'ROLLOUT SOLUTION': '0284C7',
       };
 
       headers.forEach((header, colIndex) => {
@@ -919,10 +907,6 @@ const [loading, setLoading] = useState(true);
         'TOP DEVELOPER': record.top_dev || '',
 
         // Contact Information
-        'NAME': record.contact_name || '',
-        'DESIGNATION': record.designation || '',
-        'CONTACT NUMBER': record.contact_number || '',
-        'EMAIL ADDRESS': record.email_add || '',
         'RELATIONSHIP MANAGER': record.rm || '',
         'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
 
@@ -979,7 +963,13 @@ const [loading, setLoading] = useState(true);
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
         'MIGRATED LINES': record.migrated_lines || '',
-        'BASH': record.quick_bashing || '',
+        'QUICK BASHING': record.quick_bashing || '',
+
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -987,7 +977,6 @@ const [loading, setLoading] = useState(true);
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'MDU/ONU': record.mdu_onu || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
-        'READY TO SELL PORTS': record.ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -998,14 +987,8 @@ const [loading, setLoading] = useState(true);
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
         'FTTB CIP': record.fttb_cip || '',
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'FTTB ACTUAL TA DATE': record.fttb_actual_ta_date ? new Date(record.fttb_actual_ta_date).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
-        // HWS Information
-        'HWS PO RELEASE': record.hws_po_release ? new Date(record.hws_po_release).toLocaleDateString() : '',
-        'HWS CIP': record.hws_cip || '',
-        'HWS TARGET COMPLETION': record.hws_target_completion ? new Date(record.hws_target_completion).toLocaleDateString() : '',
-        'HWS ACTUAL COMPLETION': record.hws_actual_completion ? new Date(record.hws_actual_completion).toLocaleDateString() : '',
       }));
 
       // Create title row with metadata
@@ -1113,7 +1096,6 @@ const [loading, setLoading] = useState(true);
         'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
         'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1',
         'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
-        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706',
         'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
         'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857',
         'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
@@ -1128,14 +1110,14 @@ const [loading, setLoading] = useState(true);
         'REPLACEMENT SITE': 'DB2777', 'DATE ENDORSE REPLACEMENT': 'DB2777', 'DATE ACCEPTED': 'DB2777',
         'DATE REJECTED': 'DB2777', 'GO/NOGO': 'DB2777', 'REPLACEMENTS GROUPINGS': 'DB2777',
         'TAGGING TEMP': 'DB2777', 'REPLACEMENT REQUEST': 'DB2777',
-        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'QUICK BASHING': 'D97706',
+        'BASH-PREWORKS (LOUIE)': '7C3AED', 'BASH-NETWORK (JARROD)': '7C3AED', 'BASH-HALLWAY (VIDAL)': '7C3AED', 'BASH-MIGRATION (JAYR)': '7C3AED',
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': '059669', 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': '059669',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': '059669', 'MDU/ONU': '059669', 'ACTUAL REMAINING PORTS': '059669',
-        'READY TO SELL PORTS': '059669', 'POTENTIAL REVENUE GROWTH': '059669',
+        'POTENTIAL REVENUE GROWTH': '059669',
         'SCHEME DESIGN': '7C3AED', 'FCO AOR': '7C3AED',
         'FTTB PO RELEASE': '0284C7', 'FTTB CIP': '0284C7', 'FTTB TARGET COMPLETION': '0284C7',
-        'FTTB ACTUAL TA DATE': '0284C7', 'ROLLOUT SOLUTION': '0284C7',
-        'HWS PO RELEASE': 'E11D48', 'HWS CIP': 'E11D48', 'HWS TARGET COMPLETION': 'E11D48', 'HWS ACTUAL COMPLETION': 'E11D48',
+        'ROLLOUT SOLUTION': '0284C7',
       };
 
       // Apply header styles
@@ -1373,10 +1355,6 @@ const [loading, setLoading] = useState(true);
           'TOP DEVELOPER': record.top_dev || '',
 
           // Contact Information
-          'NAME': record.contact_name || '',
-          'DESIGNATION': record.designation || '',
-          'CONTACT NUMBER': record.contact_number || '',
-          'EMAIL ADDRESS': record.email_add || '',
           'RELATIONSHIP MANAGER': record.rm || '',
           'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
 
@@ -1433,7 +1411,13 @@ const [loading, setLoading] = useState(true);
           'FL ID': record.fl_id || '',
           'PO STATUS': record.po_status || '',
           'MIGRATED LINES': record.migrated_lines || '',
-          'BASH': record.quick_bashing || '',
+          'QUICK BASHING': record.quick_bashing || '',
+
+          // BASH Section
+          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+          'BASH-NETWORK (JARROD)': record.bash_network || '',
+          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
           // Revenue & Capacity Metrics
           'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -1441,7 +1425,6 @@ const [loading, setLoading] = useState(true);
           'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
           'MDU/ONU': record.mdu_onu || '',
           'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
-          'READY TO SELL PORTS': record.ready_to_sell_ports || '',
           'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
           // Design & Planning
@@ -1452,14 +1435,8 @@ const [loading, setLoading] = useState(true);
           'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
           'FTTB CIP': record.fttb_cip || '',
           'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-          'FTTB ACTUAL TA DATE': record.fttb_actual_ta_date ? new Date(record.fttb_actual_ta_date).toLocaleDateString() : '',
           'ROLLOUT SOLUTION': record.rollout_solution || '',
 
-          // HWS Information
-          'HWS PO RELEASE': record.hws_po_release ? new Date(record.hws_po_release).toLocaleDateString() : '',
-          'HWS CIP': record.hws_cip || '',
-          'HWS TARGET COMPLETION': record.hws_target_completion ? new Date(record.hws_target_completion).toLocaleDateString() : '',
-          'HWS ACTUAL COMPLETION': record.hws_actual_completion ? new Date(record.hws_actual_completion).toLocaleDateString() : '',
         };
       });
 
@@ -1571,7 +1548,6 @@ const [loading, setLoading] = useState(true);
         'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
         'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1',
         'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
-        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706',
         'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
         'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857',
         'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
@@ -1586,14 +1562,14 @@ const [loading, setLoading] = useState(true);
         'REPLACEMENT SITE': 'DB2777', 'DATE ENDORSE REPLACEMENT': 'DB2777', 'DATE ACCEPTED': 'DB2777',
         'DATE REJECTED': 'DB2777', 'GO/NOGO': 'DB2777', 'REPLACEMENTS GROUPINGS': 'DB2777',
         'TAGGING TEMP': 'DB2777', 'REPLACEMENT REQUEST': 'DB2777',
-        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'QUICK BASHING': 'D97706',
+        'BASH-PREWORKS (LOUIE)': '7C3AED', 'BASH-NETWORK (JARROD)': '7C3AED', 'BASH-HALLWAY (VIDAL)': '7C3AED', 'BASH-MIGRATION (JAYR)': '7C3AED',
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': '059669', 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': '059669',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': '059669', 'MDU/ONU': '059669', 'ACTUAL REMAINING PORTS': '059669',
-        'READY TO SELL PORTS': '059669', 'POTENTIAL REVENUE GROWTH': '059669',
+        'POTENTIAL REVENUE GROWTH': '059669',
         'SCHEME DESIGN': '7C3AED', 'FCO AOR': '7C3AED',
         'FTTB PO RELEASE': '0284C7', 'FTTB CIP': '0284C7', 'FTTB TARGET COMPLETION': '0284C7',
-        'FTTB ACTUAL TA DATE': '0284C7', 'ROLLOUT SOLUTION': '0284C7',
-        'HWS PO RELEASE': 'E11D48', 'HWS CIP': 'E11D48', 'HWS TARGET COMPLETION': 'E11D48', 'HWS ACTUAL COMPLETION': 'E11D48',
+        'ROLLOUT SOLUTION': '0284C7',
       };
 
       // Apply header styles
@@ -1851,10 +1827,6 @@ const [loading, setLoading] = useState(true);
           'TOP DEVELOPER': record.top_dev || '',
 
           // Contact Information
-          'NAME': record.contact_name || '',
-          'DESIGNATION': record.designation || '',
-          'CONTACT NUMBER': record.contact_number || '',
-          'EMAIL ADDRESS': record.email_add || '',
           'RELATIONSHIP MANAGER': record.rm || '',
           'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
 
@@ -1911,7 +1883,13 @@ const [loading, setLoading] = useState(true);
           'FL ID': record.fl_id || '',
           'PO STATUS': record.po_status || '',
           'MIGRATED LINES': record.migrated_lines || '',
-          'BASH': record.quick_bashing || '',
+          'QUICK BASHING': record.quick_bashing || '',
+
+          // BASH Section
+          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+          'BASH-NETWORK (JARROD)': record.bash_network || '',
+          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
           // Revenue & Capacity Metrics
           'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -1919,7 +1897,6 @@ const [loading, setLoading] = useState(true);
           'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
           'MDU/ONU': record.mdu_onu || '',
           'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
-          'READY TO SELL PORTS': record.ready_to_sell_ports || '',
           'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
           // Design & Planning
@@ -1930,14 +1907,8 @@ const [loading, setLoading] = useState(true);
           'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
           'FTTB CIP': record.fttb_cip || '',
           'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-          'FTTB ACTUAL TA DATE': record.fttb_actual_ta_date ? new Date(record.fttb_actual_ta_date).toLocaleDateString() : '',
           'ROLLOUT SOLUTION': record.rollout_solution || '',
 
-          // HWS Information
-          'HWS PO RELEASE': record.hws_po_release ? new Date(record.hws_po_release).toLocaleDateString() : '',
-          'HWS CIP': record.hws_cip || '',
-          'HWS TARGET COMPLETION': record.hws_target_completion ? new Date(record.hws_target_completion).toLocaleDateString() : '',
-          'HWS ACTUAL COMPLETION': record.hws_actual_completion ? new Date(record.hws_actual_completion).toLocaleDateString() : '',
         };
       });
 
@@ -2049,7 +2020,6 @@ const [loading, setLoading] = useState(true);
         'ZONE': '0D7377', 'AREA': '0D7377', 'MARKET SEGMENT': '0D7377',
         'BUILDING STATUS': '6B46C1', 'USAGE': '6B46C1', 'FLOORS': '6B46C1', 'UNITS': '6B46C1',
         'DEVELOPER': '6B46C1', 'TOP DEVELOPER': '6B46C1',
-        'NAME': 'D97706', 'DESIGNATION': 'D97706', 'CONTACT NUMBER': 'D97706', 'EMAIL ADDRESS': 'D97706',
         'RELATIONSHIP MANAGER': 'D97706', 'RELATIONSHIP MANAGER GROUP': 'D97706',
         'PROJECT STATUS': '047857', 'PROJECT STAGE': '047857', 'PROJECT MILESTONE': '047857',
         'WORKING LINES': '047857', 'ROLLOUT PORTS': '047857', 'MRC': '047857',
@@ -2064,14 +2034,14 @@ const [loading, setLoading] = useState(true);
         'REPLACEMENT SITE': 'DB2777', 'DATE ENDORSE REPLACEMENT': 'DB2777', 'DATE ACCEPTED': 'DB2777',
         'DATE REJECTED': 'DB2777', 'GO/NOGO': 'DB2777', 'REPLACEMENTS GROUPINGS': 'DB2777',
         'TAGGING TEMP': 'DB2777', 'REPLACEMENT REQUEST': 'DB2777',
-        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'BASH': 'D97706',
+        'PREV BATCH': 'D97706', 'FL ID': 'D97706', 'PO STATUS': 'D97706', 'MIGRATED LINES': 'D97706', 'QUICK BASHING': 'D97706',
+        'BASH-PREWORKS (LOUIE)': '7C3AED', 'BASH-NETWORK (JARROD)': '7C3AED', 'BASH-HALLWAY (VIDAL)': '7C3AED', 'BASH-MIGRATION (JAYR)': '7C3AED',
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': '059669', 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': '059669',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': '059669', 'MDU/ONU': '059669', 'ACTUAL REMAINING PORTS': '059669',
-        'READY TO SELL PORTS': '059669', 'POTENTIAL REVENUE GROWTH': '059669',
+        'POTENTIAL REVENUE GROWTH': '059669',
         'SCHEME DESIGN': '7C3AED', 'FCO AOR': '7C3AED',
         'FTTB PO RELEASE': '0284C7', 'FTTB CIP': '0284C7', 'FTTB TARGET COMPLETION': '0284C7',
-        'FTTB ACTUAL TA DATE': '0284C7', 'ROLLOUT SOLUTION': '0284C7',
-        'HWS PO RELEASE': 'E11D48', 'HWS CIP': 'E11D48', 'HWS TARGET COMPLETION': 'E11D48', 'HWS ACTUAL COMPLETION': 'E11D48',
+        'ROLLOUT SOLUTION': '0284C7',
       };
 
       // Apply header styles

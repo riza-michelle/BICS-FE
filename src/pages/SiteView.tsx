@@ -311,10 +311,6 @@ const SiteView: React.FC = () => {
       { header: 'DEVELOPER',              color: '6B46C1', section: 'Building Details' },
       { header: 'TOP DEV',                color: '6B46C1', section: 'Building Details' },
       // Contact Information
-      { header: 'NAME',                   color: 'D97706', section: 'Contact Information' },
-      { header: 'DESIGNATION',            color: 'D97706', section: 'Contact Information' },
-      { header: 'CONTACT NUMBER',         color: 'D97706', section: 'Contact Information' },
-      { header: 'EMAIL ADD',              color: 'D97706', section: 'Contact Information' },
       { header: 'RM',                     color: 'D97706', section: 'Contact Information' },
       { header: 'RM GROUP',               color: 'D97706', section: 'Contact Information' },
       // Project Information
@@ -370,9 +366,6 @@ const SiteView: React.FC = () => {
       { header: 'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)',  color: '059669', section: 'Revenue & Capacity' },
       { header: 'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)', color: '059669', section: 'Revenue & Capacity' },
       { header: 'ACTUAL TAD PORTS/PAIRS PROVISIONED',            color: '059669', section: 'Revenue & Capacity' },
-      { header: 'ACTUAL TA NETWORK',                             color: '059669', section: 'Revenue & Capacity' },
-      { header: 'TA NETWORK VS WARPP',                           color: '059669', section: 'Revenue & Capacity' },
-      { header: 'TA DATE NETWORK',                               color: '059669', section: 'Revenue & Capacity' },
       { header: 'ACTUAL TA',                                     color: '059669', section: 'Revenue & Capacity' },
       { header: 'ACTUAL FA',                                     color: '059669', section: 'Revenue & Capacity' },
       { header: 'WARPP PCN',                                     color: '059669', section: 'Revenue & Capacity' },
@@ -380,7 +373,6 @@ const SiteView: React.FC = () => {
       { header: 'MIGRATED LINES',                                color: '059669', section: 'Revenue & Capacity' },
       { header: 'ACTUAL REMAINING PORTS',                        color: '059669', section: 'Revenue & Capacity' },
       { header: 'ACTUAL READY TO SELL PORTS',                    color: '059669', section: 'Revenue & Capacity' },
-      { header: 'READY TO SELL PORTS',                           color: '059669', section: 'Revenue & Capacity' },
       { header: 'POTENTIAL REVENUE GROWTH',                      color: '059669', section: 'Revenue & Capacity' },
       // Design & Planning
       { header: 'SCHEME DESIGN',          color: '7C3AED', section: 'Design & Planning' },
@@ -389,15 +381,12 @@ const SiteView: React.FC = () => {
       { header: 'FTTB PO RELEASE',        color: '0284C7', section: 'FTTB Information' },
       { header: 'FTTB CIP',               color: '0284C7', section: 'FTTB Information' },
       { header: 'FTTB TARGET COMPLETION', color: '0284C7', section: 'FTTB Information' },
-      { header: 'FTTB ACTUAL TA DATE',    color: '0284C7', section: 'FTTB Information' },
       { header: 'ROLLOUT SOLUTION',       color: '0284C7', section: 'FTTB Information' },
-      // HWS Information
-      { header: 'HWS PO RELEASE',         color: 'E11D48', section: 'HWS Information' },
-      { header: 'HWS CIP',                color: 'E11D48', section: 'HWS Information' },
-      { header: 'HWS TARGET COMPLETION',  color: 'E11D48', section: 'HWS Information' },
-      { header: 'HWS ACTUAL COMPLETION',  color: 'E11D48', section: 'HWS Information' },
-      // Additional
-      { header: 'BASH',                   color: 'D97706', section: 'Additional Information' },
+      // BASH Section
+      { header: 'BASH-PREWORKS (LOUIE)',  color: '7C3AED', section: 'BASH Section' },
+      { header: 'BASH-NETWORK (JARROD)',  color: '7C3AED', section: 'BASH Section' },
+      { header: 'BASH-HALLWAY (VIDAL)',   color: '7C3AED', section: 'BASH Section' },
+      { header: 'BASH-MIGRATION (JAYR)',  color: '7C3AED', section: 'BASH Section' },
     ];
 
     const headers = templateColumns.map(c => c.header);
@@ -610,10 +599,6 @@ const SiteView: React.FC = () => {
             ])}
 
             {renderDetailSection('Contact Information', [
-              { label: 'NAME', value: selectedRecord.contact_name },
-              { label: 'DESIGNATION', value: selectedRecord.designation },
-              { label: 'CONTACT NUMBER', value: selectedRecord.contact_number },
-              { label: 'EMAIL ADDRESS', value: selectedRecord.email_add },
               { label: 'RELATIONSHIP MANAGER', value: selectedRecord.rm },
               { label: 'RELATIONSHIP MANAGER GROUP', value: selectedRecord.rm_group },
             ])}
@@ -677,7 +662,14 @@ const SiteView: React.FC = () => {
               { label: 'FL ID', value: selectedRecord.fl_id },
               { label: 'PO STATUS', value: selectedRecord.po_status },
               { label: 'MIGRATED LINES', value: selectedRecord.migrated_lines },
-              { label: 'BASH', value: selectedRecord.quick_bashing },
+              { label: 'QUICK BASHING', value: selectedRecord.quick_bashing },
+            ])}
+
+            {renderDetailSection('BASH Section', [
+              { label: 'BASH-PREWORKS (LOUIE)', value: selectedRecord.bash_preworks },
+              { label: 'BASH-NETWORK (JARROD)', value: selectedRecord.bash_network },
+              { label: 'BASH-HALLWAY (VIDAL)', value: selectedRecord.bash_hallway },
+              { label: 'BASH-MIGRATION (JAYR)', value: selectedRecord.bash_migration },
             ])}
 
             {renderDetailSection('Revenue & Capacity Metrics', [
@@ -686,11 +678,7 @@ const SiteView: React.FC = () => {
               { label: 'ACTUAL TAD PORTS/PAIRS PROVISIONED', value: selectedRecord.actual_tad_ports_pairs_provisioned },
               { label: 'MDU/ONU', value: selectedRecord.mdu_onu },
               { label: 'ACTUAL REMAINING PORTS', value: selectedRecord.actual_remaining_ports },
-              { label: 'READY TO SELL PORTS', value: selectedRecord.ready_to_sell_ports },
               { label: 'POTENTIAL REVENUE GROWTH', value: selectedRecord.potential_revenue_growth },
-              { label: 'ACTUAL TA NETWORK', value: selectedRecord.actual_ta_network },
-              { label: 'TA NETWORK VS WARPP', value: selectedRecord.ta_network_vs_warpp },
-              { label: 'TA DATE NETWORK', value: selectedRecord.ta_date_network ? new Date(selectedRecord.ta_date_network).toLocaleDateString() : '-' },
               { label: 'ACTUAL TA', value: selectedRecord.actual_ta },
               { label: 'ACTUAL FA', value: selectedRecord.actual_fa },
               { label: 'WARPP PCN', value: selectedRecord.warpp_pcn },
@@ -706,16 +694,9 @@ const SiteView: React.FC = () => {
               { label: 'FTTB PO RELEASE', value: selectedRecord.fttb_po_release ? new Date(selectedRecord.fttb_po_release).toLocaleDateString() : '-' },
               { label: 'FTTB CIP', value: selectedRecord.fttb_cip },
               { label: 'FTTB TARGET COMPLETION', value: selectedRecord.fttb_target_completion ? new Date(selectedRecord.fttb_target_completion).toLocaleDateString() : '-' },
-              { label: 'FTTB ACTUAL TA DATE', value: selectedRecord.fttb_actual_ta_date ? new Date(selectedRecord.fttb_actual_ta_date).toLocaleDateString() : '-' },
               { label: 'ROLLOUT SOLUTION', value: selectedRecord.rollout_solution },
             ])}
 
-            {renderDetailSection('HWS Information', [
-              { label: 'HWS PO RELEASE', value: selectedRecord.hws_po_release ? new Date(selectedRecord.hws_po_release).toLocaleDateString() : '-' },
-              { label: 'HWS CIP', value: selectedRecord.hws_cip },
-              { label: 'HWS TARGET COMPLETION', value: selectedRecord.hws_target_completion ? new Date(selectedRecord.hws_target_completion).toLocaleDateString() : '-' },
-              { label: 'HWS ACTUAL COMPLETION', value: selectedRecord.hws_actual_completion ? new Date(selectedRecord.hws_actual_completion).toLocaleDateString() : '-' },
-            ])}
           </div>
         </div>
       </div>

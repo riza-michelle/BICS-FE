@@ -564,10 +564,6 @@ const DataEntry: React.FC = () => {
             {/* Contact Information */}
             {renderFormSection("Contact Information", (
               <>
-                {renderInput('contact_name', 'NAME')}
-                {renderInput('designation', 'DESIGNATION')}
-                {renderInput('contact_number', 'CONTACT NUMBER', 'tel')}
-                {renderInput('email_add', 'EMAIL ADDRESS', 'email')}
                 {renderSelect('rm', 'RELATIONSHIP MANAGER', relationshipManagerList)}
                 {renderReadOnlyInput('rm_group', 'RELATIONSHIP MANAGER GROUP')}
               </>
@@ -796,7 +792,17 @@ const DataEntry: React.FC = () => {
                   'PO RELEASED'
                 ])}
                 {renderInput('migrated_lines', 'MIGRATED LINES', 'number')}
-                {renderInput('quick_bashing', 'BASH')}
+                {renderInput('quick_bashing', 'QUICK BASHING')}
+              </>
+            ))}
+
+            {/* BASH Section */}
+            {renderFormSection("BASH Section", (
+              <>
+                {renderInput('bash_preworks', 'BASH-PREWORKS (LOUIE)')}
+                {renderInput('bash_network', 'BASH-NETWORK (JARROD)')}
+                {renderInput('bash_hallway', 'BASH-HALLWAY (VIDAL)')}
+                {renderInput('bash_migration', 'BASH-MIGRATION (JAYR)')}
               </>
             ))}
 
@@ -808,11 +814,7 @@ const DataEntry: React.FC = () => {
                 {renderInput('actual_tad_ports_pairs_provisioned', 'ACTUAL TAD PORTS/PAIRS PROVISIONED', 'number')}
                 {renderInput('mdu_onu', 'MDU/ONU')}
                 {renderInput('actual_remaining_ports', 'ACTUAL REMAINING PORTS', 'number')}
-                {renderInput('ready_to_sell_ports', 'READY TO SELL PORTS', 'number')}
                 {renderInput('potential_revenue_growth', 'POTENTIAL REVENUE GROWTH', 'number')}
-                {renderInput('actual_ta_network', 'ACTUAL TA NETWORK')}
-                {renderInput('ta_network_vs_warpp', 'TA NETWORK VS WARPP')}
-                {renderInput('ta_date_network', 'TA DATE NETWORK', 'date')}
                 {renderInput('actual_ta', 'ACTUAL TA')}
                 {renderInput('actual_fa', 'ACTUAL FA')}
                 {renderInput('warpp_pcn', 'WARPP PCN')}
@@ -834,18 +836,7 @@ const DataEntry: React.FC = () => {
                 {renderInput('fttb_po_release', 'FTTB PO RELEASE', 'date')}
                 {renderInput('fttb_cip', 'FTTB CIP')}
                 {renderInput('fttb_target_completion', 'FTTB TARGET COMPLETION', 'date')}
-                {renderInput('fttb_actual_ta_date', 'FTTB ACTUAL TA DATE', 'date')}
                 {renderInput('rollout_solution', 'ROLLOUT SOLUTION')}
-              </>
-            ))}
-
-            {/* HWS Information */}
-            {renderFormSection("HWS Information", (
-              <>
-                {renderInput('hws_po_release', 'HWS PO RELEASE', 'date')}
-                {renderInput('hws_cip', 'HWS CIP')}
-                {renderInput('hws_target_completion', 'HWS TARGET COMPLETION', 'date')}
-                {renderInput('hws_actual_completion', 'HWS ACTUAL COMPLETION', 'date')}
               </>
             ))}
 
