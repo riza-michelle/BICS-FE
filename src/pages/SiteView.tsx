@@ -79,7 +79,7 @@ const SiteView: React.FC = () => {
 
       const response = await bicsAPI.getRecords({
         page: currentPage,
-        limit: 100,
+        limit: 200,
         search: searchQuery || undefined,
         bcsi_aor: selectedPersonnel || undefined,
         epc_batch: selectedEpcBatch || undefined,
