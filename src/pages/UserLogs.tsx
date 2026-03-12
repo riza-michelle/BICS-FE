@@ -194,61 +194,119 @@ const UserLogs: React.FC = () => {
 
   const getActionBadge = (action: string) => {
     const colors = {
-      login: 'bg-green-100 text-green-800 border-green-200',
-      logout: 'bg-gray-100 text-gray-800 border-gray-200',
-      create_record: 'bg-blue-100 text-blue-800 border-blue-200',
-      update_record: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      delete_record: 'bg-red-100 text-red-800 border-red-200',
-      create_epc_batch: 'bg-blue-100 text-blue-800 border-blue-200',
-      update_epc_batch: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      delete_epc_batch: 'bg-red-100 text-red-800 border-red-200',
-      upload_moa: 'bg-blue-100 text-blue-800 border-blue-200',
-      update_moa: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      delete_moa: 'bg-red-100 text-red-800 border-red-200',
-      delete_all_logs: 'bg-red-100 text-red-800 border-red-200'
+      // Auth
+      login:                        'bg-green-100 text-green-800 border-green-200',
+      logout:                       'bg-gray-100 text-gray-800 border-gray-200',
+      change_password:              'bg-yellow-100 text-yellow-800 border-yellow-200',
+      forgot_password_reset:        'bg-yellow-100 text-yellow-800 border-yellow-200',
+      // BICS Records
+      create_record:                'bg-blue-100 text-blue-800 border-blue-200',
+      update_record:                'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_record:                'bg-red-100 text-red-800 border-red-200',
+      delete_all_records:           'bg-red-100 text-red-800 border-red-200',
+      duplicate_record:             'bg-purple-100 text-purple-800 border-purple-200',
+      import_excel:                 'bg-blue-100 text-blue-800 border-blue-200',
+      // MOA
+      upload_moa:                   'bg-blue-100 text-blue-800 border-blue-200',
+      update_moa:                   'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_moa:                   'bg-red-100 text-red-800 border-red-200',
+      // EPC Batch
+      create_epc_batch:             'bg-blue-100 text-blue-800 border-blue-200',
+      update_epc_batch:             'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_epc_batch:             'bg-red-100 text-red-800 border-red-200',
+      // Vendor
+      create_vendor:                'bg-blue-100 text-blue-800 border-blue-200',
+      update_vendor:                'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_vendor:                'bg-red-100 text-red-800 border-red-200',
+      // SAQ Personnel
+      create_saq_personnel:         'bg-blue-100 text-blue-800 border-blue-200',
+      update_saq_personnel:         'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_saq_personnel:         'bg-red-100 text-red-800 border-red-200',
+      // FCO Personnel
+      create_fco_personnel:         'bg-blue-100 text-blue-800 border-blue-200',
+      update_fco_personnel:         'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_fco_personnel:         'bg-red-100 text-red-800 border-red-200',
+      // Top Developer
+      create_top_developer:         'bg-blue-100 text-blue-800 border-blue-200',
+      update_top_developer:         'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_top_developer:         'bg-red-100 text-red-800 border-red-200',
+      // Relationship Manager
+      create_relationship_manager:  'bg-blue-100 text-blue-800 border-blue-200',
+      update_relationship_manager:  'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_relationship_manager:  'bg-red-100 text-red-800 border-red-200',
+      // Validated By
+      create_validated_by:          'bg-blue-100 text-blue-800 border-blue-200',
+      update_validated_by:          'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_validated_by:          'bg-red-100 text-red-800 border-red-200',
+      // COB Inventory
+      create_cob_inventory:         'bg-blue-100 text-blue-800 border-blue-200',
+      update_cob_inventory:         'bg-yellow-100 text-yellow-800 border-yellow-200',
+      delete_cob_inventory:         'bg-red-100 text-red-800 border-red-200',
+      // System
+      delete_all_logs:              'bg-red-100 text-red-800 border-red-200',
     };
     return colors[action as keyof typeof colors] || 'bg-purple-100 text-purple-800 border-purple-200';
   };
 
   const formatActionLabel = (action: string, details?: any) => {
     const labels: { [key: string]: string } = {
-      login: 'Login',
-      logout: 'Logout',
-      create_record: 'Create Record',
-      update_record: 'Update Record',
-      delete_record: 'Delete Record',
-      create_batch: 'Create EPC Batch',
-      update_batch: 'Update EPC Batch',
-      delete_batch: 'Delete EPC Batch',
-      create_epc_batch: 'Create EPC Batch',
-      update_epc_batch: 'Update EPC Batch',
-      delete_epc_batch: 'Delete EPC Batch',
-      upload_moa: 'Upload MOA',
-      update_moa: 'Update MOA',
-      delete_moa: 'Delete MOA',
-      create_moa_client: 'Create MOA Client',
-      update_moa_client: 'Update MOA Client',
-      delete_moa_client: 'Delete MOA Client',
-      create_vendor: 'Create Vendor',
-      update_vendor: 'Update Vendor',
-      delete_vendor: 'Delete Vendor',
-      create_saq_personnel: 'Create SAQ Personnel',
-      update_saq_personnel: 'Update SAQ Personnel',
-      delete_saq_personnel: 'Delete SAQ Personnel',
-      create_fco_personnel: 'Create FCO Personnel',
-      update_fco_personnel: 'Update FCO Personnel',
-      delete_fco_personnel: 'Delete FCO Personnel',
-      create_top_developer: 'Create Top Developer',
-      update_top_developer: 'Update Top Developer',
-      delete_top_developer: 'Delete Top Developer',
-      delete_all_logs: 'Delete All Logs'
+      // Auth
+      login:                       'Login',
+      logout:                      'Logout',
+      change_password:             'Change Password',
+      forgot_password_reset:       'Password Reset',
+      // BICS Records
+      create_record:               'Create Record',
+      update_record:               'Update Record',
+      delete_record:               'Delete Record',
+      delete_all_records:          'Delete All Records',
+      duplicate_record:            'Duplicate Record',
+      import_excel:                'Bulk Upload Excel',
+      // MOA
+      upload_moa:                  'Upload MOA',
+      update_moa:                  'Update MOA',
+      delete_moa:                  'Delete MOA',
+      // EPC Batch
+      create_epc_batch:            'Create EPC Batch',
+      update_epc_batch:            'Update EPC Batch',
+      delete_epc_batch:            'Delete EPC Batch',
+      // Vendor
+      create_vendor:               'Create Vendor',
+      update_vendor:               'Update Vendor',
+      delete_vendor:               'Delete Vendor',
+      // SAQ Personnel
+      create_saq_personnel:        'Create SAQ Personnel',
+      update_saq_personnel:        'Update SAQ Personnel',
+      delete_saq_personnel:        'Delete SAQ Personnel',
+      // FCO Personnel
+      create_fco_personnel:        'Create FCO Personnel',
+      update_fco_personnel:        'Update FCO Personnel',
+      delete_fco_personnel:        'Delete FCO Personnel',
+      // Top Developer
+      create_top_developer:        'Create Top Developer',
+      update_top_developer:        'Update Top Developer',
+      delete_top_developer:        'Delete Top Developer',
+      // Relationship Manager
+      create_relationship_manager: 'Create Relationship Manager',
+      update_relationship_manager: 'Update Relationship Manager',
+      delete_relationship_manager: 'Delete Relationship Manager',
+      // Validated By
+      create_validated_by:         'Create Validated By',
+      update_validated_by:         'Update Validated By',
+      delete_validated_by:         'Delete Validated By',
+      // COB Inventory
+      create_cob_inventory:        'Create COB Inventory',
+      update_cob_inventory:        'Update COB Inventory',
+      delete_cob_inventory:        'Delete COB Inventory',
+      // System
+      delete_all_logs:             'Delete All Logs',
     };
 
     let actionText = labels[action] || action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
     // Add entity name for create/delete operations
     if (details) {
-      if ((action.includes('create') || action.includes('delete')) && !action.includes('record')) {
+      if ((action.includes('create') || action.includes('delete')) && !action.includes('record') && !action.includes('all')) {
         if (details.vendor_name) {
           actionText += ` - ${details.vendor_name}`;
         } else if (details.personnel_name) {
@@ -259,6 +317,10 @@ const UserLogs: React.FC = () => {
           actionText += ` - ${details.client_name}`;
         } else if (details.top_developer_name) {
           actionText += ` - ${details.top_developer_name}`;
+        } else if (details.relationship_manager) {
+          actionText += ` - ${details.relationship_manager}`;
+        } else if (details.validated_by_name) {
+          actionText += ` - ${details.validated_by_name}`;
         }
       }
 
@@ -267,7 +329,8 @@ const UserLogs: React.FC = () => {
         const changes: string[] = [];
         Object.entries(details.changes).forEach(([field, change]: [string, any]) => {
           if (typeof change === 'object' && change.from !== undefined && change.to !== undefined) {
-            if (field === 'vendor_name' || field === 'personnel_name' || field === 'batch_name' || field === 'client_name' || field === 'top_developer_name') {
+            if (['vendor_name', 'personnel_name', 'batch_name', 'client_name', 'top_developer_name',
+                 'relationship_manager', 'validated_by_name'].includes(field)) {
               changes.push(`"${change.from}" → "${change.to}"`);
             }
           }
@@ -349,6 +412,44 @@ const UserLogs: React.FC = () => {
       );
     }
 
+    // Duplicate record
+    if (action === 'duplicate_record') {
+      return (
+        <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+          <div className="text-xs">
+            {details.site_name && <div><span className="font-semibold text-gray-700">Site:</span> {details.site_name}</div>}
+            {details.original_id && <div><span className="font-semibold text-gray-700">Original ID:</span> {details.original_id}</div>}
+            {details.new_id && <div><span className="font-semibold text-gray-700">New Record ID:</span> <span className="text-purple-600">{details.new_id}</span></div>}
+          </div>
+        </div>
+      );
+    }
+
+    // Delete all records
+    if (action === 'delete_all_records') {
+      return (
+        <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+          <div className="text-xs">
+            <div><span className="font-semibold text-gray-700">Total Deleted:</span> <span className="text-red-600">{details.deleted_count}</span> record(s)</div>
+          </div>
+        </div>
+      );
+    }
+
+    // Bulk upload (import_excel)
+    if (action === 'import_excel') {
+      return (
+        <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+          <div className="text-xs">
+            {details.filename && <div><span className="font-semibold text-gray-700">File:</span> {details.filename}</div>}
+            {details.total_records !== undefined && <div><span className="font-semibold text-gray-700">Total Rows:</span> {details.total_records}</div>}
+            {details.success_count !== undefined && <div><span className="font-semibold text-gray-700">Imported:</span> <span className="text-green-600">{details.success_count}</span></div>}
+            {details.error_count !== undefined && details.error_count > 0 && <div><span className="font-semibold text-gray-700">Errors:</span> <span className="text-red-600">{details.error_count}</span></div>}
+          </div>
+        </div>
+      );
+    }
+
     if (action.includes('create') || action.includes('delete') || action.includes('upload')) {
       return (
         <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
@@ -376,6 +477,18 @@ const UserLogs: React.FC = () => {
             )}
             {details.project_status && (
               <div><span className="font-semibold text-gray-700">Status:</span> {details.project_status}</div>
+            )}
+            {details.top_developer_name && (
+              <div><span className="font-semibold text-gray-700">Top Developer:</span> {details.top_developer_name}</div>
+            )}
+            {details.relationship_manager && (
+              <div><span className="font-semibold text-gray-700">Relationship Manager:</span> {details.relationship_manager}</div>
+            )}
+            {details.relationship_manager_group && (
+              <div><span className="font-semibold text-gray-700">RM Group:</span> {details.relationship_manager_group}</div>
+            )}
+            {details.validated_by_name && (
+              <div><span className="font-semibold text-gray-700">Validated By:</span> {details.validated_by_name}</div>
             )}
             {details.documents_uploaded && details.documents_uploaded.length > 0 && (
               <div>
