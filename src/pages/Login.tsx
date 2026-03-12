@@ -766,7 +766,7 @@ const Login: React.FC = () => {
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center space-x-4 mb-2">
             <div className="h-px w-16 bg-gray-300"></div>
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Secured by PLDT Enterprise</span>
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide"></span>
             <div className="h-px w-16 bg-gray-300"></div>
           </div>
           <p className="text-xs text-gray-400">
