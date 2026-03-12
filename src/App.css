@@ -1,3 +1,11 @@
+/* Enforce uppercase display for all text inputs and textareas */
+input[type="text"],
+input[type="search"],
+input:not([type]),
+textarea {
+  text-transform: uppercase;
+}
+
 .App {
   text-align: center;
 }

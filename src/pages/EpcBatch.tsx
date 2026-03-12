@@ -318,7 +318,7 @@ const EpcBatchPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.batch_name}
-                  onChange={(e) => setFormData({ ...formData, batch_name: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, batch_name: e.target.value.toUpperCase() })}
                   placeholder="e.g., BATCH - 118"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   required

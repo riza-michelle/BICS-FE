@@ -402,7 +402,7 @@ const RelationshipManagerPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.relationship_manager}
-                  onChange={(e) => setFormData({ ...formData, relationship_manager: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, relationship_manager: e.target.value.toUpperCase() })}
                   placeholder="Enter relationship manager name"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   required
@@ -416,7 +416,7 @@ const RelationshipManagerPage: React.FC = () => {
                 <input
                   type="text"
                   value={formData.relationship_manager_group}
-                  onChange={(e) => setFormData({ ...formData, relationship_manager_group: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, relationship_manager_group: e.target.value.toUpperCase() })}
                   placeholder="Enter relationship manager group"
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   required

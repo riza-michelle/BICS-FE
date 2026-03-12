@@ -663,4 +663,17 @@ export const cobInventoryAPI = {
   },
 };
 
+// Role Permissions API
+export const rolePermissionsAPI = {
+  getPermissions: async (): Promise<ApiResponse<Record<string, Record<string, boolean>>>> => {
+    const response = await api.get('/role-permissions/list');
+    return response.data;
+  },
+
+  updatePermissions: async (permissions: Record<string, Record<string, boolean>>): Promise<ApiResponse<any>> => {
+    const response = await api.put('/role-permissions/update', { permissions });
+    return response.data;
+  },
+};
+
 export default api;

@@ -509,8 +509,8 @@ const SiteView: React.FC = () => {
                     {field.label}
                   </label>
                   <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-md">
-                    <p className="text-sm text-gray-900 break-words">
-                      {field.value || <span className="text-gray-400 italic">Not specified</span>}
+                    <p className="text-sm text-gray-900 break-words uppercase">
+                      {field.value || <span className="text-gray-400 italic normal-case">Not specified</span>}
                     </p>
                   </div>
                 </div>
@@ -835,7 +835,7 @@ const SiteView: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200 uppercase">
                 {loading ? (
                   <tr>
                     <td colSpan={9} className="px-2 py-4 text-center">

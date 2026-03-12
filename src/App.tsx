@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { PermissionsProvider, usePermissions } from './context/PermissionsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -19,6 +20,7 @@ import FcoPersonnel from './pages/FcoPersonnel';
 import TopDeveloper from './pages/TopDeveloper';
 import RelationshipManager from './pages/RelationshipManager';
 import ValidatedBy from './pages/ValidatedBy';
+import RolePermissions from './pages/RolePermissions';
 import Test from './pages/Test';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -38,9 +40,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const RootRedirect: React.FC = () => {
   const { user } = useAuth();
+  const { hasPermission } = usePermissions();
 
-  // Redirect based on user role
-  if (user?.role === 'Super Admin' || user?.role === 'Admin') {
+  if (hasPermission(user?.role, 'dashboard')) {
     return <Navigate to="/dashboard" replace />;
   }
   return <Navigate to="/data-entry" replace />;
@@ -50,6 +52,7 @@ function App() {
   return (
     <NotificationProvider>
       <AuthProvider>
+        <PermissionsProvider>
         <Router>
           <AppLayout>
             <Routes>
@@ -58,7 +61,7 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRoute adminOnly>
+                  <ProtectedRoute menuKey="dashboard">
                     <Dashboard />
                   </ProtectedRoute>
                 }
@@ -74,7 +77,7 @@ function App() {
               <Route
                 path="/site-view"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute menuKey="bpt_view_live_site">
                     <SiteView />
                   </ProtectedRoute>
                 }
@@ -82,7 +85,7 @@ function App() {
               <Route
                 path="/moa-uploader"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute menuKey="moa_uploader">
                     <MoaUploader />
                   </ProtectedRoute>
                 }
@@ -90,7 +93,7 @@ function App() {
               <Route
                 path="/cob-inventory"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute menuKey="cdrf_routing">
                     <CobInventory />
                   </ProtectedRoute>
                 }
@@ -98,7 +101,7 @@ function App() {
               <Route
                 path="/users"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_users">
                     <Users />
                   </ProtectedRoute>
                 }
@@ -106,7 +109,7 @@ function App() {
               <Route
                 path="/user-logs"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_user_logs">
                     <UserLogs />
                   </ProtectedRoute>
                 }
@@ -114,7 +117,7 @@ function App() {
               <Route
                 path="/epc-batch"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_epc_batch">
                     <EpcBatch />
                   </ProtectedRoute>
                 }
@@ -122,7 +125,7 @@ function App() {
               <Route
                 path="/vendor"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_vendor">
                     <Vendor />
                   </ProtectedRoute>
                 }
@@ -130,7 +133,7 @@ function App() {
               <Route
                 path="/saq-personnel"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_saq_personnel">
                     <SaqPersonnel />
                   </ProtectedRoute>
                 }
@@ -138,7 +141,7 @@ function App() {
               <Route
                 path="/fco-personnel"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_fco_personnel">
                     <FcoPersonnel />
                   </ProtectedRoute>
                 }
@@ -146,7 +149,7 @@ function App() {
               <Route
                 path="/top-developer"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_top_developer">
                     <TopDeveloper />
                   </ProtectedRoute>
                 }
@@ -154,7 +157,7 @@ function App() {
               <Route
                 path="/relationship-manager"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_relationship_manager">
                     <RelationshipManager />
                   </ProtectedRoute>
                 }
@@ -162,8 +165,16 @@ function App() {
               <Route
                 path="/validated-by"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_validated_by">
                     <ValidatedBy />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/role-permissions"
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <RolePermissions />
                   </ProtectedRoute>
                 }
               />
@@ -171,6 +182,7 @@ function App() {
             </Routes>
           </AppLayout>
         </Router>
+        </PermissionsProvider>
       </AuthProvider>
     </NotificationProvider>
   );

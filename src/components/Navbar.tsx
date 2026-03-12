@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive } from 'lucide-react';
+import { usePermissions } from '../context/PermissionsContext';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
+  const { hasPermission } = usePermissions();
   const location = useLocation();
   const [isActiveSiteOpen, setIsActiveSiteOpen] = useState(false);
   const [isConfigurationsOpen, setIsConfigurationsOpen] = useState(false);
@@ -50,8 +52,8 @@ const Navbar: React.FC = () => {
             </div>
 
             <div className="ml-10 flex items-baseline space-x-4">
-              {/* Dashboard - Only visible to Admin and Super Admin */}
-              {(user?.role === 'Admin' || user?.role === 'Super Admin') && (
+              {/* Dashboard */}
+              {hasPermission(user?.role, 'dashboard') && (
                 <Link
                   to="/dashboard"
                   className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
@@ -65,7 +67,8 @@ const Navbar: React.FC = () => {
                 </Link>
               )}
 
-              {/* Active Site Dropdown */}
+              {/* BPT Dropdown */}
+              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site')) && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsActiveSiteOpen(!isActiveSiteOpen)}
@@ -80,10 +83,10 @@ const Navbar: React.FC = () => {
                   <ChevronDown className={`h-4 w-4 transition-transform ${isActiveSiteOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown Menu */}
                 {isActiveSiteOpen && (
                   <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-1">
+                      {hasPermission(user?.role, 'bpt_add_live_site') && (
                       <Link
                         to="/data-entry"
                         onClick={() => setIsActiveSiteOpen(false)}
@@ -96,6 +99,8 @@ const Navbar: React.FC = () => {
                         <FileText className="h-4 w-4" />
                         <span>Add New Live Site</span>
                       </Link>
+                      )}
+                      {hasPermission(user?.role, 'bpt_view_live_site') && (
                       <Link
                         to="/site-view"
                         onClick={() => setIsActiveSiteOpen(false)}
@@ -108,11 +113,14 @@ const Navbar: React.FC = () => {
                         <Eye className="h-4 w-4" />
                         <span>View Live Site</span>
                       </Link>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
+              )}
 
+              {hasPermission(user?.role, 'moa_uploader') && (
               <Link
                 to="/moa-uploader"
                 className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
@@ -124,7 +132,9 @@ const Navbar: React.FC = () => {
                 <Upload className="h-4 w-4" />
                 <span>MOA Uploader</span>
               </Link>
+              )}
 
+              {hasPermission(user?.role, 'cdrf_routing') && (
               <Link
                 to="/cob-inventory"
                 className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
@@ -136,9 +146,15 @@ const Navbar: React.FC = () => {
                 <Archive className="h-4 w-4" />
                 <span>CDRF Routing</span>
               </Link>
+              )}
 
-              {/* Configurations Dropdown - Only visible to Super Admin */}
-              {user?.role === 'Super Admin' && (
+              {/* Configurations Dropdown */}
+              {(user?.role === 'Super Admin' ||
+                ['config_epc_batch','config_fco_personnel','config_relationship_manager',
+                 'config_saq_personnel','config_top_developer','config_users',
+                 'config_validated_by','config_vendor','config_user_logs']
+                  .some(k => hasPermission(user?.role, k))
+              ) && (
                 <div className="relative" ref={configurationsDropdownRef}>
                   <button
                     onClick={() => setIsConfigurationsOpen(!isConfigurationsOpen)}
@@ -153,118 +169,69 @@ const Navbar: React.FC = () => {
                     <ChevronDown className={`h-4 w-4 transition-transform ${isConfigurationsOpen ? 'rotate-180' : ''}`} />
                   </button>
 
-                  {/* Dropdown Menu */}
                   {isConfigurationsOpen && (
-                    <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                       <div className="py-1">
-                        <Link
-                          to="/epc-batch"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/epc-batch')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Package className="h-4 w-4" />
-                          <span>Add EPC Batch</span>
+                        {hasPermission(user?.role, 'config_epc_batch') && (
+                        <Link to="/epc-batch" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/epc-batch') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Package className="h-4 w-4" /><span>Add EPC Batch</span>
                         </Link>
-                        <Link
-                          to="/fco-personnel"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/fco-personnel')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <User className="h-4 w-4" />
-                          <span>Add FCO Personnel</span>
+                        )}
+                        {hasPermission(user?.role, 'config_fco_personnel') && (
+                        <Link to="/fco-personnel" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/fco-personnel') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <User className="h-4 w-4" /><span>Add FCO Personnel</span>
                         </Link>
-                        <Link
-                          to="/relationship-manager"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/relationship-manager')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Users className="h-4 w-4" />
-                          <span>Add Relationship Manager</span>
+                        )}
+                        {hasPermission(user?.role, 'config_relationship_manager') && (
+                        <Link to="/relationship-manager" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/relationship-manager') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Users className="h-4 w-4" /><span>Add Relationship Manager</span>
                         </Link>
-                        <Link
-                          to="/saq-personnel"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/saq-personnel')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <User className="h-4 w-4" />
-                          <span>Add SAQ Personnel</span>
+                        )}
+                        {hasPermission(user?.role, 'config_saq_personnel') && (
+                        <Link to="/saq-personnel" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/saq-personnel') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <User className="h-4 w-4" /><span>Add SAQ Personnel</span>
                         </Link>
-                        <Link
-                          to="/top-developer"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/top-developer')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Building2 className="h-4 w-4" />
-                          <span>Add Top Developer</span>
+                        )}
+                        {hasPermission(user?.role, 'config_top_developer') && (
+                        <Link to="/top-developer" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/top-developer') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Building2 className="h-4 w-4" /><span>Add Top Developer</span>
                         </Link>
-                        <Link
-                          to="/users"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/users')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Users className="h-4 w-4" />
-                          <span>Add User</span>
+                        )}
+                        {hasPermission(user?.role, 'config_users') && (
+                        <Link to="/users" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/users') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Users className="h-4 w-4" /><span>Add User</span>
                         </Link>
-                        <Link
-                          to="/validated-by"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/validated-by')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <User className="h-4 w-4" />
-                          <span>Add Validated By</span>
+                        )}
+                        {hasPermission(user?.role, 'config_validated_by') && (
+                        <Link to="/validated-by" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/validated-by') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <User className="h-4 w-4" /><span>Add Validated By</span>
                         </Link>
-                        <Link
-                          to="/vendor"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/vendor')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Briefcase className="h-4 w-4" />
-                          <span>Add Vendor</span>
+                        )}
+                        {hasPermission(user?.role, 'config_vendor') && (
+                        <Link to="/vendor" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/vendor') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Briefcase className="h-4 w-4" /><span>Add Vendor</span>
                         </Link>
-                        <Link
-                          to="/user-logs"
-                          onClick={() => setIsConfigurationsOpen(false)}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                            isActive('/user-logs')
-                              ? 'bg-primary-50 text-primary-700'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Activity className="h-4 w-4" />
-                          <span>User Logs</span>
+                        )}
+                        {hasPermission(user?.role, 'config_user_logs') && (
+                        <Link to="/user-logs" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/user-logs') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Activity className="h-4 w-4" /><span>User Logs</span>
                         </Link>
+                        )}
+                        {user?.role === 'Super Admin' && (
+                        <Link to="/role-permissions" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/role-permissions') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <ShieldCheck className="h-4 w-4" /><span>Role Permissions</span>
+                        </Link>
+                        )}
                       </div>
                     </div>
                   )}

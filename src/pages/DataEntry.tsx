@@ -229,7 +229,7 @@ const DataEntry: React.FC = () => {
 
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? undefined : Number(value)) : value,
+      [name]: type === 'number' ? (value === '' ? undefined : Number(value)) : typeof value === 'string' ? value.toUpperCase() : value,
     }));
   };
 
