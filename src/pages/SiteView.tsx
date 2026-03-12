@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { bicsAPI, saqPersonnelAPI } from '../services/api';
 import { BicsRecord } from '../types';
-import { Eye, ChevronLeft, ChevronRight, FileText, Edit, ChevronDown, Trash2, Download, Upload } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, FileText, Edit, ChevronDown, Trash2, Download, Upload, Copy } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import EditModal from '../components/EditModal';
 import { useNotification } from '../context/NotificationContext';
@@ -31,6 +31,8 @@ const SiteView: React.FC = () => {
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [deleteAllConfirmText, setDeleteAllConfirmText] = useState('');
   const [deleteAllLoading, setDeleteAllLoading] = useState(false);
+  const [duplicateConfirmRecord, setDuplicateConfirmRecord] = useState<BicsRecord | null>(null);
+  const [duplicateLoading, setDuplicateLoading] = useState(false);
   const location = useLocation();
   const { showNotification } = useNotification();
   const { user } = useAuth();
@@ -134,6 +136,29 @@ const SiteView: React.FC = () => {
 
   const handleDeleteClick = (record: BicsRecord) => {
     setDeleteConfirmRecord(record);
+  };
+
+  const handleDuplicateClick = (record: BicsRecord) => {
+    setDuplicateConfirmRecord(record);
+  };
+
+  const handleConfirmDuplicate = async () => {
+    if (!duplicateConfirmRecord?.id) return;
+    setDuplicateLoading(true);
+    try {
+      const response = await bicsAPI.duplicateRecord(duplicateConfirmRecord.id);
+      if (response.success) {
+        showNotification('success', 'Record duplicated successfully!');
+        setDuplicateConfirmRecord(null);
+        fetchRecords();
+      } else {
+        showNotification('error', response.message || 'Failed to duplicate record');
+      }
+    } catch (error: any) {
+      showNotification('error', error.response?.data?.message || 'Error duplicating record');
+    } finally {
+      setDuplicateLoading(false);
+    }
   };
 
   const handleCancelDelete = () => {
@@ -963,15 +988,20 @@ const SiteView: React.FC = () => {
                             <Edit className="h-3 w-3 mr-0.5" />
                             <span className="text-[10px]">Edit</span>
                           </button>
-                          {user?.role === 'Admin' && (
-                            <button
-                              onClick={() => handleDeleteClick(record)}
-                              className="inline-flex items-center text-red-600 hover:text-red-900"
-                            >
-                              <Trash2 className="h-3 w-3 mr-0.5" />
-                              <span className="text-[10px]">Delete</span>
-                            </button>
-                          )}
+                          <button
+                            onClick={() => handleDuplicateClick(record)}
+                            className="inline-flex items-center text-purple-600 hover:text-purple-900"
+                          >
+                            <Copy className="h-3 w-3 mr-0.5" />
+                            <span className="text-[10px]">Duplicate</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(record)}
+                            className="inline-flex items-center text-red-600 hover:text-red-900"
+                          >
+                            <Trash2 className="h-3 w-3 mr-0.5" />
+                            <span className="text-[10px]">Delete</span>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1094,6 +1124,48 @@ const SiteView: React.FC = () => {
                   Delete Record
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Record Modal */}
+      {duplicateConfirmRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center space-x-2">
+                <Copy className="h-5 w-5 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Duplicate Record</h3>
+              </div>
+            </div>
+            <div className="px-6 py-4">
+              <p className="text-sm text-gray-700 mb-2">
+                Are you sure you want to duplicate this record?
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>Site:</strong> {duplicateConfirmRecord.site_name || 'N/A'}<br />
+                <strong>Building:</strong> {duplicateConfirmRecord.building_name || 'N/A'}
+              </p>
+              <p className="text-sm text-purple-600 font-medium mt-3">
+                A new record with the same details will be created.
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3 px-6 pb-4">
+              <button
+                onClick={() => setDuplicateConfirmRecord(null)}
+                disabled={duplicateLoading}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDuplicate}
+                disabled={duplicateLoading}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {duplicateLoading ? 'Duplicating...' : 'Duplicate'}
+              </button>
             </div>
           </div>
         </div>
