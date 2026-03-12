@@ -153,6 +153,11 @@ export const bicsAPI = {
     return response.data;
   },
 
+  deleteAllRecords: async (): Promise<ApiResponse<any>> => {
+    const response = await api.delete('/bics/records');
+    return response.data;
+  },
+
   importExcel: async (file: File): Promise<ApiResponse<any>> => {
     const formData = new FormData();
     formData.append('file', file);

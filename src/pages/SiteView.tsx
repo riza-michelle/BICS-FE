@@ -28,6 +28,9 @@ const SiteView: React.FC = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [importing, setImporting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
+  const [deleteAllConfirmText, setDeleteAllConfirmText] = useState('');
+  const [deleteAllLoading, setDeleteAllLoading] = useState(false);
   const location = useLocation();
   const { showNotification } = useNotification();
   const { user } = useAuth();
@@ -135,6 +138,26 @@ const SiteView: React.FC = () => {
 
   const handleCancelDelete = () => {
     setDeleteConfirmRecord(null);
+  };
+
+  const handleDeleteAllRecords = async () => {
+    if (deleteAllConfirmText !== 'DELETE ALL') return;
+    setDeleteAllLoading(true);
+    try {
+      const response = await bicsAPI.deleteAllRecords();
+      if (response.success) {
+        showNotification('success', response.message || 'All records deleted successfully');
+        setShowDeleteAllModal(false);
+        setDeleteAllConfirmText('');
+        fetchRecords();
+      } else {
+        showNotification('error', response.message || 'Failed to delete all records');
+      }
+    } catch (error: any) {
+      showNotification('error', error.response?.data?.message || 'Error deleting all records');
+    } finally {
+      setDeleteAllLoading(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -709,6 +732,15 @@ const SiteView: React.FC = () => {
             <p className="mt-0.5 text-xs text-gray-600">View all active sites records</p>
           </div>
           <div className="flex gap-2">
+            {user?.role === 'Super Admin' && (
+              <button
+                onClick={() => { setShowDeleteAllModal(true); setDeleteAllConfirmText(''); }}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete All Records
+              </button>
+            )}
             <button
               onClick={() => setShowImportModal(true)}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
@@ -1081,6 +1113,50 @@ const SiteView: React.FC = () => {
                   Delete Record
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete All Records Modal */}
+      {showDeleteAllModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center space-x-2">
+                <Trash2 className="h-5 w-5 text-red-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Delete All Records</h3>
+              </div>
+            </div>
+            <div className="px-6 py-4">
+              <p className="text-sm text-gray-700 mb-2">
+                This will permanently delete <strong>all records</strong> from the Active Sites View. This action cannot be undone.
+              </p>
+              <p className="text-sm text-gray-700 mb-4">
+                Type <strong>DELETE ALL</strong> to confirm:
+              </p>
+              <input
+                type="text"
+                value={deleteAllConfirmText}
+                onChange={(e) => setDeleteAllConfirmText(e.target.value)}
+                placeholder="DELETE ALL"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              />
+            </div>
+            <div className="flex justify-end space-x-3 px-6 pb-4">
+              <button
+                onClick={() => { setShowDeleteAllModal(false); setDeleteAllConfirmText(''); }}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAllRecords}
+                disabled={deleteAllConfirmText !== 'DELETE ALL' || deleteAllLoading}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleteAllLoading ? 'Deleting...' : 'Delete All Records'}
+              </button>
             </div>
           </div>
         </div>
