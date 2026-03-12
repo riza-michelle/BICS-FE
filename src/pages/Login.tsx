@@ -770,7 +770,7 @@ const Login: React.FC = () => {
             <div className="h-px w-16 bg-gray-300"></div>
           </div>
           <p className="text-xs text-gray-400">
-            © 2024 Philippine Long Distance Telephone Company
+
           </p>
         </div>
       </div>
