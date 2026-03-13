@@ -354,6 +354,17 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
       value = String(value);
     }
 
+    // Case-insensitive match: if stored value doesn't exactly match any option,
+    // find a case-insensitive match and use that option's casing for display
+    if (value && options.length > 0 && !options.includes(value)) {
+      const lower = value.toLowerCase();
+      const match = options.find(o => o.toLowerCase() === lower);
+      if (match) value = match;
+    }
+
+    // If still no match, include the stored value as an extra option so it stays visible
+    const hasMatch = !value || options.includes(value);
+
     return (
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -367,6 +378,9 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
           className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
         >
           <option value="">Select {label}</option>
+          {!hasMatch && value && (
+            <option key="__current__" value={value}>{value}</option>
+          )}
           {options.map(option => (
             <option key={option} value={option}>{option}</option>
           ))}

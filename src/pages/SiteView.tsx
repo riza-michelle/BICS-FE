@@ -1066,6 +1066,7 @@ const SiteView: React.FC = () => {
                             <Edit className="h-3 w-3 mr-0.5" />
                             <span className="text-[10px]">Edit</span>
                           </button>
+                          {user?.role !== 'User' && (
                           <button
                             onClick={() => handleDuplicateClick(record)}
                             className="inline-flex items-center text-purple-600 hover:text-purple-900"
@@ -1073,6 +1074,7 @@ const SiteView: React.FC = () => {
                             <Copy className="h-3 w-3 mr-0.5" />
                             <span className="text-[10px]">Duplicate</span>
                           </button>
+                          )}
                           <button
                             onClick={() => handleDeleteClick(record)}
                             className="inline-flex items-center text-red-600 hover:text-red-900"
