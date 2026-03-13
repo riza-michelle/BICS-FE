@@ -85,11 +85,11 @@ const [loading, setLoading] = useState(true);
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
         'DEVELOPER': record.developer || '',
-        'TOP DEVELOPER': record.top_dev || '',
+        'TOP DEV': record.top_dev || '',
 
         // Contact Information
-        'RELATIONSHIP MANAGER': record.rm || '',
-        'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+        'RM': record.rm || '',
+        'RM GROUP': record.rm_group || '',
 
         // Project Information
         'PROJECT STATUS': record.project_status || '',
@@ -106,58 +106,61 @@ const [loading, setLoading] = useState(true);
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
         'MOA ACQUIRED BY': record.moa_acquired_by || '',
         'MOA UPLOADING STATUS': record.moa_uploading_status || '',
-
-        // Important Dates
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
         'VALIDATED BY': record.validated_by || '',
+
+        // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
         'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
         'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
-        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
-
-        // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
-        'REF ID': record.ref_id || '',
-        'REFERENCE #': record.reference_number || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'BUDGET STATUS': record.budget_status || '',
-        'IMPLEMENTATION STATUS': record.implementation_status || '',
 
         // Remarks
         'SIGNIFICANT REMARKS': record.significant_remarks || '',
+
+        // Status Information
+        'PRODUCTIVITY': record.productivity || '',
+        'REF ID': record.ref_id || '',
 
         // Replacement Information
         'REPLACEMENT SITE': record.replacement_site || '',
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
-        'GO/NOGO': record.go_nogo || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
-        'REPLACEMENT REQUEST': record.replacement_request || '',
+
+        // Status Information (continued)
+        'MOA STATUS': record.moa_status || '',
+        'PROFILE STATUS': record.profile_status || '',
+        'REFERENCE #': record.reference_number || '',
+        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
         'PREV BATCH': record.prev_batch || '',
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
-        'MIGRATED LINES': record.migrated_lines || '',
-        'QUICK BASHING': record.quick_bashing || '',
 
-        // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        // Replacement Information (continued)
+        'GO-NOGO': record.go_nogo || '',
+        'QUICK BASHING': record.quick_bashing || '',
+        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
+        'TAGGING TEMP': record.tagging_temp || '',
+
+        // Status Information (continued)
+        'BUDGET STATUS': record.budget_status || '',
+        'PROJECT PHASE': record.project_phase || '',
+        'IMPLEM STATUS': record.implementation_status || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
         'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': record.annual_based_revenue_existing_circuits_efpa || '',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
+        'ACTUAL TA': record.actual_ta || '',
+        'ACTUAL FA': record.actual_fa || '',
+        'WARPP PCN': record.warpp_pcn || '',
         'MDU/ONU': record.mdu_onu || '',
+        'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
+        'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -170,6 +173,11 @@ const [loading, setLoading] = useState(true);
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
       }));
 
       // Create title row with metadata
@@ -488,11 +496,11 @@ const [loading, setLoading] = useState(true);
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
         'DEVELOPER': record.developer || '',
-        'TOP DEVELOPER': record.top_dev || '',
+        'TOP DEV': record.top_dev || '',
 
         // Contact Information
-        'RELATIONSHIP MANAGER': record.rm || '',
-        'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+        'RM': record.rm || '',
+        'RM GROUP': record.rm_group || '',
 
         // Project Information
         'PROJECT STATUS': record.project_status || '',
@@ -509,58 +517,61 @@ const [loading, setLoading] = useState(true);
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
         'MOA ACQUIRED BY': record.moa_acquired_by || '',
         'MOA UPLOADING STATUS': record.moa_uploading_status || '',
-
-        // Important Dates
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
         'VALIDATED BY': record.validated_by || '',
+
+        // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
         'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
         'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
-        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
-
-        // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
-        'REF ID': record.ref_id || '',
-        'REFERENCE #': record.reference_number || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'BUDGET STATUS': record.budget_status || '',
-        'IMPLEMENTATION STATUS': record.implementation_status || '',
 
         // Remarks
         'SIGNIFICANT REMARKS': record.significant_remarks || '',
+
+        // Status Information
+        'PRODUCTIVITY': record.productivity || '',
+        'REF ID': record.ref_id || '',
 
         // Replacement Information
         'REPLACEMENT SITE': record.replacement_site || '',
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
-        'GO/NOGO': record.go_nogo || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
-        'REPLACEMENT REQUEST': record.replacement_request || '',
+
+        // Status Information (continued)
+        'MOA STATUS': record.moa_status || '',
+        'PROFILE STATUS': record.profile_status || '',
+        'REFERENCE #': record.reference_number || '',
+        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
         'PREV BATCH': record.prev_batch || '',
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
-        'MIGRATED LINES': record.migrated_lines || '',
-        'QUICK BASHING': record.quick_bashing || '',
 
-        // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        // Replacement Information (continued)
+        'GO-NOGO': record.go_nogo || '',
+        'QUICK BASHING': record.quick_bashing || '',
+        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
+        'TAGGING TEMP': record.tagging_temp || '',
+
+        // Status Information (continued)
+        'BUDGET STATUS': record.budget_status || '',
+        'PROJECT PHASE': record.project_phase || '',
+        'IMPLEM STATUS': record.implementation_status || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
         'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': record.annual_based_revenue_existing_circuits_efpa || '',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
+        'ACTUAL TA': record.actual_ta || '',
+        'ACTUAL FA': record.actual_fa || '',
+        'WARPP PCN': record.warpp_pcn || '',
         'MDU/ONU': record.mdu_onu || '',
+        'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
+        'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -573,6 +584,11 @@ const [loading, setLoading] = useState(true);
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
       }));
 
       const currentDateTime = new Date().toLocaleString('en-US', {
@@ -904,11 +920,11 @@ const [loading, setLoading] = useState(true);
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
         'DEVELOPER': record.developer || '',
-        'TOP DEVELOPER': record.top_dev || '',
+        'TOP DEV': record.top_dev || '',
 
         // Contact Information
-        'RELATIONSHIP MANAGER': record.rm || '',
-        'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+        'RM': record.rm || '',
+        'RM GROUP': record.rm_group || '',
 
         // Project Information
         'PROJECT STATUS': record.project_status || '',
@@ -925,58 +941,61 @@ const [loading, setLoading] = useState(true);
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
         'MOA ACQUIRED BY': record.moa_acquired_by || '',
         'MOA UPLOADING STATUS': record.moa_uploading_status || '',
-
-        // Important Dates
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
         'VALIDATED BY': record.validated_by || '',
+
+        // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
         'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
         'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
-        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
-
-        // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
-        'REF ID': record.ref_id || '',
-        'REFERENCE #': record.reference_number || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'BUDGET STATUS': record.budget_status || '',
-        'IMPLEMENTATION STATUS': record.implementation_status || '',
 
         // Remarks
         'SIGNIFICANT REMARKS': record.significant_remarks || '',
+
+        // Status Information
+        'PRODUCTIVITY': record.productivity || '',
+        'REF ID': record.ref_id || '',
 
         // Replacement Information
         'REPLACEMENT SITE': record.replacement_site || '',
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
-        'GO/NOGO': record.go_nogo || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
-        'REPLACEMENT REQUEST': record.replacement_request || '',
+
+        // Status Information (continued)
+        'MOA STATUS': record.moa_status || '',
+        'PROFILE STATUS': record.profile_status || '',
+        'REFERENCE #': record.reference_number || '',
+        'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
         'PREV BATCH': record.prev_batch || '',
         'FL ID': record.fl_id || '',
         'PO STATUS': record.po_status || '',
-        'MIGRATED LINES': record.migrated_lines || '',
-        'QUICK BASHING': record.quick_bashing || '',
 
-        // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        // Replacement Information (continued)
+        'GO-NOGO': record.go_nogo || '',
+        'QUICK BASHING': record.quick_bashing || '',
+        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
+        'TAGGING TEMP': record.tagging_temp || '',
+
+        // Status Information (continued)
+        'BUDGET STATUS': record.budget_status || '',
+        'PROJECT PHASE': record.project_phase || '',
+        'IMPLEM STATUS': record.implementation_status || '',
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
         'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': record.annual_based_revenue_existing_circuits_efpa || '',
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
+        'ACTUAL TA': record.actual_ta || '',
+        'ACTUAL FA': record.actual_fa || '',
+        'WARPP PCN': record.warpp_pcn || '',
         'MDU/ONU': record.mdu_onu || '',
+        'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
+        'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
@@ -989,6 +1008,11 @@ const [loading, setLoading] = useState(true);
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
         'ROLLOUT SOLUTION': record.rollout_solution || '',
 
+        // BASH Section
+        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+        'BASH-NETWORK (JARROD)': record.bash_network || '',
+        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
       }));
 
       // Create title row with metadata
@@ -1352,11 +1376,11 @@ const [loading, setLoading] = useState(true);
           'FLOORS': record.floors || '',
           'UNITS': record.units || '',
           'DEVELOPER': record.developer || '',
-          'TOP DEVELOPER': record.top_dev || '',
+          'TOP DEV': record.top_dev || '',
 
           // Contact Information
-          'RELATIONSHIP MANAGER': record.rm || '',
-          'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+          'RM': record.rm || '',
+          'RM GROUP': record.rm_group || '',
 
           // Project Information
           'PROJECT STATUS': record.project_status || '',
@@ -1373,58 +1397,61 @@ const [loading, setLoading] = useState(true);
           'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
           'MOA ACQUIRED BY': record.moa_acquired_by || '',
           'MOA UPLOADING STATUS': record.moa_uploading_status || '',
-
-          // Important Dates
           'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
           'VALIDATED BY': record.validated_by || '',
+
+          // Important Dates
           'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
           'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
           'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
           'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
-          'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
-
-          // Status Information
-          'PRODUCTIVITY': record.productivity || '',
-          'MOA STATUS': record.moa_status || '',
-          'PROFILE STATUS': record.profile_status || '',
-          'REF ID': record.ref_id || '',
-          'REFERENCE #': record.reference_number || '',
-          'PROJECT PHASE': record.project_phase || '',
-          'BUDGET STATUS': record.budget_status || '',
-          'IMPLEMENTATION STATUS': record.implementation_status || '',
 
           // Remarks
           'SIGNIFICANT REMARKS': record.significant_remarks || '',
+
+          // Status Information
+          'PRODUCTIVITY': record.productivity || '',
+          'REF ID': record.ref_id || '',
 
           // Replacement Information
           'REPLACEMENT SITE': record.replacement_site || '',
           'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
           'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
           'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
-          'GO/NOGO': record.go_nogo || '',
-          'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-          'TAGGING TEMP': record.tagging_temp || '',
-          'REPLACEMENT REQUEST': record.replacement_request || '',
+
+          // Status Information (continued)
+          'MOA STATUS': record.moa_status || '',
+          'PROFILE STATUS': record.profile_status || '',
+          'REFERENCE #': record.reference_number || '',
+          'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
           // Additional Information
           'PREV BATCH': record.prev_batch || '',
           'FL ID': record.fl_id || '',
           'PO STATUS': record.po_status || '',
-          'MIGRATED LINES': record.migrated_lines || '',
-          'QUICK BASHING': record.quick_bashing || '',
 
-          // BASH Section
-          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-          'BASH-NETWORK (JARROD)': record.bash_network || '',
-          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+          // Replacement Information (continued)
+          'GO-NOGO': record.go_nogo || '',
+          'QUICK BASHING': record.quick_bashing || '',
+          'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
+          'TAGGING TEMP': record.tagging_temp || '',
+
+          // Status Information (continued)
+          'BUDGET STATUS': record.budget_status || '',
+          'PROJECT PHASE': record.project_phase || '',
+          'IMPLEM STATUS': record.implementation_status || '',
 
           // Revenue & Capacity Metrics
           'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
           'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': record.annual_based_revenue_existing_circuits_efpa || '',
           'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
+          'ACTUAL TA': record.actual_ta || '',
+          'ACTUAL FA': record.actual_fa || '',
+          'WARPP PCN': record.warpp_pcn || '',
           'MDU/ONU': record.mdu_onu || '',
+          'MIGRATED LINES': record.migrated_lines || '',
           'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
+          'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
           'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
           // Design & Planning
@@ -1436,6 +1463,12 @@ const [loading, setLoading] = useState(true);
           'FTTB CIP': record.fttb_cip || '',
           'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
           'ROLLOUT SOLUTION': record.rollout_solution || '',
+
+          // BASH Section
+          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+          'BASH-NETWORK (JARROD)': record.bash_network || '',
+          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
         };
       });
@@ -1824,11 +1857,11 @@ const [loading, setLoading] = useState(true);
           'FLOORS': record.floors || '',
           'UNITS': record.units || '',
           'DEVELOPER': record.developer || '',
-          'TOP DEVELOPER': record.top_dev || '',
+          'TOP DEV': record.top_dev || '',
 
           // Contact Information
-          'RELATIONSHIP MANAGER': record.rm || '',
-          'RELATIONSHIP MANAGER GROUP': record.rm_group || '',
+          'RM': record.rm || '',
+          'RM GROUP': record.rm_group || '',
 
           // Project Information
           'PROJECT STATUS': record.project_status || '',
@@ -1845,58 +1878,61 @@ const [loading, setLoading] = useState(true);
           'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
           'MOA ACQUIRED BY': record.moa_acquired_by || '',
           'MOA UPLOADING STATUS': record.moa_uploading_status || '',
-
-          // Important Dates
           'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
           'VALIDATED BY': record.validated_by || '',
+
+          // Important Dates
           'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
           'TARGET DATE PROFILING': record.target_date_profiling ? new Date(record.target_date_profiling).toLocaleDateString() : '',
           'TARGET DATE MOA TO ACQUIRE': record.target_date_moa_to_acquire ? new Date(record.target_date_moa_to_acquire).toLocaleDateString() : '',
           'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
-          'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
-
-          // Status Information
-          'PRODUCTIVITY': record.productivity || '',
-          'MOA STATUS': record.moa_status || '',
-          'PROFILE STATUS': record.profile_status || '',
-          'REF ID': record.ref_id || '',
-          'REFERENCE #': record.reference_number || '',
-          'PROJECT PHASE': record.project_phase || '',
-          'BUDGET STATUS': record.budget_status || '',
-          'IMPLEMENTATION STATUS': record.implementation_status || '',
 
           // Remarks
           'SIGNIFICANT REMARKS': record.significant_remarks || '',
+
+          // Status Information
+          'PRODUCTIVITY': record.productivity || '',
+          'REF ID': record.ref_id || '',
 
           // Replacement Information
           'REPLACEMENT SITE': record.replacement_site || '',
           'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
           'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
           'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
-          'GO/NOGO': record.go_nogo || '',
-          'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-          'TAGGING TEMP': record.tagging_temp || '',
-          'REPLACEMENT REQUEST': record.replacement_request || '',
+
+          // Status Information (continued)
+          'MOA STATUS': record.moa_status || '',
+          'PROFILE STATUS': record.profile_status || '',
+          'REFERENCE #': record.reference_number || '',
+          'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
           // Additional Information
           'PREV BATCH': record.prev_batch || '',
           'FL ID': record.fl_id || '',
           'PO STATUS': record.po_status || '',
-          'MIGRATED LINES': record.migrated_lines || '',
-          'QUICK BASHING': record.quick_bashing || '',
 
-          // BASH Section
-          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-          'BASH-NETWORK (JARROD)': record.bash_network || '',
-          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+          // Replacement Information (continued)
+          'GO-NOGO': record.go_nogo || '',
+          'QUICK BASHING': record.quick_bashing || '',
+          'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
+          'TAGGING TEMP': record.tagging_temp || '',
+
+          // Status Information (continued)
+          'BUDGET STATUS': record.budget_status || '',
+          'PROJECT PHASE': record.project_phase || '',
+          'IMPLEM STATUS': record.implementation_status || '',
 
           // Revenue & Capacity Metrics
           'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
           'ANNUAL BASED REVENUE (EXISTING CIRCUITS EFPA)': record.annual_based_revenue_existing_circuits_efpa || '',
           'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
+          'ACTUAL TA': record.actual_ta || '',
+          'ACTUAL FA': record.actual_fa || '',
+          'WARPP PCN': record.warpp_pcn || '',
           'MDU/ONU': record.mdu_onu || '',
+          'MIGRATED LINES': record.migrated_lines || '',
           'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
+          'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
           'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
           // Design & Planning
@@ -1908,6 +1944,12 @@ const [loading, setLoading] = useState(true);
           'FTTB CIP': record.fttb_cip || '',
           'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
           'ROLLOUT SOLUTION': record.rollout_solution || '',
+
+          // BASH Section
+          'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
+          'BASH-NETWORK (JARROD)': record.bash_network || '',
+          'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
+          'BASH-MIGRATION (JAYR)': record.bash_migration || '',
 
         };
       });
