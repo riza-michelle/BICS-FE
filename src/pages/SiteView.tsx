@@ -20,6 +20,7 @@ const SiteView: React.FC = () => {
   const [selectedEpcBatch, setSelectedEpcBatch] = useState<string>('');
   const [selectedProjectStatus, setSelectedProjectStatus] = useState<string>('');
   const [selectedProjectScheme, setSelectedProjectScheme] = useState<string>('');
+  const [selectedSaqMilestone, setSelectedSaqMilestone] = useState<string>('');
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [personnelList, setPersonnelList] = useState<string[]>([]);
@@ -48,7 +49,7 @@ const SiteView: React.FC = () => {
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedAgingDays, searchQuery]);
+  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedSaqMilestone, selectedAgingDays, searchQuery]);
 
   // Check for notification from navigation state
   useEffect(() => {
@@ -87,6 +88,7 @@ const SiteView: React.FC = () => {
         epc_batch: selectedEpcBatch || undefined,
         project_status: selectedProjectStatus || undefined,
         project_scheme: selectedProjectScheme || undefined,
+        saq_milestone: selectedSaqMilestone || undefined,
         min_aging_days: minAgingDays,
         max_aging_days: maxAgingDays,
       });
@@ -221,6 +223,24 @@ const SiteView: React.FC = () => {
     setSelectedProjectScheme(e.target.value);
     setCurrentPage(1);
   };
+
+  const handleSaqMilestoneFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSaqMilestone(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedPersonnel('');
+    setSelectedEpcBatch('');
+    setSelectedProjectStatus('');
+    setSelectedProjectScheme('');
+    setSelectedSaqMilestone('');
+    setSelectedAgingDays('');
+    setSearchQuery('');
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters = !!(selectedPersonnel || selectedEpcBatch || selectedProjectStatus || selectedProjectScheme || selectedSaqMilestone || selectedAgingDays || searchQuery);
 
   const handleAgingDaysFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAgingDays(e.target.value);
@@ -815,6 +835,54 @@ const SiteView: React.FC = () => {
                 <option value="OVERLAY">OVERLAY</option>
               </select>
             </div>
+            <div className="flex-1 min-w-[160px]">
+              <select
+                value={selectedSaqMilestone}
+                onChange={handleSaqMilestoneFilter}
+                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
+              >
+                <option value="">All SAQ Milestones</option>
+                <option value="CAN'T LOCATE">CAN'T LOCATE</option>
+                <option value="DUPLICATION">DUPLICATION</option>
+                <option value="ELECTRICITY PAYMENT">ELECTRICITY PAYMENT</option>
+                <option value="FACILITY COLOCATED">FACILITY COLOCATED</option>
+                <option value="FACILITY LOCATION">FACILITY LOCATION</option>
+                <option value="FEASIBLE VIA POLE NAP">FEASIBLE VIA POLE NAP</option>
+                <option value="FOR DEMOLITION / DEMOLISHED">FOR DEMOLITION / DEMOLISHED</option>
+                <option value="FOR RENOV / ONGOING RENOV">FOR RENOV / ONGOING RENOV</option>
+                <option value="FOR VACANCY">FOR VACANCY</option>
+                <option value="FOR ACQUISITION">FOR ACQUISITION</option>
+                <option value="FOR PROFILING">FOR PROFILING</option>
+                <option value="FOR SIGNING">FOR SIGNING</option>
+                <option value="HIGH COB">HIGH COB</option>
+                <option value="HIGH LEASE">HIGH LEASE</option>
+                <option value="MIXED USE">MIXED USE</option>
+                <option value="MOA VALIDATION">MOA VALIDATION</option>
+                <option value="MULTIPLE SITES">MULTIPLE SITES</option>
+                <option value="NO COMMITMENT">NO COMMITMENT</option>
+                <option value="NO DEMAND (SALES CONFIRMED)">NO DEMAND (SALES CONFIRMED)</option>
+                <option value="NO DEMAND FROM CLIENT">NO DEMAND FROM CLIENT</option>
+                <option value="NO RESPONSE">NO RESPONSE</option>
+                <option value="ONGOING COMMERCIAL NEGO">ONGOING COMMERCIAL NEGO</option>
+                <option value="PO CONCERN">PO CONCERN</option>
+                <option value="PRA">PRA</option>
+                <option value="REJECTED">REJECTED</option>
+                <option value="REJECTED REPLACEMENT">REJECTED REPLACEMENT</option>
+                <option value="REQUIRES FTTB PLAN">REQUIRES FTTB PLAN</option>
+                <option value="REQUIRES HS DESIGN">REQUIRES HS DESIGN</option>
+                <option value="RESIDENTIAL">RESIDENTIAL</option>
+                <option value="SIGNED MOA">SIGNED MOA</option>
+                <option value="SIGNED TOR">SIGNED TOR</option>
+                <option value="SUBMITTED LOI">SUBMITTED LOI</option>
+                <option value="SUBMITTED MOA">SUBMITTED MOA</option>
+                <option value="UNDER CLARKTEL PROJECT">UNDER CLARKTEL PROJECT</option>
+                <option value="UNDER CONSTRUCTION">UNDER CONSTRUCTION</option>
+                <option value="USED AS REPLACEMENT">USED AS REPLACEMENT</option>
+                <option value="WIP SITE">WIP SITE</option>
+                <option value="WITH EXISTING FTTB">WITH EXISTING FTTB</option>
+                <option value="PLDT BUILDING">PLDT BUILDING</option>
+              </select>
+            </div>
             <div className="flex-1 min-w-[140px]">
               <select
                 value={selectedAgingDays}
@@ -837,6 +905,14 @@ const SiteView: React.FC = () => {
                 className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
               />
             </div>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="shrink-0 inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 whitespace-nowrap"
+              >
+                ✕ Clear Filters
+              </button>
+            )}
           </div>
         </div>
 
