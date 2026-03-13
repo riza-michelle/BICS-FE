@@ -1018,7 +1018,7 @@ const SiteView: React.FC = () => {
                         )}
                       </td>
                       <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-900 font-medium text-center">
-                        {record.saq_milestone === 'SIGNED MOA' ? (
+                        {record.saq_milestone === 'SIGNED MOA' || record.project_status === 'FALLOUT' ? (
                           <span className="text-gray-500 italic">-</span>
                         ) : record.date_of_recent_engagement ? (
                           (() => {
