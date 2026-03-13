@@ -1075,6 +1075,7 @@ const SiteView: React.FC = () => {
                             <span className="text-[10px]">Duplicate</span>
                           </button>
                           )}
+                          {user?.role !== 'User' && (
                           <button
                             onClick={() => handleDeleteClick(record)}
                             className="inline-flex items-center text-red-600 hover:text-red-900"
@@ -1082,6 +1083,7 @@ const SiteView: React.FC = () => {
                             <Trash2 className="h-3 w-3 mr-0.5" />
                             <span className="text-[10px]">Delete</span>
                           </button>
+                          )}
                         </div>
                       </td>
                     </tr>
