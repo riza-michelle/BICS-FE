@@ -126,6 +126,7 @@ export const bicsAPI = {
     bcsi_aor?: string;
     epc_batch?: string;
     project_scheme?: string;
+    saq_milestone?: string;
     min_aging_days?: number;
     max_aging_days?: number;
   }): Promise<ApiResponse<RecordsResponse>> => {
@@ -338,6 +339,11 @@ export const usersAPI = {
 
   delete: async (id: number): Promise<ApiResponse<any>> => {
     const response = await api.delete(`/users/delete/${id}`);
+    return response.data;
+  },
+
+  unlock: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/users/unlock/${id}`);
     return response.data;
   },
 };
