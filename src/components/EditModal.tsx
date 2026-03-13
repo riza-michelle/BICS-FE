@@ -244,9 +244,12 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
       }
     }
 
+    const isSelect = e.target.tagName === 'SELECT';
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? undefined : Number(value)) : value,
+      [name]: type === 'number'
+        ? (value === '' ? undefined : Number(value))
+        : (isSelect ? value : (typeof value === 'string' ? value.toUpperCase() : value)),
     }));
   };
 

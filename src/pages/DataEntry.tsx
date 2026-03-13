@@ -227,9 +227,12 @@ const DataEntry: React.FC = () => {
       }
     }
 
+    const isSelect = e.target.tagName === 'SELECT';
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? undefined : Number(value)) : typeof value === 'string' ? value.toUpperCase() : value,
+      [name]: type === 'number'
+        ? (value === '' ? undefined : Number(value))
+        : (isSelect ? value : (typeof value === 'string' ? value.toUpperCase() : value)),
     }));
   };
 
