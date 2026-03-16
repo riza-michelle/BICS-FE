@@ -765,23 +765,7 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
                   'TOR BA SUBMITTED'
                 ])}
                 {renderInput('signed_tor_moa_date', 'SIGNED TOR/MOA DATE', 'date')}
-                {renderSelect('moa_acquired_by', 'MOA ACQUIRED BY', [
-                  'ADMARASIGAN',
-                  'APMORILLA',
-                  'CBTABINGA',
-                  'CLTRABUCO',
-                  'DFCAGADAS',
-                  'ELALIBO',
-                  'JDALVAREZ',
-                  'JMBALAG',
-                  'KDTAMONDONG',
-                  'LMTAMAYO',
-                  'LSAGAPITO',
-                  'LTTEOVISIO',
-                  'MIDDELACRUZ',
-                  'MLCARANDANG',
-                  'NMNARCISO'
-                ])}
+                {renderSelect('moa_acquired_by', 'MOA ACQUIRED BY', saqPersonnelList)}
                 {renderSelect('moa_uploading_status', 'MOA UPLOADING STATUS', [
                   'FOR UPLOADING',
                   'UPLOADED'
