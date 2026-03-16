@@ -919,34 +919,34 @@ const SiteView: React.FC = () => {
         {/* Records Table */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="w-full table-fixed divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     BICS Personnel
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     EPC Batch
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[18%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Site Name
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[16%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Building Name
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Project Status
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Project Scheme
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     SAQ Milestone
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Aging Days
                   </th>
-                  <th className="px-2 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-tight sticky right-0 z-10 bg-gray-50 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
+                  <th className="w-[14%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight sticky right-0 z-10 bg-gray-50 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
                     Actions
                   </th>
                 </tr>
@@ -970,26 +970,26 @@ const SiteView: React.FC = () => {
                 ) : (
                   records.map((record) => (
                     <tr key={record.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-center overflow-hidden">
                         {record.bcsi_aor ? (
-                          <span className={`px-1.5 py-0.5 inline-flex text-[10px] leading-4 font-semibold rounded-full ${getPersonnelColor(record.bcsi_aor)}`}>
+                          <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full truncate max-w-full ${getPersonnelColor(record.bcsi_aor)}`}>
                             {record.bcsi_aor}
                           </span>
                         ) : (
                           <span className="text-gray-500">-</span>
                         )}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-500 text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-500 text-center truncate overflow-hidden">
                         {record.epc_batch || '-'}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] font-medium text-gray-900 text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] font-medium text-gray-900 text-center truncate overflow-hidden" title={record.site_name || ''}>
                         {record.site_name || '-'}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-500 text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-500 text-center truncate overflow-hidden" title={record.building_name || ''}>
                         {record.building_name || '-'}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-center">
-                        <span className={`px-1.5 py-0.5 inline-flex text-[10px] leading-4 font-semibold rounded-full ${
+                      <td className="px-1.5 py-1.5 text-center overflow-hidden">
+                        <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full truncate max-w-full ${
                           record.project_status === 'Active'
                             ? 'bg-green-100 text-green-800'
                             : record.project_status === 'Completed'
@@ -1001,12 +1001,12 @@ const SiteView: React.FC = () => {
                           {record.project_status || 'N/A'}
                         </span>
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-500 text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-500 text-center truncate overflow-hidden">
                         {record.project_scheme || '-'}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-500 text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-500 text-center overflow-hidden">
                         {record.saq_milestone ? (
-                          <span className={`px-1.5 py-0.5 inline-flex text-[10px] leading-4 font-semibold rounded-full ${
+                          <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full truncate max-w-full ${
                             record.saq_milestone === 'SIGNED MOA'
                               ? 'bg-green-100 text-green-800 border border-green-200'
                               : 'bg-gray-100 text-gray-800 border border-gray-200'
@@ -1017,41 +1017,32 @@ const SiteView: React.FC = () => {
                           <span className="text-gray-400 italic">-</span>
                         )}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] text-gray-900 font-medium text-center">
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-900 font-medium text-center overflow-hidden">
                         {record.saq_milestone === 'SIGNED MOA' || record.project_status === 'FALLOUT' ? (
                           <span className="text-gray-500 italic">-</span>
                         ) : record.date_of_recent_engagement ? (
                           (() => {
-                            // Parse date string (YYYY-MM-DD format from backend)
-                            // Split and parse manually to avoid timezone issues
-                            const dateStr = record.date_of_recent_engagement.split('T')[0]; // Handle both date and datetime formats
+                            const dateStr = record.date_of_recent_engagement.split('T')[0];
                             const [year, month, day] = dateStr.split('-').map(Number);
-
-                            // Create date objects at midnight local time
-                            const engagementDate = new Date(year, month - 1, day); // month is 0-indexed
+                            const engagementDate = new Date(year, month - 1, day);
                             const currentDate = new Date();
-                            currentDate.setHours(0, 0, 0, 0); // Reset to start of day
-
-                            // Calculate difference in milliseconds and convert to days
+                            currentDate.setHours(0, 0, 0, 0);
                             const diffTime = currentDate.getTime() - engagementDate.getTime();
                             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
                             return (
-                              <span className={`px-1.5 py-0.5 inline-flex text-[10px] leading-4 font-semibold rounded-full ${
-                                diffDays <= 7
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
+                              <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full ${
+                                diffDays <= 7 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                               }`}>
-                                {diffDays} {diffDays === 1 ? 'day' : 'days'}
+                                {diffDays}d
                               </span>
                             );
                           })()
                         ) : (
-                          <span className="text-gray-400 italic">N/A</span>
+                          <span className="text-gray-400 italic">-</span>
                         )}
                       </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-[11px] font-medium sticky right-0 z-10 bg-white shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
-                        <div className="flex items-center justify-center space-x-2">
+                      <td className="px-1.5 py-1.5 font-medium sticky right-0 z-10 bg-white shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
+                        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                           <button
                             onClick={() => handleViewRecord(record)}
                             className="inline-flex items-center text-blue-600 hover:text-blue-900"
@@ -1067,22 +1058,22 @@ const SiteView: React.FC = () => {
                             <span className="text-[10px]">Edit</span>
                           </button>
                           {user?.role !== 'User' && (
-                          <button
-                            onClick={() => handleDuplicateClick(record)}
-                            className="inline-flex items-center text-purple-600 hover:text-purple-900"
-                          >
-                            <Copy className="h-3 w-3 mr-0.5" />
-                            <span className="text-[10px]">Duplicate</span>
-                          </button>
+                            <button
+                              onClick={() => handleDuplicateClick(record)}
+                              className="inline-flex items-center text-purple-600 hover:text-purple-900"
+                            >
+                              <Copy className="h-3 w-3 mr-0.5" />
+                              <span className="text-[10px]">Duplicate</span>
+                            </button>
                           )}
                           {user?.role !== 'User' && (
-                          <button
-                            onClick={() => handleDeleteClick(record)}
-                            className="inline-flex items-center text-red-600 hover:text-red-900"
-                          >
-                            <Trash2 className="h-3 w-3 mr-0.5" />
-                            <span className="text-[10px]">Delete</span>
-                          </button>
+                            <button
+                              onClick={() => handleDeleteClick(record)}
+                              className="inline-flex items-center text-red-600 hover:text-red-900"
+                            >
+                              <Trash2 className="h-3 w-3 mr-0.5" />
+                              <span className="text-[10px]">Delete</span>
+                            </button>
                           )}
                         </div>
                       </td>
