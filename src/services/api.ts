@@ -154,6 +154,16 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getSignedMoaMonthly: async (): Promise<ApiResponse<{ month_key: string; month_label: string; count: number }[]>> => {
+    const response = await api.get('/bics/signed-moa-monthly');
+    return response.data;
+  },
+
+  getSignedMoaByPersonnel: async (): Promise<ApiResponse<{ personnel: string; total: number; months: Record<string, number> }[]>> => {
+    const response = await api.get('/bics/signed-moa-by-personnel');
+    return response.data;
+  },
+
   duplicateRecord: async (id: number): Promise<ApiResponse<any>> => {
     const response = await api.post(`/bics/records/${id}/duplicate`);
     return response.data;

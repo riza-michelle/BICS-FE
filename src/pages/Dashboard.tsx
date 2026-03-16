@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { bicsAPI } from '../services/api';
 import { DashboardStats } from '../types';
 import {
@@ -13,19 +13,36 @@ import {
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import * as XLSX from 'xlsx-js-style';
+import ExcelJS from 'exceljs';
+
+interface SignedMoaMonthly { month_key: string; month_label: string; count: number; }
+interface SignedMoaByPersonnel { personnel: string; total: number; months: Record<string, number>; }
 
 const Dashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [signedMoaMonthly, setSignedMoaMonthly] = useState<SignedMoaMonthly[]>([]);
+  const [signedMoaByPersonnel, setSignedMoaByPersonnel] = useState<SignedMoaByPersonnel[]>([]);
+  const chartSvgRef = useRef<SVGSVGElement>(null);
   const { showNotification } = useNotification();
   const { user } = useAuth();
 
   const loadDashboardStats = useCallback(async () => {
     try {
-      const statsResponse = await bicsAPI.getDashboardStats();
+      const [statsResponse, moaMonthlyResponse, moaPersonnelResponse] = await Promise.all([
+        bicsAPI.getDashboardStats(),
+        bicsAPI.getSignedMoaMonthly(),
+        bicsAPI.getSignedMoaByPersonnel(),
+      ]);
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);
+      }
+      if (moaMonthlyResponse.success && moaMonthlyResponse.data) {
+        setSignedMoaMonthly(moaMonthlyResponse.data);
+      }
+      if (moaPersonnelResponse.success && moaPersonnelResponse.data) {
+        setSignedMoaByPersonnel(moaPersonnelResponse.data);
       }
     } catch (error) {
       console.error('Error loading dashboard stats:', error);
@@ -2264,6 +2281,178 @@ const [loading, setLoading] = useState(true);
     }
   };
 
+  const handleExportSignedMoaMonthly = async () => {
+    if (signedMoaMonthly.length === 0) {
+      showNotification('error', 'No Signed MOA data to export');
+      return;
+    }
+
+    const year = new Date().getFullYear();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const SHEET_COLS = 20; // full-width span (title, chart, section headers)
+    const DATA_COLS  = 14; // personnel table width (1 name + 12 months + 1 total)
+
+    // ── Capture SVG chart as PNG ──
+    let chartImageBase64: string | null = null;
+    let chartAspectRatio = 0.35;
+    if (chartSvgRef.current) {
+      try {
+        const svgEl = chartSvgRef.current;
+        const vb = svgEl.viewBox.baseVal;
+        chartAspectRatio = vb.height / vb.width;
+        const svgStr = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        await new Promise<void>((resolve) => {
+          const img = new Image();
+          const W = 1800;
+          const H = Math.round(W * chartAspectRatio);
+          const canvas = document.createElement('canvas');
+          canvas.width = W;
+          canvas.height = H;
+          const ctx = canvas.getContext('2d')!;
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, W, H);
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, W, H);
+            URL.revokeObjectURL(url);
+            chartImageBase64 = canvas.toDataURL('image/png').split(',')[1];
+            resolve();
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); resolve(); };
+          img.src = url;
+        });
+      } catch (_) { /* chart capture failed, continue without image */ }
+    }
+
+    // ── Build ExcelJS workbook ──
+    const workbook = new ExcelJS.Workbook();
+    const ws = workbook.addWorksheet(`Signed_MOA_${year}`);
+
+    // 20 columns: col1=name(22), cols2-13=months(10 each), col14=total(12), cols15-20=filler(10 each)
+    ws.columns = [
+      { width: 22 },
+      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
+      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
+      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
+      { width: 12 },
+      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
+    ];
+
+    const sc = (r: number, c: number, value: any, opts?: {
+      bold?: boolean; sz?: number; color?: string; bg?: string;
+      italic?: boolean; hAlign?: string; border?: 'thin' | 'header';
+    }) => {
+      const cell = ws.getCell(r, c);
+      cell.value = value;
+      if (!opts) return;
+      cell.font = { bold: opts.bold, size: opts.sz, italic: opts.italic, color: opts.color ? { argb: 'FF' + opts.color } : undefined };
+      if (opts.bg) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + opts.bg } } as any;
+      cell.alignment = { horizontal: (opts.hAlign || 'left') as any, vertical: 'middle' };
+      if (opts.border === 'thin') cell.border = { top: { style: 'thin', color: { argb: 'FFE5E7EB' } }, bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } }, left: { style: 'thin', color: { argb: 'FFE5E7EB' } }, right: { style: 'thin', color: { argb: 'FFE5E7EB' } } };
+      else if (opts.border === 'header') cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'medium', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } };
+    };
+    const mg = (r1: number, c1: number, r2: number, c2: number) => ws.mergeCells(r1, c1, r2, c2);
+
+    // ── Row 1: Title ──
+    ws.getRow(1).height = 28;
+    sc(1, 1, `SIGNED MOA MONTHLY REPORT — ${year}`, { bold: true, sz: 14, color: 'FFFFFF', bg: '4338CA' });
+    mg(1, 1, 1, SHEET_COLS);
+
+    // ── Row 2: Generated date ──
+    ws.getRow(2).height = 16;
+    sc(2, 1, `Generated: ${new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}`, { sz: 10, italic: true, color: '6B7280' });
+    mg(2, 1, 2, SHEET_COLS);
+
+    // ── Row 3: Spacer ──
+    ws.getRow(3).height = 6;
+
+    // ── Row 4: Monthly Summary header ──
+    ws.getRow(4).height = 20;
+    sc(4, 1, 'MONTH', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
+    mg(4, 1, 4, 4);
+    sc(4, 5, 'YEAR', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
+    mg(4, 5, 4, 8);
+    sc(4, 9, 'SIGNED MOA COUNT', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
+    mg(4, 9, 4, SHEET_COLS);
+
+    // ── Rows 5–16: Monthly data ──
+    signedMoaMonthly.forEach((d, i) => {
+      const r = 5 + i;
+      ws.getRow(r).height = 18;
+      const bg = i % 2 === 0 ? 'FFFFFF' : 'EEF2FF';
+      sc(r, 1, d.month_label.split(' ')[0], { sz: 11, bg, hAlign: 'center', border: 'thin' });
+      mg(r, 1, r, 4);
+      sc(r, 5, year, { sz: 11, bg, hAlign: 'center', border: 'thin' });
+      mg(r, 5, r, 8);
+      sc(r, 9, d.count, { sz: 11, bold: true, color: d.count > 0 ? '4338CA' : '9CA3AF', bg, hAlign: 'center', border: 'thin' });
+      mg(r, 9, r, SHEET_COLS);
+    });
+
+    // ── Chart image section ──
+    const chartHeaderRow = 5 + signedMoaMonthly.length + 1;
+    ws.getRow(chartHeaderRow).height = 22;
+    sc(chartHeaderRow, 1, 'MONTHLY SIGNED MOA CHART', { bold: true, sz: 12, color: 'FFFFFF', bg: '312E81' });
+    mg(chartHeaderRow, 1, chartHeaderRow, SHEET_COLS);
+
+    const chartImgStartRow = chartHeaderRow + 1;
+    const CHART_ROW_COUNT = 18;
+    if (chartImageBase64) {
+      const imageId = workbook.addImage({ base64: chartImageBase64, extension: 'png' });
+      ws.addImage(imageId, {
+        tl: { col: 0, row: chartImgStartRow - 1 },
+        br: { col: SHEET_COLS, row: chartImgStartRow - 1 + CHART_ROW_COUNT },
+        editAs: 'oneCell',
+      } as any);
+      for (let r = chartImgStartRow; r < chartImgStartRow + CHART_ROW_COUNT; r++) {
+        ws.getRow(r).height = 16;
+      }
+    }
+
+    // ── Personnel Breakdown ──
+    const p2StartRow = chartImgStartRow + (chartImageBase64 ? CHART_ROW_COUNT : 0) + 2;
+
+    ws.getRow(p2StartRow - 1).height = 22;
+    sc(p2StartRow - 1, 1, 'BY BICS PERSONNEL', { bold: true, sz: 12, color: 'FFFFFF', bg: '1F4788' });
+    mg(p2StartRow - 1, 1, p2StartRow - 1, SHEET_COLS);
+
+    ws.getRow(p2StartRow).height = 20;
+    sc(p2StartRow, 1, 'BICS PERSONNEL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' });
+    months.forEach((m, i) => sc(p2StartRow, 2 + i, m, { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' }));
+    sc(p2StartRow, DATA_COLS, 'TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' });
+
+    signedMoaByPersonnel.forEach((p, i) => {
+      const r = p2StartRow + 1 + i;
+      ws.getRow(r).height = 18;
+      const bg = i % 2 === 0 ? 'FFFFFF' : 'EFF6FF';
+      sc(r, 1, p.personnel, { sz: 11, bold: true, bg, hAlign: 'left', border: 'thin' });
+      months.forEach((m, mi) => sc(r, 2 + mi, p.months[m] || 0, { sz: 11, bg, hAlign: 'center', border: 'thin' }));
+      sc(r, DATA_COLS, p.total, { sz: 11, bold: true, color: '1F4788', bg, hAlign: 'center', border: 'thin' });
+    });
+
+    const gtRow = p2StartRow + 1 + signedMoaByPersonnel.length;
+    ws.getRow(gtRow).height = 20;
+    sc(gtRow, 1, 'GRAND TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+    months.forEach((m, i) => {
+      const total = signedMoaByPersonnel.reduce((sum, p2) => sum + (p2.months[m] || 0), 0);
+      sc(gtRow, 2 + i, total, { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+    });
+    sc(gtRow, DATA_COLS, signedMoaByPersonnel.reduce((sum, p2) => sum + p2.total, 0), { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+
+    // ── Download ──
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const dlUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = dlUrl;
+    a.download = `BICS_Signed_MOA_Monthly_${year}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(dlUrl);
+    showNotification('success', `Exported Signed MOA monthly data for ${year}`);
+  };
+
   useEffect(() => {
     const initDashboard = async () => {
       await loadDashboardStats();
@@ -2565,6 +2754,97 @@ const [loading, setLoading] = useState(true);
                     <span className="text-xs text-red-600 mt-1">Click to export records</span>
                   </div>
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Signed MOA Monthly Chart */}
+        <div className="mb-4">
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+            <div className="px-4 py-3 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Activity className="h-4 w-4 text-indigo-500 mr-2" />
+                  <h2 className="text-base font-semibold text-gray-900">Signed MOA — Monthly</h2>
+                  <span className="ml-2 text-xs text-gray-400">({new Date().getFullYear()})</span>
+                </div>
+                <button
+                  onClick={handleExportSignedMoaMonthly}
+                  disabled={exporting || signedMoaMonthly.length === 0}
+                  className="inline-flex items-center px-3 py-1.5 border border-indigo-300 rounded-md text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Download className="h-3.5 w-3.5 mr-1" />
+                  Export Excel
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              {signedMoaMonthly.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                  <BarChart3 className="h-10 w-10 mb-2 text-gray-300" />
+                  <p className="text-sm">No Signed MOA data available yet.</p>
+                </div>
+              ) : (() => {
+                const maxCount = Math.max(...signedMoaMonthly.map(d => d.count), 1);
+                const chartH = 240;
+                const labelH = 48;
+                const yAxisW = 40;
+                const topPad = 28;
+                const rightPad = 8;
+                const viewBoxW = 900;
+                const n = signedMoaMonthly.length;
+                const slotW = (viewBoxW - yAxisW - rightPad) / n;
+                const barW = slotW * 0.6;
+                const barOffset = (slotW - barW) / 2;
+
+                return (
+                  <svg
+                    ref={chartSvgRef}
+                    viewBox={`0 0 ${viewBoxW} ${chartH + labelH + topPad}`}
+                    width="100%"
+                    height={chartH + labelH + topPad}
+                    preserveAspectRatio="xMidYMid meet"
+                  >
+                    {[0, 0.25, 0.5, 0.75, 1].map((pct) => {
+                      const y = topPad + chartH - pct * chartH;
+                      const val = Math.round(pct * maxCount);
+                      return (
+                        <g key={pct}>
+                          <line x1={yAxisW} y1={y} x2={viewBoxW - rightPad} y2={y} stroke="#E5E7EB" strokeWidth={1} />
+                          <text x={yAxisW - 6} y={y + 4} textAnchor="end" fontSize={12} fontFamily="system-ui, sans-serif" fill="#6B7280">{val}</text>
+                        </g>
+                      );
+                    })}
+                    {signedMoaMonthly.map((d, i) => {
+                      const barH = Math.max((d.count / maxCount) * chartH, d.count > 0 ? 3 : 0);
+                      const slotX = yAxisW + i * slotW;
+                      const x = slotX + barOffset;
+                      const y = topPad + chartH - barH;
+                      const shortLabel = d.month_label.split(' ')[0];
+                      const centerX = slotX + slotW / 2;
+                      return (
+                        <g key={d.month_key}>
+                          {barH > 0 && <rect x={x} y={y} width={barW} height={barH} rx={4} fill="#6366F1" opacity={0.88} />}
+                          <text x={centerX} y={y - 7} textAnchor="middle" fontSize={13} fontWeight="700" fontFamily="system-ui, sans-serif" fill="#4338CA">
+                            {d.count > 0 ? d.count : ''}
+                          </text>
+                          <text x={centerX} y={topPad + chartH + 20} textAnchor="middle" fontSize={13} fontWeight="600" fontFamily="system-ui, sans-serif" fill="#374151">
+                            {shortLabel}
+                          </text>
+                          <text x={centerX} y={topPad + chartH + 38} textAnchor="middle" fontSize={11} fontFamily="system-ui, sans-serif" fill="#9CA3AF">
+                            {d.month_label.split(' ')[1]}
+                          </text>
+                        </g>
+                      );
+                    })}
+                    <line x1={yAxisW} y1={topPad} x2={yAxisW} y2={topPad + chartH} stroke="#D1D5DB" strokeWidth={1} />
+                  </svg>
+                );
+              })()}
+              <div className="mt-3 flex items-center gap-2">
+                <span className="inline-block w-3 h-3 rounded-sm bg-indigo-500"></span>
+                <span className="text-xs text-gray-500">Number of MOAs signed per month in {new Date().getFullYear()} (based on Signed TOR/MOA Date)</span>
               </div>
             </div>
           </div>
