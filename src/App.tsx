@@ -21,6 +21,7 @@ import TopDeveloper from './pages/TopDeveloper';
 import RelationshipManager from './pages/RelationshipManager';
 import ValidatedBy from './pages/ValidatedBy';
 import RolePermissions from './pages/RolePermissions';
+import PendingApprovals from './pages/PendingApprovals';
 import Test from './pages/Test';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -42,7 +43,7 @@ const RootRedirect: React.FC = () => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
 
-  if (hasPermission(user?.role, 'dashboard')) {
+  if (user?.role === 'User' || hasPermission(user?.role, 'dashboard')) {
     return <Navigate to="/dashboard" replace />;
   }
   return <Navigate to="/data-entry" replace />;
@@ -61,7 +62,7 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  <ProtectedRoute menuKey="dashboard">
+                  <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
                 }
@@ -175,6 +176,14 @@ function App() {
                 element={
                   <ProtectedRoute superAdminOnly>
                     <RolePermissions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pending-approvals"
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <PendingApprovals />
                   </ProtectedRoute>
                 }
               />
