@@ -818,8 +818,19 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
                   'EXISTING',
                   'NO NEED'
                 ])}
-                {renderInput('project_phase', 'PROJECT PHASE')}
-                {renderInput('budget_status', 'BUDGET STATUS')}
+                {renderSelect('project_phase', 'PROJECT PHASE', [
+                  'COMPLETED MIGRATION',
+                  'FALLOUT',
+                  'HALLWAY PHASE',
+                  'IMPLEMENTATION PHASE',
+                  'MIGRATION PHASE',
+                  'READY TO SELL',
+                  'SITE ACQUISITION PHASE',
+                ])}
+                {renderSelect('budget_status', 'BUDGET STATUS', [
+                  'BUDGET APPROVED',
+                  'FOR BUDGET APPROVAL',
+                ])}
                 {renderSelect('implementation_status', 'IMPLEMENTATION STATUS', [
                   'DROPPED',
                   'ONGOING',
