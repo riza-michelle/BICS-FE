@@ -209,6 +209,10 @@ export const pendingRecordsAPI = {
     const response = await api.get('/pending-records/count');
     return response.data;
   },
+  deleteRejected: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.delete(`/pending-records/${id}`);
+    return response.data;
+  },
 };
 
 // Health check

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { pendingRecordsAPI } from '../services/api';
-import { CheckCircle, XCircle, Clock, Eye, X, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Eye, X, AlertCircle, Trash2 } from 'lucide-react';
 import { useNotification } from '../context/NotificationContext';
 
 interface PendingRecord {
@@ -25,6 +25,7 @@ const PendingApprovals: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [approveConfirmRecord, setApproveConfirmRecord] = useState<PendingRecord | null>(null);
+  const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<PendingRecord | null>(null);
   const { showNotification } = useNotification();
 
   const fetchList = async () => {
@@ -80,6 +81,25 @@ const PendingApprovals: React.FC = () => {
       }
     } catch (error: any) {
       showNotification('error', error.response?.data?.message || 'Error rejecting record');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteConfirmRecord) return;
+    setActionLoading(true);
+    try {
+      const response = await pendingRecordsAPI.deleteRejected(deleteConfirmRecord.id);
+      if (response.success) {
+        showNotification('success', 'Rejected record deleted.');
+        setDeleteConfirmRecord(null);
+        fetchList();
+      } else {
+        showNotification('error', response.message || 'Failed to delete record');
+      }
+    } catch (error: any) {
+      showNotification('error', error.response?.data?.message || 'Error deleting record');
     } finally {
       setActionLoading(false);
     }
@@ -215,6 +235,14 @@ const PendingApprovals: React.FC = () => {
                               </button>
                             </>
                           )}
+                          {activeTab === 'REJECTED' && (
+                            <button
+                              onClick={() => setDeleteConfirmRecord(item)}
+                              className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -282,6 +310,42 @@ const PendingApprovals: React.FC = () => {
                   className="px-5 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center gap-2">
                   {actionLoading ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div> : <CheckCircle className="h-4 w-4" />}
                   Approve
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-gradient-to-r from-red-700 to-red-800 text-white px-6 py-4">
+              <h2 className="text-lg font-bold">Delete Rejected Record</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <Trash2 className="h-10 w-10 text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-gray-800 font-medium">Permanently delete this rejected submission?</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="font-semibold">{deleteConfirmRecord.record_data.site_name || 'Unnamed Site'}</span>
+                    {deleteConfirmRecord.record_data.building_name && ` — ${deleteConfirmRecord.record_data.building_name}`}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">Submitted by <span className="font-medium">{deleteConfirmRecord.submitted_username}</span></p>
+                  <p className="text-sm text-red-600 mt-3 font-medium">This action cannot be undone.</p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setDeleteConfirmRecord(null)} disabled={actionLoading}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                  Cancel
+                </button>
+                <button onClick={handleDelete} disabled={actionLoading}
+                  className="px-5 py-2 bg-red-700 text-white rounded-md text-sm font-medium hover:bg-red-800 disabled:opacity-50 flex items-center gap-2">
+                  {actionLoading ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div> : <Trash2 className="h-4 w-4" />}
+                  Delete
                 </button>
               </div>
             </div>
