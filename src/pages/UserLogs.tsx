@@ -244,6 +244,7 @@ const UserLogs: React.FC = () => {
       delete_cob_inventory:         'bg-red-100 text-red-800 border-red-200',
       // System
       delete_all_logs:              'bg-red-100 text-red-800 border-red-200',
+      unlock_account:               'bg-green-100 text-green-800 border-green-200',
     };
     return colors[action as keyof typeof colors] || 'bg-purple-100 text-purple-800 border-purple-200';
   };
@@ -300,6 +301,7 @@ const UserLogs: React.FC = () => {
       delete_cob_inventory:        'Delete COB Inventory',
       // System
       delete_all_logs:             'Delete All Logs',
+      unlock_account:              'Unlock Account',
     };
 
     let actionText = labels[action] || action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -407,6 +409,18 @@ const UserLogs: React.FC = () => {
                 Client: {details.client_name}
               </div>
             )}
+          </div>
+        </div>
+      );
+    }
+
+    // Unlock account
+    if (action === 'unlock_account') {
+      return (
+        <div className="mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+          <div className="text-xs">
+            {details.unlocked_username && <div><span className="font-semibold text-gray-700">Unlocked User:</span> <span className="text-green-600">{details.unlocked_username}</span></div>}
+            {details.role && <div><span className="font-semibold text-gray-700">Role:</span> {details.role}</div>}
           </div>
         </div>
       );

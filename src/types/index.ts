@@ -5,6 +5,8 @@ export interface User {
   fullname?: string;
   contact_number?: string;
   role?: 'Super Admin' | 'Admin' | 'User';
+  is_locked?: boolean;
+  last_login_at?: string;
   created_at?: string;
   updated_at?: string;
 }

@@ -78,6 +78,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setMessage(null);
 
     try {
       const result = await authAPI.login(formData.username, formData.password);
@@ -90,10 +91,18 @@ const Login: React.FC = () => {
         setMessage(null);
         setMode('mfa');
       } else {
-        alert('Either the username or password is incorrect');
+        setMessage({ type: 'error', text: 'Invalid username or password.' });
       }
-    } catch (error) {
-      alert('Either the username or password is incorrect');
+    } catch (error: any) {
+      const data = error.response?.data;
+      if (data?.code === 'ACCOUNT_LOCKED') {
+        setMessage({
+          type: 'error',
+          text: 'Your account is currently locked. Please contact your Administrator.',
+        });
+      } else {
+        setMessage({ type: 'error', text: 'Invalid username or password.' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -338,6 +347,17 @@ const Login: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {message && (
+                  <div className={`flex items-start space-x-2 p-3 rounded-md text-sm ${
+                    message.type === 'error'
+                      ? 'bg-red-50 border border-red-200 text-red-700'
+                      : 'bg-green-50 border border-green-200 text-green-700'
+                  }`}>
+                    <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                    <span>{message.text}</span>
+                  </div>
+                )}
 
                 <button
                   type="submit"

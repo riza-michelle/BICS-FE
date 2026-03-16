@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { usersAPI } from '../services/api';
 import { User } from '../types';
-import { UserPlus, Search, Edit, Trash2, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { UserPlus, Search, Edit, Trash2, ChevronLeft, ChevronRight, X, LockOpen, Lock } from 'lucide-react';
 import { useNotification } from '../context/NotificationContext';
+import { useAuth } from '../context/AuthContext';
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -14,6 +15,7 @@ const Users: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<User | null>(null);
+  const [unlockConfirmRecord, setUnlockConfirmRecord] = useState<User | null>(null);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -23,6 +25,7 @@ const Users: React.FC = () => {
     role: 'User' as 'Super Admin' | 'Admin' | 'User'
   });
   const { showNotification } = useNotification();
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     fetchUsers();
@@ -179,9 +182,30 @@ const Users: React.FC = () => {
     }
   };
 
+  const handleUnlockClick = (user: User) => {
+    setUnlockConfirmRecord(user);
+  };
+
+  const handleConfirmUnlock = async () => {
+    if (!unlockConfirmRecord || !unlockConfirmRecord.id) return;
+
+    try {
+      const response = await usersAPI.unlock(unlockConfirmRecord.id);
+      if (response.success) {
+        showNotification('success', response.message || 'Account unlocked successfully!');
+        setUnlockConfirmRecord(null);
+        fetchUsers();
+      } else {
+        showNotification('error', response.message || 'Failed to unlock account');
+      }
+    } catch (error: any) {
+      showNotification('error', error.response?.data?.message || 'Error unlocking account');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <div className="w-full py-6 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
@@ -217,25 +241,31 @@ const Users: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Username
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Full Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Contact Number
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Last Login
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created At
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -243,7 +273,7 @@ const Users: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center">
+                    <td colSpan={9} className="px-3 py-3 text-center">
                       <div className="flex justify-center items-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                       </div>
@@ -251,26 +281,26 @@ const Users: React.FC = () => {
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan={9} className="px-3 py-3 text-center text-sm text-gray-500">
                       No users found
                     </td>
                   </tr>
                 ) : (
                   users.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
                         {user.username}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.fullname || '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.email || '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.contact_number || '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           user.role === 'Super Admin'
                             ? 'bg-yellow-100 text-yellow-800'
@@ -281,23 +311,49 @@ const Users: React.FC = () => {
                           {user.role || 'User'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
+                        {user.is_locked ? (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                            <Lock className="h-3 w-3 mr-1" />
+                            Locked
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                            Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
+                        {user.last_login_at
+                          ? new Date(user.last_login_at).toLocaleString()
+                          : <span className="text-gray-400 italic">Never</span>}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-3">
+                      <td className="px-3 py-2 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2 text-xs">
                           <button
                             onClick={() => handleOpenModal(user)}
                             className="inline-flex items-center text-blue-600 hover:text-blue-900"
                           >
-                            <Edit className="h-4 w-4 mr-1" />
+                            <Edit className="h-3.5 w-3.5 mr-1" />
                             Edit
                           </button>
+                          {currentUser?.role === 'Super Admin' && user.is_locked && (
+                            <button
+                              onClick={() => handleUnlockClick(user)}
+                              className="inline-flex items-center text-green-600 hover:text-green-900"
+                            >
+                              <LockOpen className="h-3.5 w-3.5 mr-1" />
+                              Unlock
+                            </button>
+                          )}
                           <button
                             onClick={() => handleDeleteClick(user)}
                             className="inline-flex items-center text-red-600 hover:text-red-900"
                           >
-                            <Trash2 className="h-4 w-4 mr-1" />
+                            <Trash2 className="h-3.5 w-3.5 mr-1" />
                             Delete
                           </button>
                         </div>
@@ -311,7 +367,7 @@ const Users: React.FC = () => {
 
           {/* Pagination */}
           {!loading && users.length > 0 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="bg-white px-4 py-2 flex items-center justify-between border-t border-gray-200 sm:px-4">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -455,9 +511,9 @@ const Users: React.FC = () => {
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
-                  <option value="User">User</option>
-                  <option value="Admin">Admin</option>
                   <option value="Super Admin">Super Admin</option>
+                  <option value="Admin">Admin</option>
+                  <option value="User">User</option>
                 </select>
               </div>
 
@@ -477,6 +533,59 @@ const Users: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Unlock Confirmation Modal */}
+      {unlockConfirmRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4">
+              <h2 className="text-xl font-bold">Unlock Account</h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="bg-green-100 rounded-full p-3">
+                    <LockOpen className="h-6 w-6 text-green-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-900 font-medium mb-2">
+                    Are you sure you want to unlock this account?
+                  </p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    <strong>Username:</strong> {unlockConfirmRecord.username}
+                  </p>
+                  {unlockConfirmRecord.fullname && (
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>Full Name:</strong> {unlockConfirmRecord.fullname}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-600 mb-4">
+                    <strong>Role:</strong> {unlockConfirmRecord.role}
+                  </p>
+                  <p className="text-sm text-green-600 font-medium">
+                    The user will be able to log in again after unlocking.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => setUnlockConfirmRecord(null)}
+                  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmUnlock}
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Unlock Account
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
