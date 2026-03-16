@@ -2846,6 +2846,55 @@ const Dashboard: React.FC = () => {
                 <span className="inline-block w-3 h-3 rounded-sm bg-indigo-500"></span>
                 <span className="text-xs text-gray-500">Number of MOAs signed per month in {new Date().getFullYear()} (based on Signed TOR/MOA Date)</span>
               </div>
+
+              {/* Personnel Breakdown Table */}
+              {signedMoaByPersonnel.length > 0 && (
+                <div className="mt-6 border-t border-gray-100 pt-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <span className="inline-block w-2 h-4 rounded-sm bg-indigo-600"></span>
+                    By BICS Personnel
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-indigo-700 text-white">
+                          <th className="px-3 py-2 text-left font-semibold">BICS Personnel</th>
+                          {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
+                            <th key={m} className="px-2 py-2 text-center font-semibold w-10">{m}</th>
+                          ))}
+                          <th className="px-3 py-2 text-center font-semibold">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {signedMoaByPersonnel.map((p, i) => (
+                          <tr key={p.personnel} className={i % 2 === 0 ? 'bg-white' : 'bg-indigo-50'}>
+                            <td className="px-3 py-1.5 font-medium text-gray-800 whitespace-nowrap">{p.personnel}</td>
+                            {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
+                              <td key={m} className="px-2 py-1.5 text-center text-gray-600">
+                                {p.months[m] > 0 ? p.months[m] : <span className="text-gray-300">—</span>}
+                              </td>
+                            ))}
+                            <td className="px-3 py-1.5 text-center font-bold text-indigo-700">{p.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="bg-indigo-700 text-white font-bold">
+                          <td className="px-3 py-2">Grand Total</td>
+                          {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map(m => (
+                            <td key={m} className="px-2 py-2 text-center">
+                              {signedMoaByPersonnel.reduce((sum, p) => sum + (p.months[m] || 0), 0) || <span className="opacity-50">—</span>}
+                            </td>
+                          ))}
+                          <td className="px-3 py-2 text-center">
+                            {signedMoaByPersonnel.reduce((sum, p) => sum + p.total, 0)}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
