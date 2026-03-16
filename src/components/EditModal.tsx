@@ -244,6 +244,16 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
       }
     }
 
+    // Auto-set productivity to "ENGAGED" when date_of_recent_engagement is set
+    if (name === 'date_of_recent_engagement' && value) {
+      setFormData(prev => ({
+        ...prev,
+        date_of_recent_engagement: value,
+        productivity: 'ENGAGED',
+      }));
+      return;
+    }
+
     const isSelect = e.target.tagName === 'SELECT';
     setFormData(prev => ({
       ...prev,
