@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermissions } from '../context/PermissionsContext';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck } from 'lucide-react';
+import { pendingRecordsAPI } from '../services/api';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -10,6 +11,7 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [isActiveSiteOpen, setIsActiveSiteOpen] = useState(false);
   const [isConfigurationsOpen, setIsConfigurationsOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const configurationsDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -20,6 +22,20 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
   };
+
+  // Fetch pending count for Super Admin
+  useEffect(() => {
+    if (user?.role !== 'Super Admin') return;
+    const fetchCount = async () => {
+      try {
+        const res = await pendingRecordsAPI.count();
+        setPendingCount(res.count);
+      } catch {}
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, [user?.role]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -230,6 +246,18 @@ const Navbar: React.FC = () => {
                         <Link to="/role-permissions" onClick={() => setIsConfigurationsOpen(false)}
                           className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/role-permissions') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
                           <ShieldCheck className="h-4 w-4" /><span>Role Permissions</span>
+                        </Link>
+                        )}
+                        {user?.role === 'Super Admin' && (
+                        <Link to="/pending-approvals" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/pending-approvals') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Clock className="h-4 w-4" />
+                          <span>Pending Approvals</span>
+                          {pendingCount > 0 && (
+                            <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white leading-none">
+                              {pendingCount}
+                            </span>
+                          )}
                         </Link>
                         )}
                       </div>
