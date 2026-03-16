@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { bicsAPI, epcBatchAPI, vendorAPI, saqPersonnelAPI, fcoPersonnelAPI, topDeveloperAPI, relationshipManagerAPI, validatedByAPI } from '../services/api';
+import { bicsAPI, pendingRecordsAPI, epcBatchAPI, vendorAPI, saqPersonnelAPI, fcoPersonnelAPI, topDeveloperAPI, relationshipManagerAPI, validatedByAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { BicsRecord } from '../types';
 import { Save, RotateCcw, ArrowLeft } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 
 const DataEntry: React.FC = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<BicsRecord>({});
   const [loading, setLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -248,23 +250,25 @@ const DataEntry: React.FC = () => {
       let response;
       if (isEditMode && recordId) {
         response = await bicsAPI.updateRecord(recordId, dataToSubmit);
+      } else if (user?.role === 'User') {
+        // User role: submit for Super Admin approval
+        response = await pendingRecordsAPI.submit(dataToSubmit);
       } else {
         response = await bicsAPI.createRecord(dataToSubmit);
       }
 
       if (response.success) {
-        showNotification('success', isEditMode ? 'Record updated successfully!' : 'Record created successfully!');
-        if (!isEditMode) {
-          setFormData({});
-          // Scroll to top for new entries
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Redirect back to site view after showing notification
         if (isEditMode) {
-          setTimeout(() => {
-            navigate('/site-view');
-          }, 1500);
+          showNotification('success', 'Record updated successfully!');
+          setTimeout(() => { navigate('/site-view'); }, 1500);
+        } else if (user?.role === 'User') {
+          showNotification('success', 'Site submitted for Super Admin approval. It will appear in View Live Site once approved.');
+          setFormData({});
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          showNotification('success', 'Record created successfully!');
+          setFormData({});
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       } else {
         showNotification('error', response.message || `Failed to ${isEditMode ? 'update' : 'create'} record`);
@@ -692,23 +696,7 @@ const DataEntry: React.FC = () => {
                   'TOR BA SUBMITTED'
                 ])}
                 {renderInput('signed_tor_moa_date', 'SIGNED TOR/MOA DATE', 'date')}
-                {renderSelect('moa_acquired_by', 'MOA ACQUIRED BY', [
-                  'ADMARASIGAN',
-                  'APMORILLA',
-                  'CBTABINGA',
-                  'CLTRABUCO',
-                  'DFCAGADAS',
-                  'ELALIBO',
-                  'JDALVAREZ',
-                  'JMBALAG',
-                  'KDTAMONDONG',
-                  'LMTAMAYO',
-                  'LSAGAPITO',
-                  'LTTEOVISIO',
-                  'MIDDELACRUZ',
-                  'MLCARANDANG',
-                  'NMNARCISO'
-                ])}
+                {renderSelect('moa_acquired_by', 'MOA ACQUIRED BY', saqPersonnelList)}
                 {renderSelect('moa_uploading_status', 'MOA UPLOADING STATUS', [
                   'FOR UPLOADING',
                   'UPLOADED'
