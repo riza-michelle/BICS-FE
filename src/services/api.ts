@@ -177,6 +177,30 @@ export const bicsAPI = {
   },
 };
 
+// Pending Records API
+export const pendingRecordsAPI = {
+  submit: async (data: any): Promise<ApiResponse<any>> => {
+    const response = await api.post('/pending-records/submit', data);
+    return response.data;
+  },
+  list: async (status = 'PENDING'): Promise<ApiResponse<any>> => {
+    const response = await api.get(`/pending-records/list?status=${status}`);
+    return response.data;
+  },
+  approve: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/pending-records/${id}/approve`);
+    return response.data;
+  },
+  reject: async (id: number, reason: string): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/pending-records/${id}/reject`, { reason });
+    return response.data;
+  },
+  count: async (): Promise<{ success: boolean; count: number }> => {
+    const response = await api.get('/pending-records/count');
+    return response.data;
+  },
+};
+
 // Health check
 export const healthAPI = {
   check: async (): Promise<ApiResponse<any>> => {
