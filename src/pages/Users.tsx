@@ -22,7 +22,7 @@ const Users: React.FC = () => {
     email: '',
     fullname: '',
     contact_number: '',
-    role: 'User' as 'Super Admin' | 'Admin' | 'User'
+    role: 'User - SAQ' as 'Super Admin' | 'Admin' | 'User - SAQ'
   });
   const { showNotification } = useNotification();
   const { user: currentUser } = useAuth();
@@ -68,7 +68,7 @@ const Users: React.FC = () => {
         email: user.email || '',
         fullname: user.fullname || '',
         contact_number: user.contact_number || '',
-        role: (user.role || 'User') as 'Super Admin' | 'Admin' | 'User'
+        role: (user.role || 'User') as 'Super Admin' | 'Admin' | 'User - SAQ'
       });
     } else {
       setEditingUser(null);
@@ -78,7 +78,7 @@ const Users: React.FC = () => {
         email: '',
         fullname: '',
         contact_number: '',
-        role: 'User'
+        role: 'User - SAQ'
       });
     }
     setShowModal(true);
@@ -93,7 +93,7 @@ const Users: React.FC = () => {
       email: '',
       fullname: '',
       contact_number: '',
-      role: 'User'
+      role: 'User - SAQ'
     });
   };
 
@@ -308,7 +308,7 @@ const Users: React.FC = () => {
                             ? 'bg-purple-100 text-purple-800'
                             : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {user.role || 'User'}
+                          {user.role || 'User - SAQ'}
                         </span>
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm">
@@ -507,13 +507,13 @@ const Users: React.FC = () => {
                 </label>
                 <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Super Admin' | 'Admin' | 'User' })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Super Admin' | 'Admin' | 'User - SAQ' })}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="Super Admin">Super Admin</option>
                   <option value="Admin">Admin</option>
-                  <option value="User">User</option>
+                  <option value="User - SAQ">User - SAQ</option>
                 </select>
               </div>
 

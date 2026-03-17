@@ -1077,7 +1077,7 @@ const SiteView: React.FC = () => {
                             <Edit className="h-3 w-3 mr-0.5" />
                             <span className="text-[10px]">Edit</span>
                           </button>
-                          {user?.role !== 'User' && (
+                          {user?.role !== 'User - SAQ' && (
                             <button
                               onClick={() => handleDuplicateClick(record)}
                               className="inline-flex items-center text-purple-600 hover:text-purple-900"
@@ -1086,7 +1086,7 @@ const SiteView: React.FC = () => {
                               <span className="text-[10px]">Duplicate</span>
                             </button>
                           )}
-                          {user?.role !== 'User' && (
+                          {user?.role !== 'User - SAQ' && (
                             <button
                               onClick={() => handleDeleteClick(record)}
                               className="inline-flex items-center text-red-600 hover:text-red-900"

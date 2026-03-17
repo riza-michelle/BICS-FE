@@ -219,6 +219,19 @@ export const pendingRecordsAPI = {
     const response = await api.delete(`/pending-records/${id}`);
     return response.data;
   },
+  mySubmissions: async (status?: string): Promise<ApiResponse<any>> => {
+    const params = status ? `?status=${status}` : '';
+    const response = await api.get(`/pending-records/my-submissions${params}`);
+    return response.data;
+  },
+  updateSubmission: async (id: number, data: any): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/pending-records/${id}/update`, data);
+    return response.data;
+  },
+  deleteMySubmission: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.delete(`/pending-records/my/${id}`);
+    return response.data;
+  },
 };
 
 // Health check
@@ -363,7 +376,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Super Admin' | 'Admin' | 'User';
+    role?: 'Super Admin' | 'Admin' | 'User - SAQ';
   }): Promise<ApiResponse<User>> => {
     const response = await api.post('/users/create', userData);
     return response.data;
@@ -375,7 +388,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Super Admin' | 'Admin' | 'User';
+    role?: 'Super Admin' | 'Admin' | 'User - SAQ';
   }): Promise<ApiResponse<User>> => {
     const response = await api.put(`/users/update/${id}`, userData);
     return response.data;

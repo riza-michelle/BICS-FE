@@ -270,7 +270,7 @@ const DataEntry: React.FC = () => {
       let response;
       if (isEditMode && recordId) {
         response = await bicsAPI.updateRecord(recordId, dataToSubmit);
-      } else if (user?.role === 'User') {
+      } else if (user?.role === 'User - SAQ') {
         // User role: submit for Super Admin approval
         response = await pendingRecordsAPI.submit(dataToSubmit);
       } else {
@@ -281,7 +281,7 @@ const DataEntry: React.FC = () => {
         if (isEditMode) {
           showNotification('success', 'Record updated successfully!');
           setTimeout(() => { navigate('/site-view'); }, 1500);
-        } else if (user?.role === 'User') {
+        } else if (user?.role === 'User - SAQ') {
           showNotification('success', 'Site submitted for Super Admin approval. It will appear in View Live Site once approved.');
           setFormData({});
           window.scrollTo({ top: 0, behavior: 'smooth' });

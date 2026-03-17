@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { pendingRecordsAPI } from '../services/api';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock } from 'lucide-react';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell } from 'lucide-react';
+import { MY_SUBMISSIONS_LAST_VISIT_KEY } from '../pages/MySubmissions';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
   const [isActiveSiteOpen, setIsActiveSiteOpen] = useState(false);
   const [isConfigurationsOpen, setIsConfigurationsOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const [unreadSubmissionsCount, setUnreadSubmissionsCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const configurationsDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +36,27 @@ const Navbar: React.FC = () => {
     };
     fetchCount();
     const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, [user?.role]);
+
+  // Fetch unread submissions count for non-Super-Admin users
+  useEffect(() => {
+    if (user?.role === 'Super Admin') return;
+    const fetchUnread = async () => {
+      try {
+        const res = await pendingRecordsAPI.mySubmissions();
+        if (res.success && res.data) {
+          const lastVisit = localStorage.getItem(MY_SUBMISSIONS_LAST_VISIT_KEY);
+          const reviewed = (res.data as any[]).filter(
+            s => s.status !== 'PENDING' && s.reviewed_at &&
+              (!lastVisit || new Date(s.reviewed_at) > new Date(lastVisit))
+          );
+          setUnreadSubmissionsCount(reviewed.length);
+        }
+      } catch {}
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
   }, [user?.role]);
 
@@ -134,6 +157,27 @@ const Navbar: React.FC = () => {
                   </div>
                 )}
               </div>
+              )}
+
+              {/* My Submissions - visible to all non-Super-Admin users */}
+              {user?.role !== 'Super Admin' && (
+                <Link
+                  to="/my-submissions"
+                  onClick={() => setUnreadSubmissionsCount(0)}
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
+                    isActive('/my-submissions')
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Bell className="h-4 w-4" />
+                  <span>My Submissions</span>
+                  {unreadSubmissionsCount > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white leading-none">
+                      {unreadSubmissionsCount}
+                    </span>
+                  )}
+                </Link>
               )}
 
               {hasPermission(user?.role, 'moa_uploader') && (

@@ -21,7 +21,7 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   config_user_logs:           { label: 'User Logs',                group: 'Configurations' },
 };
 
-const ROLES = ['Admin', 'User'] as const;
+const ROLES = ['Admin', 'User - SAQ'] as const;
 
 type PermissionMap = Record<string, Record<string, boolean>>;
 
