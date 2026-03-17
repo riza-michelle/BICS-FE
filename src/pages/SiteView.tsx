@@ -921,7 +921,7 @@ const SiteView: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                placeholder="Search..."
+                placeholder="Search site, building, ref #..."
                 className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
               />
             </div>
@@ -942,31 +942,34 @@ const SiteView: React.FC = () => {
             <table className="w-full table-fixed divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     BICS Personnel
                   </th>
-                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     EPC Batch
                   </th>
-                  <th className="w-[18%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[16%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Site Name
                   </th>
-                  <th className="w-[16%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[14%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Building Name
                   </th>
-                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[7%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                    Ref #
+                  </th>
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Project Status
                   </th>
-                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[7%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Project Scheme
                   </th>
-                  <th className="w-[9%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     SAQ Milestone
                   </th>
-                  <th className="w-[8%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
+                  <th className="w-[7%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight">
                     Aging Days
                   </th>
-                  <th className="w-[14%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight sticky right-0 z-10 bg-gray-50 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
+                  <th className="w-[17%] px-1.5 py-2 text-center text-[9px] font-medium text-gray-500 uppercase tracking-tight sticky right-0 z-10 bg-gray-50 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.08)]">
                     Actions
                   </th>
                 </tr>
@@ -974,7 +977,7 @@ const SiteView: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200 uppercase">
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="px-2 py-4 text-center">
+                    <td colSpan={10} className="px-2 py-4 text-center">
                       <div className="flex justify-center items-center">
                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                       </div>
@@ -1007,6 +1010,9 @@ const SiteView: React.FC = () => {
                       </td>
                       <td className="px-1.5 py-1.5 text-[10px] text-gray-500 text-center truncate overflow-hidden" title={record.building_name || ''}>
                         {record.building_name || '-'}
+                      </td>
+                      <td className="px-1.5 py-1.5 text-[10px] text-gray-700 font-medium text-center truncate overflow-hidden" title={record.reference_number || ''}>
+                        {record.reference_number || '-'}
                       </td>
                       <td className="px-1.5 py-1.5 text-center overflow-hidden">
                         <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full truncate max-w-full ${
