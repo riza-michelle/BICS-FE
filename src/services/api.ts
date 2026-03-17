@@ -115,6 +115,11 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getNextReferenceNumber: async (): Promise<{ success: boolean; next_reference_number: string }> => {
+    const response = await api.get('/bics/next-reference-number');
+    return response.data;
+  },
+
   getRecords: async (params?: {
     page?: number;
     limit?: number;
@@ -129,6 +134,7 @@ export const bicsAPI = {
     saq_milestone?: string;
     min_aging_days?: number;
     max_aging_days?: number;
+    site_name_initial?: string;
   }): Promise<ApiResponse<RecordsResponse>> => {
     const response = await api.get('/bics/records', { params });
     return response.data;

@@ -23,6 +23,7 @@ const SiteView: React.FC = () => {
   const [selectedSaqMilestone, setSelectedSaqMilestone] = useState<string>('');
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedAlpha, setSelectedAlpha] = useState<string>('');
   const [personnelList, setPersonnelList] = useState<string[]>([]);
   const [expandedViewSections, setExpandedViewSections] = useState<{ [key: string]: boolean }>({});
   const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<BicsRecord | null>(null);
@@ -49,7 +50,7 @@ const SiteView: React.FC = () => {
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedSaqMilestone, selectedAgingDays, searchQuery]);
+  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedSaqMilestone, selectedAgingDays, searchQuery, selectedAlpha]);
 
   // Check for notification from navigation state
   useEffect(() => {
@@ -91,6 +92,7 @@ const SiteView: React.FC = () => {
         saq_milestone: selectedSaqMilestone || undefined,
         min_aging_days: minAgingDays,
         max_aging_days: maxAgingDays,
+        site_name_initial: selectedAlpha || undefined,
       });
 
       if (response.success && response.data) {
@@ -237,10 +239,11 @@ const SiteView: React.FC = () => {
     setSelectedSaqMilestone('');
     setSelectedAgingDays('');
     setSearchQuery('');
+    setSelectedAlpha('');
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = !!(selectedPersonnel || selectedEpcBatch || selectedProjectStatus || selectedProjectScheme || selectedSaqMilestone || selectedAgingDays || searchQuery);
+  const hasActiveFilters = !!(selectedPersonnel || selectedEpcBatch || selectedProjectStatus || selectedProjectScheme || selectedSaqMilestone || selectedAgingDays || searchQuery || selectedAlpha);
 
   const handleAgingDaysFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAgingDays(e.target.value);
@@ -781,6 +784,23 @@ const SiteView: React.FC = () => {
 
         {/* Filter Bar */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4">
+          {/* A-Z Site Name Filter */}
+          <div className="flex items-center gap-1 mb-2 flex-wrap">
+            <span className="text-[10px] font-semibold text-gray-500 mr-1 shrink-0">Site Name:</span>
+            {['All', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')].map(letter => (
+              <button
+                key={letter}
+                onClick={() => { setSelectedAlpha(letter === 'All' ? '' : letter); setCurrentPage(1); }}
+                className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                  (letter === 'All' && !selectedAlpha) || selectedAlpha === letter
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-blue-100 hover:text-blue-700'
+                }`}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center gap-2">
             <div className="flex-1 min-w-[140px]">
               <select

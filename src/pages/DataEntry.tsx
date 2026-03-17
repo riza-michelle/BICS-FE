@@ -123,6 +123,16 @@ const DataEntry: React.FC = () => {
     fetchTopDevelopers();
     fetchRelationshipManagers();
     fetchValidatedBy();
+
+    // Auto-set reference number for new entries only
+    const editId = new URLSearchParams(window.location.search).get('edit');
+    if (!editId) {
+      bicsAPI.getNextReferenceNumber().then(res => {
+        if (res.success) {
+          setFormData(prev => ({ ...prev, reference_number: res.next_reference_number }));
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   // Load record for editing if edit parameter is present
@@ -769,7 +779,16 @@ const DataEntry: React.FC = () => {
                   'COMPLETED'
                 ])}
                 {renderInput('ref_id', 'REF ID')}
-                {renderInput('reference_number', 'REFERENCE #')}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1.5">REFERENCE #</label>
+                  <input
+                    type="text"
+                    name="reference_number"
+                    value={formData.reference_number || ''}
+                    readOnly
+                    className="block w-full px-2.5 py-1.5 border border-gray-200 rounded-md shadow-sm bg-gray-50 text-xs text-gray-700 font-semibold cursor-not-allowed"
+                  />
+                </div>
               </>
             ))}
 
