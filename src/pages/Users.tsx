@@ -21,7 +21,6 @@ const Users: React.FC = () => {
     password: '',
     email: '',
     fullname: '',
-    contact_number: '',
     role: 'User - SAQ' as 'Super Admin' | 'Admin' | 'User - SAQ'
   });
   const { showNotification } = useNotification();
@@ -67,7 +66,6 @@ const Users: React.FC = () => {
         password: '',
         email: user.email || '',
         fullname: user.fullname || '',
-        contact_number: user.contact_number || '',
         role: (user.role || 'User') as 'Super Admin' | 'Admin' | 'User - SAQ'
       });
     } else {
@@ -77,7 +75,6 @@ const Users: React.FC = () => {
         password: '',
         email: '',
         fullname: '',
-        contact_number: '',
         role: 'User - SAQ'
       });
     }
@@ -92,7 +89,6 @@ const Users: React.FC = () => {
       password: '',
       email: '',
       fullname: '',
-      contact_number: '',
       role: 'User - SAQ'
     });
   };
@@ -117,7 +113,6 @@ const Users: React.FC = () => {
           username: formData.username,
           email: formData.email || undefined,
           fullname: formData.fullname || undefined,
-          contact_number: formData.contact_number || undefined,
           role: formData.role
         };
 
@@ -140,7 +135,6 @@ const Users: React.FC = () => {
           password: formData.password,
           email: formData.email || undefined,
           fullname: formData.fullname || undefined,
-          contact_number: formData.contact_number || undefined,
           role: formData.role
         });
 
@@ -251,9 +245,6 @@ const Users: React.FC = () => {
                     Email
                   </th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Contact Number
-                  </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role
                   </th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -273,7 +264,7 @@ const Users: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="px-3 py-3 text-center">
+                    <td colSpan={8} className="px-3 py-3 text-center">
                       <div className="flex justify-center items-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                       </div>
@@ -296,9 +287,6 @@ const Users: React.FC = () => {
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.email || '-'}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
-                        {user.contact_number || '-'}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -485,18 +473,6 @@ const Users: React.FC = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contact Number
-                </label>
-                <input
-                  type="tel"
-                  value={formData.contact_number}
-                  onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
