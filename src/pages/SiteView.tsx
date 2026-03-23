@@ -307,6 +307,7 @@ const SiteView: React.FC = () => {
   const epcBatchList = [
     'BATCH - 55',
     'BATCH - 118',
+    'BATCH - 172',
     'BATCH - 223',
     'BATCH - 243',
     'BATCH - 340',
