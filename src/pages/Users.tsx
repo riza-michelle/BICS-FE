@@ -5,6 +5,48 @@ import { UserPlus, Search, Edit, Trash2, ChevronLeft, ChevronRight, X, LockOpen,
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 
+function businessDaysElapsed(referenceDate: string | Date): number {
+  const start = new Date(referenceDate);
+  start.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (start >= today) return 0;
+
+  let count = 0;
+  const current = new Date(start);
+  current.setDate(current.getDate() + 1);
+
+  while (current <= today) {
+    const day = current.getDay();
+    if (day !== 0 && day !== 6) count++;
+    current.setDate(current.getDate() + 1);
+  }
+  return count;
+}
+
+function getLockCountdown(user: User): { label: string; className: string } | null {
+  if (user.role === 'Super Admin') return null;
+  if (user.is_locked) return null;
+
+  const ref = user.last_login_at || user.created_at;
+  if (!ref) return null;
+
+  const elapsed = businessDaysElapsed(ref);
+  const remaining = 30 - elapsed;
+
+  if (remaining <= 0) {
+    return { label: 'Locking soon', className: 'bg-red-100 text-red-700' };
+  } else if (remaining <= 5) {
+    return { label: `${remaining} day${remaining === 1 ? '' : 's'} left`, className: 'bg-orange-100 text-orange-700' };
+  } else if (remaining <= 10) {
+    return { label: `${remaining} days left`, className: 'bg-yellow-100 text-yellow-700' };
+  } else {
+    return { label: `${remaining} days left`, className: 'bg-gray-100 text-gray-600' };
+  }
+}
+
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -257,6 +299,9 @@ const Users: React.FC = () => {
                     Created At
                   </th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Locks In
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -264,7 +309,7 @@ const Users: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="px-3 py-3 text-center">
+                    <td colSpan={9} className="px-3 py-3 text-center">
                       <div className="flex justify-center items-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                       </div>
@@ -318,6 +363,17 @@ const Users: React.FC = () => {
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
+                        {(() => {
+                          const cd = getLockCountdown(user);
+                          if (!cd) return <span className="text-gray-400">-</span>;
+                          return (
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${cd.className}`}>
+                              {cd.label}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2 text-xs">
