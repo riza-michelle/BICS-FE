@@ -6,6 +6,7 @@ export interface User {
   contact_number?: string;
   role?: 'Super Admin' | 'Admin' | 'User - SAQ';
   is_locked?: boolean;
+  is_active?: boolean;
   last_login_at?: string;
   created_at?: string;
   updated_at?: string;

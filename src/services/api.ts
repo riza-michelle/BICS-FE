@@ -399,8 +399,23 @@ export const usersAPI = {
     return response.data;
   },
 
+  lock: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/users/lock/${id}`);
+    return response.data;
+  },
+
   unlock: async (id: number): Promise<ApiResponse<any>> => {
     const response = await api.put(`/users/unlock/${id}`);
+    return response.data;
+  },
+
+  activate: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/users/activate/${id}`);
+    return response.data;
+  },
+
+  deactivate: async (id: number): Promise<ApiResponse<any>> => {
+    const response = await api.put(`/users/deactivate/${id}`);
     return response.data;
   },
 };
