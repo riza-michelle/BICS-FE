@@ -4,7 +4,7 @@ export interface User {
   email?: string;
   fullname?: string;
   contact_number?: string;
-  role?: 'Super Admin' | 'Admin' | 'User - SAQ';
+  role?: 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO';
   is_locked?: boolean;
   is_active?: boolean;
   last_login_at?: string;

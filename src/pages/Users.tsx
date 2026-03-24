@@ -66,7 +66,7 @@ const Users: React.FC = () => {
     password: '',
     email: '',
     fullname: '',
-    role: 'User - SAQ' as 'Super Admin' | 'Admin' | 'User - SAQ'
+    role: 'User - SAQ' as 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO'
   });
   const { showNotification } = useNotification();
   const { user: currentUser } = useAuth();
@@ -111,7 +111,7 @@ const Users: React.FC = () => {
         password: '',
         email: user.email || '',
         fullname: user.fullname || '',
-        role: (user.role || 'User') as 'Super Admin' | 'Admin' | 'User - SAQ'
+        role: (user.role || 'User - SAQ') as 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO'
       });
     } else {
       setEditingUser(null);
@@ -624,13 +624,14 @@ const Users: React.FC = () => {
                 </label>
                 <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Super Admin' | 'Admin' | 'User - SAQ' })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO' })}
                   className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="Super Admin">Super Admin</option>
                   <option value="Admin">Admin</option>
                   <option value="User - SAQ">User - SAQ</option>
+                  <option value="User - FCO">User - FCO</option>
                 </select>
               </div>
 

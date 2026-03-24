@@ -376,7 +376,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Super Admin' | 'Admin' | 'User - SAQ';
+    role?: 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO';
   }): Promise<ApiResponse<User>> => {
     const response = await api.post('/users/create', userData);
     return response.data;
@@ -388,7 +388,7 @@ export const usersAPI = {
     email?: string;
     fullname?: string;
     contact_number?: string;
-    role?: 'Super Admin' | 'Admin' | 'User - SAQ';
+    role?: 'Super Admin' | 'Admin' | 'User - SAQ' | 'User - FCO';
   }): Promise<ApiResponse<User>> => {
     const response = await api.put(`/users/update/${id}`, userData);
     return response.data;
