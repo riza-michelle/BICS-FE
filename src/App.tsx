@@ -23,6 +23,7 @@ import ValidatedBy from './pages/ValidatedBy';
 import RolePermissions from './pages/RolePermissions';
 import PendingApprovals from './pages/PendingApprovals';
 import MySubmissions from './pages/MySubmissions';
+import FcoUpdate from './pages/FcoUpdate';
 import Test from './pages/Test';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -44,6 +45,9 @@ const RootRedirect: React.FC = () => {
   const { user } = useAuth();
   const { hasPermission } = usePermissions();
 
+  if (hasPermission(user?.role, 'bpt_fco_update') && !hasPermission(user?.role, 'dashboard')) {
+    return <Navigate to="/fco-update" replace />;
+  }
   if (user?.role === 'User - SAQ' || hasPermission(user?.role, 'dashboard')) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -185,6 +189,14 @@ function App() {
                 element={
                   <ProtectedRoute superAdminOnly>
                     <PendingApprovals />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/fco-update"
+                element={
+                  <ProtectedRoute>
+                    <FcoUpdate />
                   </ProtectedRoute>
                 }
               />

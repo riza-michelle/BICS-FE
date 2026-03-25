@@ -8,6 +8,7 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   dashboard:                  { label: 'Dashboard',               group: 'Main Menu' },
   bpt_add_live_site:          { label: 'BPT - Add New Live Site',  group: 'Main Menu' },
   bpt_view_live_site:         { label: 'BPT - View Live Site',     group: 'Main Menu' },
+  bpt_fco_update:             { label: 'BPT - FCO Update',         group: 'Main Menu' },
   moa_uploader:               { label: 'MOA Uploader',             group: 'Main Menu' },
   cdrf_routing:               { label: 'CDRF Routing',             group: 'Main Menu' },
   config_epc_batch:           { label: 'Add EPC Batch',            group: 'Configurations' },
@@ -21,7 +22,7 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   config_user_logs:           { label: 'User Logs',                group: 'Configurations' },
 };
 
-const ROLES = ['Admin', 'User - SAQ'] as const;
+const ROLES = ['Admin', 'User - SAQ', 'User - FCO'] as const;
 
 type PermissionMap = Record<string, Record<string, boolean>>;
 

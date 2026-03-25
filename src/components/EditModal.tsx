@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BicsRecord } from '../types';
 import { Save, X, AlertCircle, CheckCircle, ChevronDown } from 'lucide-react';
 import { epcBatchAPI, vendorAPI, saqPersonnelAPI, fcoPersonnelAPI, topDeveloperAPI, relationshipManagerAPI, validatedByAPI } from '../services/api';
+import RemarksHistory from './RemarksHistory';
 
 interface EditModalProps {
   record: BicsRecord;
@@ -844,9 +845,12 @@ const EditModal: React.FC<EditModalProps> = ({ record, onClose, onSave }) => {
 
             {/* Remarks */}
             {renderFormSection("Remarks", (
-              <>
-                {renderTextarea('significant_remarks', 'SIGNIFICANT REMARKS')}
-              </>
+              <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                <RemarksHistory
+                  recordId={record.id!}
+                  legacyRemark={record.significant_remarks}
+                />
+              </div>
             ))}
 
             {/* Replacement Information */}

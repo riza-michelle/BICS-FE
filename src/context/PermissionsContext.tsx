@@ -7,6 +7,7 @@ export const MENU_KEYS = [
   'dashboard',
   'bpt_add_live_site',
   'bpt_view_live_site',
+  'bpt_fco_update',
   'moa_uploader',
   'cdrf_routing',
   'config_epc_batch',
