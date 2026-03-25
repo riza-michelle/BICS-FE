@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, Clock, User } from 'lucide-react';
+import { Send, Clock, User } from 'lucide-react';
 import { bicsAPI } from '../services/api';
 import { RemarksHistoryEntry } from '../types';
 
