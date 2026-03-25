@@ -336,7 +336,10 @@ const Navbar: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm text-gray-700">
               <User className="h-4 w-4" />
-              <span>{user?.username}</span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-medium">{user?.username}</span>
+                {user?.role && <span className="text-xs text-gray-400">{user.role}</span>}
+              </div>
             </div>
 
             <button
