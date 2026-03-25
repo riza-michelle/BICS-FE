@@ -24,9 +24,11 @@ const SiteView: React.FC = () => {
   const [selectedProjectScheme, setSelectedProjectScheme] = useState<string[]>([]);
   const [selectedSaqMilestone, setSelectedSaqMilestone] = useState<string[]>([]);
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
+  const [selectedCity, setSelectedCity] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedAlpha, setSelectedAlpha] = useState<string>('');
   const [personnelList, setPersonnelList] = useState<string[]>([]);
+  const [cityList, setCityList] = useState<string[]>([]);
   const [expandedViewSections, setExpandedViewSections] = useState<{ [key: string]: boolean }>({});
   const [deleteConfirmRecord, setDeleteConfirmRecord] = useState<BicsRecord | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -47,12 +49,15 @@ const SiteView: React.FC = () => {
         setPersonnelList(res.data.personnel.map((p: any) => p.personnel_name));
       }
     }).catch(() => {});
+    bicsAPI.getDistinctCities().then(res => {
+      if (res.success && res.data) setCityList(res.data);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedSaqMilestone, selectedAgingDays, searchQuery, selectedAlpha]);
+  }, [currentPage, selectedPersonnel, selectedEpcBatch, selectedProjectStatus, selectedProjectScheme, selectedSaqMilestone, selectedAgingDays, selectedCity, searchQuery, selectedAlpha]);
 
   // Check for notification from navigation state
   useEffect(() => {
@@ -92,6 +97,7 @@ const SiteView: React.FC = () => {
         project_status: selectedProjectStatus.length ? selectedProjectStatus.join(',') : undefined,
         project_scheme: selectedProjectScheme.length ? selectedProjectScheme.join(',') : undefined,
         saq_milestone: selectedSaqMilestone.length ? selectedSaqMilestone.join(',') : undefined,
+        city_municipality: selectedCity.length ? selectedCity.join(',') : undefined,
         min_aging_days: minAgingDays,
         max_aging_days: maxAgingDays,
         site_name_initial: selectedAlpha || undefined,
@@ -215,12 +221,13 @@ const SiteView: React.FC = () => {
     setSelectedProjectScheme([]);
     setSelectedSaqMilestone([]);
     setSelectedAgingDays('');
+    setSelectedCity([]);
     setSearchQuery('');
     setSelectedAlpha('');
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = !!(selectedPersonnel.length || selectedEpcBatch.length || selectedProjectStatus.length || selectedProjectScheme.length || selectedSaqMilestone.length || selectedAgingDays || searchQuery || selectedAlpha);
+  const hasActiveFilters = !!(selectedPersonnel.length || selectedEpcBatch.length || selectedProjectStatus.length || selectedProjectScheme.length || selectedSaqMilestone.length || selectedAgingDays || selectedCity.length || searchQuery || selectedAlpha);
 
   const handleAgingDaysFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAgingDays(e.target.value);
@@ -786,9 +793,33 @@ const SiteView: React.FC = () => {
         </div>
 
         {/* Filter Bar */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4">
-          {/* A-Z Site Name Filter */}
-          <div className="flex items-center gap-1 mb-2 flex-wrap">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4 space-y-2">
+          {/* Row 1: Search + Clear */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                placeholder="Search site name, building, reference #..."
+                className="block w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
+              />
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="shrink-0 inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 whitespace-nowrap"
+              >
+                ✕ Clear Filters
+              </button>
+            )}
+          </div>
+
+          {/* Row 2: A-Z Site Name Filter */}
+          <div className="flex items-center gap-1 flex-wrap">
             <span className="text-[10px] font-semibold text-gray-500 mr-1 shrink-0">Site Name:</span>
             {['All', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')].map(letter => (
               <button
@@ -804,7 +835,9 @@ const SiteView: React.FC = () => {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Row 3: Dropdown Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="flex-1 min-w-[140px]">
               <MultiSelectDropdown
                 options={personnelList}
@@ -856,6 +889,14 @@ const SiteView: React.FC = () => {
                 placeholder="All SAQ Milestones"
               />
             </div>
+            <div className="flex-1 min-w-[160px]">
+              <MultiSelectDropdown
+                options={cityList}
+                selected={selectedCity}
+                onChange={(vals) => { setSelectedCity(vals); setCurrentPage(1); }}
+                placeholder="All Cities/Municipalities"
+              />
+            </div>
             <div className="flex-1 min-w-[140px]">
               <select
                 value={selectedAgingDays}
@@ -869,23 +910,6 @@ const SiteView: React.FC = () => {
                 <option value="61+">61+ days (Overdue)</option>
               </select>
             </div>
-            <div className="w-48 shrink-0">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                placeholder="Search site, building, ref #..."
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              />
-            </div>
-            {hasActiveFilters && (
-              <button
-                onClick={handleClearFilters}
-                className="shrink-0 inline-flex items-center px-3 py-1.5 border border-orange-300 text-xs font-medium rounded-md text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-orange-400 whitespace-nowrap"
-              >
-                ✕ Clear Filters
-              </button>
-            )}
           </div>
         </div>
 

@@ -135,8 +135,14 @@ export const bicsAPI = {
     min_aging_days?: number;
     max_aging_days?: number;
     site_name_initial?: string;
+    city_municipality?: string;
   }): Promise<ApiResponse<RecordsResponse>> => {
     const response = await api.get('/bics/records', { params });
+    return response.data;
+  },
+
+  getDistinctCities: async (): Promise<ApiResponse<string[]>> => {
+    const response = await api.get('/bics/distinct-cities');
     return response.data;
   },
 
