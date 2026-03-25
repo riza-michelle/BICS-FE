@@ -204,7 +204,7 @@ function App() {
               <Route
                 path="/my-submissions"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute menuKey="my_submissions">
                     <MySubmissions />
                   </ProtectedRoute>
                 }

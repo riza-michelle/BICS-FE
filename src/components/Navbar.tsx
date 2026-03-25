@@ -173,8 +173,8 @@ const Navbar: React.FC = () => {
               </div>
               )}
 
-              {/* My Submissions - visible to all non-Super-Admin users */}
-              {user?.role !== 'Super Admin' && (
+              {/* My Submissions - permission controlled */}
+              {hasPermission(user?.role, 'my_submissions') && (
                 <Link
                   to="/my-submissions"
                   onClick={() => setUnreadSubmissionsCount(0)}

@@ -21,9 +21,10 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   config_vendor:              { label: 'Add Vendor',               group: 'Configurations' },
   config_user_logs:           { label: 'User Logs',                group: 'Configurations' },
   pending_approvals:          { label: 'Pending Approvals',        group: 'Configurations' },
+  my_submissions:             { label: 'My Submissions',           group: 'Main Menu' },
 };
 
-const ROLES = ['Admin', 'User - SAQ', 'User - FCO'] as const;
+const ROLES = ['Super Admin', 'Admin', 'User - SAQ', 'User - FCO'] as const;
 
 type PermissionMap = Record<string, Record<string, boolean>>;
 
@@ -92,7 +93,7 @@ const RolePermissions: React.FC = () => {
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">Role Permissions</h2>
         <p className="text-sm text-gray-600 mt-1">
-          Configure which menus and tabs are accessible per user role. Super Admin always has full access.
+          Configure which menus and tabs are accessible per user role.
         </p>
       </div>
 
@@ -120,10 +121,6 @@ const RolePermissions: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/2">
                   Menu / Tab
                 </th>
-                {/* Super Admin column - always checked, disabled */}
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Super Admin
-                </th>
                 {ROLES.map(role => (
                   <th key={role} className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {role}
@@ -136,7 +133,7 @@ const RolePermissions: React.FC = () => {
                 <React.Fragment key={group}>
                   {/* Group header row */}
                   <tr className="bg-gray-50">
-                    <td colSpan={ROLES.length + 2} className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <td colSpan={ROLES.length + 1} className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       {group}
                     </td>
                   </tr>
@@ -146,16 +143,6 @@ const RolePermissions: React.FC = () => {
                       <td className="px-6 py-3 text-sm text-gray-900 font-medium">
                         {MENU_LABELS[menuKey].label}
                       </td>
-                      {/* Super Admin - always enabled, not editable */}
-                      <td className="px-6 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={true}
-                          disabled
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded cursor-not-allowed opacity-50"
-                        />
-                      </td>
-                      {/* Configurable roles */}
                       {ROLES.map(role => (
                         <td key={role} className="px-6 py-3 text-center">
                           <input

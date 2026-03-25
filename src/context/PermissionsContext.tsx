@@ -20,6 +20,7 @@ export const MENU_KEYS = [
   'config_vendor',
   'config_user_logs',
   'pending_approvals',
+  'my_submissions',
 ] as const;
 
 export type MenuKey = typeof MENU_KEYS[number];
@@ -68,8 +69,6 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const hasPermission = (role: string | undefined, menuKey: string): boolean => {
     if (!role) return false;
-    // Super Admin always has full access
-    if (role === 'Super Admin') return true;
     return permissions[role]?.[menuKey] === true;
   };
 
