@@ -155,6 +155,7 @@ const Navbar: React.FC = () => {
                       )}
                       {hasPermission(user?.role, 'bpt_fco_update') && (
                       <Link
+                        hidden={true}
                         to="/fco-update"
                         onClick={() => setIsActiveSiteOpen(false)}
                         className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
