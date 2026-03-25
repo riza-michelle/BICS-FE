@@ -1012,6 +1012,8 @@ const SiteView: React.FC = () => {
                           <span className={`px-1 py-0.5 inline-flex text-[9px] leading-4 font-semibold rounded-full truncate max-w-full ${
                             record.saq_milestone === 'SIGNED MOA'
                               ? 'bg-green-100 text-green-800 border border-green-200'
+                              : record.saq_milestone === 'SIGNED TOR'
+                              ? 'bg-blue-100 text-blue-800 border border-blue-200'
                               : 'bg-gray-100 text-gray-800 border border-gray-200'
                           }`}>
                             {record.saq_milestone}
@@ -1021,7 +1023,7 @@ const SiteView: React.FC = () => {
                         )}
                       </td>
                       <td className="px-1.5 py-1.5 text-[10px] text-gray-900 font-medium text-center overflow-hidden">
-                        {record.saq_milestone === 'SIGNED MOA' || record.project_status === 'FALLOUT' ? (
+                        {(record.saq_milestone === 'SIGNED MOA' || record.saq_milestone === 'SIGNED TOR') || record.project_status === 'FALLOUT' ? (
                           <span className="text-gray-500 italic">-</span>
                         ) : record.date_of_recent_engagement ? (
                           (() => {
