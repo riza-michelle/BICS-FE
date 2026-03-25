@@ -1,3 +1,10 @@
+export interface RemarksHistoryEntry {
+  id: number;
+  remark: string;
+  created_by_name: string;
+  created_at: string;
+}
+
 export interface User {
   id: number;
   username: string;
