@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { pendingRecordsAPI } from '../services/api';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell } from 'lucide-react';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell, PencilLine } from 'lucide-react';
 import { MY_SUBMISSIONS_LAST_VISIT_KEY } from '../pages/MySubmissions';
 
 const Navbar: React.FC = () => {
@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
   const configurationsDropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
-  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view');
+  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update');
   const isConfigurationsActive = isActive('/users') || isActive('/user-logs') || isActive('/epc-batch') || isActive('/vendor') || isActive('/saq-personnel') || isActive('/fco-personnel') || isActive('/top-developer') || isActive('/relationship-manager') || isActive('/validated-by');
 
   const handleLogout = () => {
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
               )}
 
               {/* BPT Dropdown */}
-              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site')) && (
+              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site') || hasPermission(user?.role, 'bpt_fco_update')) && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsActiveSiteOpen(!isActiveSiteOpen)}
@@ -151,6 +151,20 @@ const Navbar: React.FC = () => {
                       >
                         <Eye className="h-4 w-4" />
                         <span>View Live Site</span>
+                      </Link>
+                      )}
+                      {hasPermission(user?.role, 'bpt_fco_update') && (
+                      <Link
+                        to="/fco-update"
+                        onClick={() => setIsActiveSiteOpen(false)}
+                        className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
+                          isActive('/fco-update')
+                            ? 'bg-primary-50 text-primary-700'
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <PencilLine className="h-4 w-4" />
+                        <span>FCO Update</span>
                       </Link>
                       )}
                     </div>
