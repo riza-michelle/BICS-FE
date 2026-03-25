@@ -19,6 +19,7 @@ export const MENU_KEYS = [
   'config_validated_by',
   'config_vendor',
   'config_user_logs',
+  'pending_approvals',
 ] as const;
 
 export type MenuKey = typeof MENU_KEYS[number];

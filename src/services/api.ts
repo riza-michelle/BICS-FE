@@ -72,6 +72,10 @@ export const authAPI = {
     return response.data;
   },
 
+  heartbeat: async (): Promise<void> => {
+    await api.post('/auth/heartbeat');
+  },
+
   changePassword: async (username: string, currentPassword: string, newPassword: string): Promise<ApiResponse<any>> => {
     const response = await api.post('/auth/change-password', {
       username,
@@ -387,6 +391,11 @@ export const moaAPI = {
 
 // Users API
 export const usersAPI = {
+  getOnlineUsers: async (): Promise<ApiResponse<{ id: number; username: string; fullname: string; role: string; last_seen_at: string }[]>> => {
+    const response = await api.get('/users/online');
+    return response.data;
+  },
+
   getList: async (params?: {
     page?: number;
     limit?: number;

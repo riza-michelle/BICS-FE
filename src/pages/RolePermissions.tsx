@@ -20,6 +20,7 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   config_validated_by:        { label: 'Add Validated By',         group: 'Configurations' },
   config_vendor:              { label: 'Add Vendor',               group: 'Configurations' },
   config_user_logs:           { label: 'User Logs',                group: 'Configurations' },
+  pending_approvals:          { label: 'Pending Approvals',        group: 'Configurations' },
 };
 
 const ROLES = ['Admin', 'User - SAQ', 'User - FCO'] as const;

@@ -24,6 +24,7 @@ import RolePermissions from './pages/RolePermissions';
 import PendingApprovals from './pages/PendingApprovals';
 import MySubmissions from './pages/MySubmissions';
 import FcoUpdate from './pages/FcoUpdate';
+import OnlineUsers from './pages/OnlineUsers';
 import Test from './pages/Test';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -187,7 +188,7 @@ function App() {
               <Route
                 path="/pending-approvals"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="pending_approvals">
                     <PendingApprovals />
                   </ProtectedRoute>
                 }
@@ -205,6 +206,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MySubmissions />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/online-users"
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <OnlineUsers />
                   </ProtectedRoute>
                 }
               />

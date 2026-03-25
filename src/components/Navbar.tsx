@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { pendingRecordsAPI } from '../services/api';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell, PencilLine } from 'lucide-react';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell, PencilLine, Wifi } from 'lucide-react';
 import { MY_SUBMISSIONS_LAST_VISIT_KEY } from '../pages/MySubmissions';
 
 const Navbar: React.FC = () => {
@@ -19,15 +19,15 @@ const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
   const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update');
-  const isConfigurationsActive = isActive('/users') || isActive('/user-logs') || isActive('/epc-batch') || isActive('/vendor') || isActive('/saq-personnel') || isActive('/fco-personnel') || isActive('/top-developer') || isActive('/relationship-manager') || isActive('/validated-by');
+  const isConfigurationsActive = isActive('/users') || isActive('/user-logs') || isActive('/epc-batch') || isActive('/vendor') || isActive('/saq-personnel') || isActive('/fco-personnel') || isActive('/top-developer') || isActive('/relationship-manager') || isActive('/validated-by') || isActive('/online-users');
 
   const handleLogout = () => {
     logout();
   };
 
-  // Fetch pending count for Super Admin
+  // Fetch pending count for users with pending_approvals permission
   useEffect(() => {
-    if (user?.role !== 'Super Admin') return;
+    if (!hasPermission(user?.role, 'pending_approvals')) return;
     const fetchCount = async () => {
       try {
         const res = await pendingRecordsAPI.count();
@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
     fetchCount();
     const interval = setInterval(fetchCount, 30000);
     return () => clearInterval(interval);
-  }, [user?.role]);
+  }, [user?.role, hasPermission]);
 
   // Fetch unread submissions count for non-Super-Admin users
   useEffect(() => {
@@ -157,7 +157,7 @@ const Navbar: React.FC = () => {
                       <Link
                         to="/fco-update"
                         onClick={() => setIsActiveSiteOpen(false)}
-                        className={`hidden flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
+                        className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
                           isActive('/fco-update')
                             ? 'bg-primary-50 text-primary-700'
                             : 'text-gray-700 hover:bg-gray-100'
@@ -306,7 +306,7 @@ const Navbar: React.FC = () => {
                           <ShieldCheck className="h-4 w-4" /><span>Role Permissions</span>
                         </Link>
                         )}
-                        {user?.role === 'Super Admin' && (
+                        {hasPermission(user?.role, 'pending_approvals') && (
                         <Link to="/pending-approvals" onClick={() => setIsConfigurationsOpen(false)}
                           className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/pending-approvals') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
                           <Clock className="h-4 w-4" />
@@ -316,6 +316,13 @@ const Navbar: React.FC = () => {
                               {pendingCount}
                             </span>
                           )}
+                        </Link>
+                        )}
+                        {user?.role === 'Super Admin' && (
+                        <Link to="/online-users" onClick={() => setIsConfigurationsOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/online-users') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                          <Wifi className="h-4 w-4" />
+                          <span>Online Users</span>
                         </Link>
                         )}
                       </div>

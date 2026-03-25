@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User } from '../types';
 import { authAPI } from '../services/api';
 
+const HEARTBEAT_INTERVAL_MS = 60_000; // 60 seconds
+
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -104,6 +106,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('user');
     }
   };
+
+  // Send heartbeat while authenticated
+  useEffect(() => {
+    if (!token) return;
+    authAPI.heartbeat().catch(() => {});
+    const interval = setInterval(() => {
+      authAPI.heartbeat().catch(() => {});
+    }, HEARTBEAT_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [token]);
 
   const value: AuthContextType = {
     user,
