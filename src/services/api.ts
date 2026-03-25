@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AuthResponse, ApiResponse, DashboardStats, RecordsResponse, BicsRecord, EngagementSummary, MoaListResponse, UsersListResponse, User, EpcBatchListResponse, EpcBatch, VendorListResponse, Vendor, SaqPersonnelListResponse, SaqPersonnel, FcoPersonnelListResponse, FcoPersonnel, TopDeveloperListResponse, TopDeveloper, RelationshipManagerListResponse, RelationshipManager, ValidatedByListResponse, ValidatedBy, CobInventoryListResponse, CobInventory, EpcBatchOption, SaqPersonnelOption } from '../types';
+import { AuthResponse, ApiResponse, DashboardStats, RecordsResponse, BicsRecord, RemarksHistoryEntry, EngagementSummary, MoaListResponse, UsersListResponse, User, EpcBatchListResponse, EpcBatch, VendorListResponse, Vendor, SaqPersonnelListResponse, SaqPersonnel, FcoPersonnelListResponse, FcoPersonnel, TopDeveloperListResponse, TopDeveloper, RelationshipManagerListResponse, RelationshipManager, ValidatedByListResponse, ValidatedBy, CobInventoryListResponse, CobInventory, EpcBatchOption, SaqPersonnelOption } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
@@ -160,6 +160,16 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getRemarksHistory: async (id: number): Promise<ApiResponse<RemarksHistoryEntry[]>> => {
+    const response = await api.get(`/bics/records/${id}/remarks-history`);
+    return response.data;
+  },
+
+  addRemark: async (id: number, remark: string): Promise<ApiResponse<RemarksHistoryEntry>> => {
+    const response = await api.post(`/bics/records/${id}/remarks-history`, { remark });
+    return response.data;
+  },
+
   getSignedMoaMonthly: async (): Promise<ApiResponse<{ month_key: string; month_label: string; count: number }[]>> => {
     const response = await api.get('/bics/signed-moa-monthly');
     return response.data;
@@ -177,6 +187,16 @@ export const bicsAPI = {
 
   deleteAllRecords: async (): Promise<ApiResponse<any>> => {
     const response = await api.delete('/bics/records');
+    return response.data;
+  },
+
+  fcoUpdateRecord: async (id: number, data: Partial<BicsRecord>): Promise<ApiResponse<BicsRecord>> => {
+    const response = await api.put(`/bics/records/fco-update/${id}`, data);
+    return response.data;
+  },
+
+  fcoBulkUpdate: async (ids: number[], data: Partial<BicsRecord>): Promise<ApiResponse<any>> => {
+    const response = await api.put('/bics/records/fco-bulk-update', { ids, data });
     return response.data;
   },
 
