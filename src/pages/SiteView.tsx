@@ -4,6 +4,8 @@ import { BicsRecord } from '../types';
 import { Eye, ChevronLeft, ChevronRight, FileText, Edit, ChevronDown, Trash2, Download, Upload, Copy } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import EditModal from '../components/EditModal';
+import RemarksHistory from '../components/RemarksHistory';
+import MultiSelectDropdown from '../components/MultiSelectDropdown';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import * as XLSX from 'xlsx-js-style';
@@ -16,11 +18,11 @@ const SiteView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [selectedPersonnel, setSelectedPersonnel] = useState<string>('');
-  const [selectedEpcBatch, setSelectedEpcBatch] = useState<string>('');
-  const [selectedProjectStatus, setSelectedProjectStatus] = useState<string>('');
-  const [selectedProjectScheme, setSelectedProjectScheme] = useState<string>('');
-  const [selectedSaqMilestone, setSelectedSaqMilestone] = useState<string>('');
+  const [selectedPersonnel, setSelectedPersonnel] = useState<string[]>([]);
+  const [selectedEpcBatch, setSelectedEpcBatch] = useState<string[]>([]);
+  const [selectedProjectStatus, setSelectedProjectStatus] = useState<string[]>([]);
+  const [selectedProjectScheme, setSelectedProjectScheme] = useState<string[]>([]);
+  const [selectedSaqMilestone, setSelectedSaqMilestone] = useState<string[]>([]);
   const [selectedAgingDays, setSelectedAgingDays] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedAlpha, setSelectedAlpha] = useState<string>('');
@@ -85,11 +87,11 @@ const SiteView: React.FC = () => {
         page: currentPage,
         limit: 200,
         search: searchQuery || undefined,
-        bcsi_aor: selectedPersonnel || undefined,
-        epc_batch: selectedEpcBatch || undefined,
-        project_status: selectedProjectStatus || undefined,
-        project_scheme: selectedProjectScheme || undefined,
-        saq_milestone: selectedSaqMilestone || undefined,
+        bcsi_aor: selectedPersonnel.length ? selectedPersonnel.join(',') : undefined,
+        epc_batch: selectedEpcBatch.length ? selectedEpcBatch.join(',') : undefined,
+        project_status: selectedProjectStatus.length ? selectedProjectStatus.join(',') : undefined,
+        project_scheme: selectedProjectScheme.length ? selectedProjectScheme.join(',') : undefined,
+        saq_milestone: selectedSaqMilestone.length ? selectedSaqMilestone.join(',') : undefined,
         min_aging_days: minAgingDays,
         max_aging_days: maxAgingDays,
         site_name_initial: selectedAlpha || undefined,
@@ -206,44 +208,19 @@ const SiteView: React.FC = () => {
     }
   };
 
-  const handlePersonnelFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPersonnel(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleEpcBatchFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedEpcBatch(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleProjectStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedProjectStatus(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleProjectSchemeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedProjectScheme(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleSaqMilestoneFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSaqMilestone(e.target.value);
-    setCurrentPage(1);
-  };
-
   const handleClearFilters = () => {
-    setSelectedPersonnel('');
-    setSelectedEpcBatch('');
-    setSelectedProjectStatus('');
-    setSelectedProjectScheme('');
-    setSelectedSaqMilestone('');
+    setSelectedPersonnel([]);
+    setSelectedEpcBatch([]);
+    setSelectedProjectStatus([]);
+    setSelectedProjectScheme([]);
+    setSelectedSaqMilestone([]);
     setSelectedAgingDays('');
     setSearchQuery('');
     setSelectedAlpha('');
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = !!(selectedPersonnel || selectedEpcBatch || selectedProjectStatus || selectedProjectScheme || selectedSaqMilestone || selectedAgingDays || searchQuery || selectedAlpha);
+  const hasActiveFilters = !!(selectedPersonnel.length || selectedEpcBatch.length || selectedProjectStatus.length || selectedProjectScheme.length || selectedSaqMilestone.length || selectedAgingDays || searchQuery || selectedAlpha);
 
   const handleAgingDaysFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedAgingDays(e.target.value);
@@ -691,9 +668,34 @@ const SiteView: React.FC = () => {
               { label: 'IMPLEMENTATION STATUS', value: selectedRecord.implementation_status },
             ])}
 
-            {renderDetailSection('Remarks', [
-              { label: 'SIGNIFICANT REMARKS', value: selectedRecord.significant_remarks },
-            ])}
+            {/* Remarks — history feed */}
+            {(() => {
+              const isExpanded = expandedViewSections['Remarks'] !== false;
+              return (
+                <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => toggleViewSection('Remarks')}
+                    className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center hover:from-blue-100 hover:to-indigo-100 transition-colors"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                      <span className="w-1.5 h-6 bg-blue-600 rounded-full mr-3"></span>
+                      Significant Remarks
+                    </h3>
+                    <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
+                  </button>
+                  {isExpanded && (
+                    <div className="p-6">
+                      <RemarksHistory
+                        recordId={selectedRecord.id!}
+                        legacyRemark={selectedRecord.significant_remarks}
+                        readOnly
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {renderDetailSection('Replacement Information', [
               { label: 'REPLACEMENT SITE', value: selectedRecord.replacement_site },
@@ -804,105 +806,55 @@ const SiteView: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <div className="flex-1 min-w-[140px]">
-              <select
-                value={selectedPersonnel}
-                onChange={handlePersonnelFilter}
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              >
-                <option value="">All BICS Personnel</option>
-                {personnelList.map((personnel) => (
-                  <option key={personnel} value={personnel}>
-                    {personnel}
-                  </option>
-                ))}
-              </select>
+              <MultiSelectDropdown
+                options={personnelList}
+                selected={selectedPersonnel}
+                onChange={(vals) => { setSelectedPersonnel(vals); setCurrentPage(1); }}
+                placeholder="All BICS Personnel"
+              />
             </div>
             <div className="flex-1 min-w-[140px]">
-              <select
-                value={selectedEpcBatch}
-                onChange={handleEpcBatchFilter}
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              >
-                <option value="">All EPC Batch</option>
-                {epcBatchList.map((batch) => (
-                  <option key={batch} value={batch}>
-                    {batch}
-                  </option>
-                ))}
-              </select>
+              <MultiSelectDropdown
+                options={epcBatchList}
+                selected={selectedEpcBatch}
+                onChange={(vals) => { setSelectedEpcBatch(vals); setCurrentPage(1); }}
+                placeholder="All EPC Batch"
+              />
             </div>
             <div className="flex-1 min-w-[140px]">
-              <select
-                value={selectedProjectStatus}
-                onChange={handleProjectStatusFilter}
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              >
-                <option value="">All Project Status</option>
-                {projectStatusList.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
+              <MultiSelectDropdown
+                options={projectStatusList}
+                selected={selectedProjectStatus}
+                onChange={(vals) => { setSelectedProjectStatus(vals); setCurrentPage(1); }}
+                placeholder="All Project Status"
+              />
             </div>
             <div className="flex-1 min-w-[140px]">
-              <select
-                value={selectedProjectScheme}
-                onChange={handleProjectSchemeFilter}
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              >
-                <option value="">All Project Schemes</option>
-                <option value="GROWTH">GROWTH</option>
-                <option value="OVERLAY">OVERLAY</option>
-              </select>
+              <MultiSelectDropdown
+                options={['GROWTH', 'OVERLAY']}
+                selected={selectedProjectScheme}
+                onChange={(vals) => { setSelectedProjectScheme(vals); setCurrentPage(1); }}
+                placeholder="All Project Schemes"
+              />
             </div>
             <div className="flex-1 min-w-[160px]">
-              <select
-                value={selectedSaqMilestone}
-                onChange={handleSaqMilestoneFilter}
-                className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
-              >
-                <option value="">All SAQ Milestones</option>
-                <option value="CAN'T LOCATE">CAN'T LOCATE</option>
-                <option value="DUPLICATION">DUPLICATION</option>
-                <option value="ELECTRICITY PAYMENT">ELECTRICITY PAYMENT</option>
-                <option value="FACILITY COLOCATED">FACILITY COLOCATED</option>
-                <option value="FACILITY LOCATION">FACILITY LOCATION</option>
-                <option value="FEASIBLE VIA POLE NAP">FEASIBLE VIA POLE NAP</option>
-                <option value="FOR DEMOLITION / DEMOLISHED">FOR DEMOLITION / DEMOLISHED</option>
-                <option value="FOR RENOV / ONGOING RENOV">FOR RENOV / ONGOING RENOV</option>
-                <option value="FOR VACANCY">FOR VACANCY</option>
-                <option value="FOR ACQUISITION">FOR ACQUISITION</option>
-                <option value="FOR PROFILING">FOR PROFILING</option>
-                <option value="FOR SIGNING">FOR SIGNING</option>
-                <option value="HIGH COB">HIGH COB</option>
-                <option value="HIGH LEASE">HIGH LEASE</option>
-                <option value="MIXED USE">MIXED USE</option>
-                <option value="MOA VALIDATION">MOA VALIDATION</option>
-                <option value="MULTIPLE SITES">MULTIPLE SITES</option>
-                <option value="NO COMMITMENT">NO COMMITMENT</option>
-                <option value="NO DEMAND (SALES CONFIRMED)">NO DEMAND (SALES CONFIRMED)</option>
-                <option value="NO DEMAND FROM CLIENT">NO DEMAND FROM CLIENT</option>
-                <option value="NO RESPONSE">NO RESPONSE</option>
-                <option value="ONGOING COMMERCIAL NEGO">ONGOING COMMERCIAL NEGO</option>
-                <option value="PO CONCERN">PO CONCERN</option>
-                <option value="PRA">PRA</option>
-                <option value="REJECTED">REJECTED</option>
-                <option value="REJECTED REPLACEMENT">REJECTED REPLACEMENT</option>
-                <option value="REQUIRES FTTB PLAN">REQUIRES FTTB PLAN</option>
-                <option value="REQUIRES HS DESIGN">REQUIRES HS DESIGN</option>
-                <option value="RESIDENTIAL">RESIDENTIAL</option>
-                <option value="SIGNED MOA">SIGNED MOA</option>
-                <option value="SIGNED TOR">SIGNED TOR</option>
-                <option value="SUBMITTED LOI">SUBMITTED LOI</option>
-                <option value="SUBMITTED MOA">SUBMITTED MOA</option>
-                <option value="UNDER CLARKTEL PROJECT">UNDER CLARKTEL PROJECT</option>
-                <option value="UNDER CONSTRUCTION">UNDER CONSTRUCTION</option>
-                <option value="USED AS REPLACEMENT">USED AS REPLACEMENT</option>
-                <option value="WIP SITE">WIP SITE</option>
-                <option value="WITH EXISTING FTTB">WITH EXISTING FTTB</option>
-                <option value="PLDT BUILDING">PLDT BUILDING</option>
-              </select>
+              <MultiSelectDropdown
+                options={[
+                  "CAN'T LOCATE", 'DUPLICATION', 'ELECTRICITY PAYMENT', 'FACILITY COLOCATED',
+                  'FACILITY LOCATION', 'FEASIBLE VIA POLE NAP', 'FOR DEMOLITION / DEMOLISHED',
+                  'FOR RENOV / ONGOING RENOV', 'FOR VACANCY', 'FOR ACQUISITION', 'FOR PROFILING',
+                  'FOR SIGNING', 'HIGH COB', 'HIGH LEASE', 'MIXED USE', 'MOA VALIDATION',
+                  'MULTIPLE SITES', 'NO COMMITMENT', 'NO DEMAND (SALES CONFIRMED)',
+                  'NO DEMAND FROM CLIENT', 'NO RESPONSE', 'ONGOING COMMERCIAL NEGO', 'PO CONCERN',
+                  'PRA', 'REJECTED', 'REJECTED REPLACEMENT', 'REQUIRES FTTB PLAN',
+                  'REQUIRES HS DESIGN', 'RESIDENTIAL', 'SIGNED MOA', 'SIGNED TOR', 'SUBMITTED LOI',
+                  'SUBMITTED MOA', 'UNDER CLARKTEL PROJECT', 'UNDER CONSTRUCTION',
+                  'USED AS REPLACEMENT', 'WIP SITE', 'WITH EXISTING FTTB', 'PLDT BUILDING',
+                ]}
+                selected={selectedSaqMilestone}
+                onChange={(vals) => { setSelectedSaqMilestone(vals); setCurrentPage(1); }}
+                placeholder="All SAQ Milestones"
+              />
             </div>
             <div className="flex-1 min-w-[140px]">
               <select
