@@ -56,11 +56,15 @@ function parseCoords(raw: string): [number, number] | null {
 function markerIcon(status: string): any {
   const color = STATUS_COLORS[status] || '#6b7280';
   return L.divIcon({
-    html: `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid rgba(255,255,255,0.9);box-shadow:0 1px 3px rgba(0,0,0,0.4)"></div>`,
+    html: `<div style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;background:${color};border-radius:6px;border:2px solid rgba(255,255,255,0.95);box-shadow:0 2px 6px rgba(0,0,0,0.35)">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01"/>
+      </svg>
+    </div>`,
     className: '',
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
-    popupAnchor: [0, -8],
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    popupAnchor: [0, -16],
   });
 }
 
@@ -232,7 +236,7 @@ const LiveMap: React.FC = () => {
           {LEGEND.map(({ label, color }) => (
             <div key={label} className="flex items-center gap-2 mb-1 last:mb-0">
               <div
-                className="w-3 h-3 rounded-full border-2 border-white shadow-sm flex-shrink-0"
+                className="w-3.5 h-3.5 rounded flex-shrink-0 border border-white shadow-sm"
                 style={{ backgroundColor: color }}
               />
               <span className="text-xs text-gray-600">{label}</span>
