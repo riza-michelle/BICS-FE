@@ -283,11 +283,15 @@ const DataEntry: React.FC = () => {
           setTimeout(() => { navigate('/site-view'); }, 1500);
         } else if (user?.role === 'User - SAQ') {
           showNotification('success', 'Site submitted for Super Admin approval. It will appear in View Live Site once approved.');
-          setFormData({});
+          bicsAPI.getNextReferenceNumber().then(r => {
+            setFormData(r.success ? { reference_number: r.next_reference_number } : {});
+          }).catch(() => setFormData({}));
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           showNotification('success', 'Record created successfully!');
-          setFormData({});
+          bicsAPI.getNextReferenceNumber().then(r => {
+            setFormData(r.success ? { reference_number: r.next_reference_number } : {});
+          }).catch(() => setFormData({}));
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       } else {
@@ -301,7 +305,9 @@ const DataEntry: React.FC = () => {
   };
 
   const handleReset = () => {
-    setFormData({});
+    bicsAPI.getNextReferenceNumber().then(r => {
+      setFormData(r.success ? { reference_number: r.next_reference_number } : {});
+    }).catch(() => setFormData({}));
   };
 
   const renderFormSection = (title: string, children: React.ReactNode) => (
