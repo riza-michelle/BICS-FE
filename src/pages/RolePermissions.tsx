@@ -20,6 +20,7 @@ const MENU_LABELS: Record<string, { label: string; group: string }> = {
   config_validated_by:        { label: 'Add Validated By',         group: 'Configurations' },
   config_vendor:              { label: 'Add Vendor',               group: 'Configurations' },
   config_user_logs:           { label: 'User Logs',                group: 'Configurations' },
+  config_online_users:        { label: 'Online Users',             group: 'Configurations' },
   pending_approvals:          { label: 'Pending Approvals',        group: 'Configurations' },
   my_submissions:             { label: 'My Submissions',           group: 'Main Menu' },
 };

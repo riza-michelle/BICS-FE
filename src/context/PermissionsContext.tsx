@@ -19,6 +19,7 @@ export const MENU_KEYS = [
   'config_validated_by',
   'config_vendor',
   'config_user_logs',
+  'config_online_users',
   'pending_approvals',
   'my_submissions',
 ] as const;

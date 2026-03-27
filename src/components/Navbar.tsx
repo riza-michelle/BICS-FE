@@ -318,7 +318,7 @@ const Navbar: React.FC = () => {
                           )}
                         </Link>
                         )}
-                        {user?.role === 'Super Admin' && (
+                        {hasPermission(user?.role, 'config_online_users') && (
                         <Link to="/online-users" onClick={() => setIsConfigurationsOpen(false)}
                           className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${isActive('/online-users') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'}`}>
                           <Wifi className="h-4 w-4" />

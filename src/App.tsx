@@ -212,7 +212,7 @@ function App() {
               <Route
                 path="/online-users"
                 element={
-                  <ProtectedRoute superAdminOnly>
+                  <ProtectedRoute menuKey="config_online_users">
                     <OnlineUsers />
                   </ProtectedRoute>
                 }
