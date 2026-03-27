@@ -195,6 +195,11 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getMapLocations: async (): Promise<ApiResponse<any[]>> => {
+    const response = await api.get('/bics/map-locations');
+    return response.data;
+  },
+
   deleteAllRecords: async (): Promise<ApiResponse<any>> => {
     const response = await api.delete('/bics/records');
     return response.data;

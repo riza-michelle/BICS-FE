@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePermissions } from '../context/PermissionsContext';
 import { pendingRecordsAPI } from '../services/api';
-import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell, PencilLine, Wifi } from 'lucide-react';
+import { Building2, LayoutDashboard, FileText, LogOut, User, Eye, ChevronDown, Upload, Settings, Users, Activity, Package, Briefcase, Archive, ShieldCheck, Clock, Bell, PencilLine, Wifi, MapPin } from 'lucide-react';
 import { MY_SUBMISSIONS_LAST_VISIT_KEY } from '../pages/MySubmissions';
 
 const Navbar: React.FC = () => {
@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
   const configurationsDropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
-  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update');
+  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update') || isActive('/live-map');
   const isConfigurationsActive = isActive('/users') || isActive('/user-logs') || isActive('/epc-batch') || isActive('/vendor') || isActive('/saq-personnel') || isActive('/fco-personnel') || isActive('/top-developer') || isActive('/relationship-manager') || isActive('/validated-by') || isActive('/online-users');
 
   const handleLogout = () => {
@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="bg-white shadow-lg border-b border-gray-200">
+    <nav className="bg-white shadow-lg border-b border-gray-200 relative z-[9999]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
               )}
 
               {/* BPT Dropdown */}
-              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site') || hasPermission(user?.role, 'bpt_fco_update')) && (
+              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site') || hasPermission(user?.role, 'bpt_fco_update') || hasPermission(user?.role, 'bpt_live_map')) && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsActiveSiteOpen(!isActiveSiteOpen)}
@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
                 </button>
 
                 {isActiveSiteOpen && (
-                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[9999]">
                     <div className="py-1">
                       {hasPermission(user?.role, 'bpt_add_live_site') && (
                       <Link
@@ -165,6 +165,20 @@ const Navbar: React.FC = () => {
                       >
                         <PencilLine className="h-4 w-4" />
                         <span>FCO Update</span>
+                      </Link>
+                      )}
+                      {hasPermission(user?.role, 'bpt_live_map') && (
+                      <Link
+                        to="/live-map"
+                        onClick={() => setIsActiveSiteOpen(false)}
+                        className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
+                          isActive('/live-map')
+                            ? 'bg-primary-50 text-primary-700'
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                      >
+                        <MapPin className="h-4 w-4" />
+                        <span>Live Map</span>
                       </Link>
                       )}
                     </div>
@@ -244,7 +258,7 @@ const Navbar: React.FC = () => {
                   </button>
 
                   {isConfigurationsOpen && (
-                    <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[9999]">
                       <div className="py-1">
                         {hasPermission(user?.role, 'config_epc_batch') && (
                         <Link to="/epc-batch" onClick={() => setIsConfigurationsOpen(false)}

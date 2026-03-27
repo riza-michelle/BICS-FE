@@ -25,6 +25,7 @@ import PendingApprovals from './pages/PendingApprovals';
 import MySubmissions from './pages/MySubmissions';
 import FcoUpdate from './pages/FcoUpdate';
 import OnlineUsers from './pages/OnlineUsers';
+import LiveMap from './pages/LiveMap';
 import Test from './pages/Test';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -214,6 +215,14 @@ function App() {
                 element={
                   <ProtectedRoute menuKey="config_online_users">
                     <OnlineUsers />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/live-map"
+                element={
+                  <ProtectedRoute menuKey="bpt_live_map">
+                    <LiveMap />
                   </ProtectedRoute>
                 }
               />
