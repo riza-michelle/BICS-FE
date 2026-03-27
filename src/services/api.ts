@@ -200,6 +200,11 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getNoCoordinates: async (): Promise<ApiResponse<any[]>> => {
+    const response = await api.get('/bics/no-coordinates');
+    return response.data;
+  },
+
   deleteAllRecords: async (): Promise<ApiResponse<any>> => {
     const response = await api.delete('/bics/records');
     return response.data;

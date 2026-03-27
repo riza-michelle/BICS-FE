@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { MapPin, Filter, X } from 'lucide-react';
+import { MapPin, Filter, X, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
@@ -21,6 +21,17 @@ interface MapLocation {
   province: string;
 }
 
+interface NoCoordRecord {
+  id: number;
+  site_name: string;
+  building_name: string;
+  address: string;
+  city_municipality: string;
+  province: string;
+  project_status: string;
+  moa_status: string;
+}
+
 interface ParsedLocation extends MapLocation {
   lat: number;
   lng: number;
@@ -30,6 +41,12 @@ const STATUS_COLORS: Record<string, string> = {
   ACTIVE:   '#22c55e',
   FALLOUT:  '#ef4444',
   PIPELINE: '#f59e0b',
+};
+
+const STATUS_BADGE_STYLE: Record<string, { bg: string; text: string }> = {
+  ACTIVE:   { bg: '#dcfce7', text: '#15803d' },
+  FALLOUT:  { bg: '#fee2e2', text: '#b91c1c' },
+  PIPELINE: { bg: '#fef3c7', text: '#b45309' },
 };
 
 const LEGEND = [
@@ -70,16 +87,9 @@ function markerIcon(status: string): any {
 
 function buildPopupHTML(loc: ParsedLocation): string {
   const address = [loc.address, loc.city_municipality, loc.province].filter(Boolean).join(', ');
+  const s = STATUS_BADGE_STYLE[loc.project_status];
   const statusBadge = loc.project_status
-    ? `<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;background:${
-        loc.project_status === 'ACTIVE' ? '#dcfce7' :
-        loc.project_status === 'FALLOUT' ? '#fee2e2' :
-        loc.project_status === 'PIPELINE' ? '#fef3c7' : '#f3f4f6'
-      };color:${
-        loc.project_status === 'ACTIVE' ? '#15803d' :
-        loc.project_status === 'FALLOUT' ? '#b91c1c' :
-        loc.project_status === 'PIPELINE' ? '#b45309' : '#4b5563'
-      }">${loc.project_status}</span>`
+    ? `<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;background:${s?.bg ?? '#f3f4f6'};color:${s?.text ?? '#4b5563'}">${loc.project_status}</span>`
     : '';
   const moaBadge = loc.moa_status
     ? `<span style="display:inline-block;padding:1px 6px;border-radius:3px;font-size:11px;font-weight:600;background:#f3f4f6;color:#4b5563">${loc.moa_status}</span>`
@@ -98,17 +108,24 @@ function buildPopupHTML(loc: ParsedLocation): string {
 const PH_CENTER: [number, number] = [12.0, 122.0];
 
 const LiveMap: React.FC = () => {
-  const [locations, setLocations] = useState<MapLocation[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [filter, setFilter]       = useState<FilterValue>('ALL');
-  const mapRef      = useRef<any>(null);
-  const mapDivRef   = useRef<HTMLDivElement | null>(null);
-  const clusterRef  = useRef<any>(null);
+  const [locations, setLocations]       = useState<MapLocation[]>([]);
+  const [noCoords, setNoCoords]         = useState<NoCoordRecord[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [filter, setFilter]             = useState<FilterValue>('ALL');
+  const [showSummary, setShowSummary]   = useState(false);
+  const [summaryFilter, setSummaryFilter] = useState('');
+  const mapRef     = useRef<any>(null);
+  const mapDivRef  = useRef<HTMLDivElement | null>(null);
+  const clusterRef = useRef<any>(null);
 
   useEffect(() => {
-    bicsAPI.getMapLocations()
-      .then(res => { if (res.success && res.data) setLocations(res.data); })
-      .catch(console.error)
+    Promise.all([
+      bicsAPI.getMapLocations(),
+      bicsAPI.getNoCoordinates(),
+    ]).then(([mapRes, noRes]) => {
+      if (mapRes.success && mapRes.data) setLocations(mapRes.data);
+      if (noRes.success && noRes.data) setNoCoords(noRes.data);
+    }).catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
@@ -155,6 +172,17 @@ const LiveMap: React.FC = () => {
     filter === 'ALL' ? parsed : parsed.filter(l => l.project_status === filter),
   [parsed, filter]);
 
+  const filteredNoCoords = useMemo(() => {
+    if (!summaryFilter.trim()) return noCoords;
+    const q = summaryFilter.toLowerCase();
+    return noCoords.filter(r =>
+      r.site_name?.toLowerCase().includes(q) ||
+      r.building_name?.toLowerCase().includes(q) ||
+      r.city_municipality?.toLowerCase().includes(q) ||
+      r.province?.toLowerCase().includes(q)
+    );
+  }, [noCoords, summaryFilter]);
+
   // Sync markers whenever filter or data changes, then fit map to bounds
   useEffect(() => {
     if (!clusterRef.current || !mapRef.current) return;
@@ -168,7 +196,6 @@ const LiveMap: React.FC = () => {
       const bounds = L.latLngBounds(filtered.map(loc => [loc.lat, loc.lng]));
       mapRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
     } else {
-      // No markers — reset to Philippines overview
       mapRef.current.setView(PH_CENTER, 6);
     }
   }, [filtered]);
@@ -186,14 +213,24 @@ const LiveMap: React.FC = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex-none">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-blue-500" />
             <div>
               <h1 className="text-base font-semibold text-gray-900">Live Map</h1>
               <p className="text-xs text-gray-500">
-                {parsed.length.toLocaleString()} of {locations.length.toLocaleString()} records have coordinates plotted
+                {parsed.length.toLocaleString()} of {(locations.length + noCoords.length).toLocaleString()} records have coordinates plotted
               </p>
             </div>
+            {noCoords.length > 0 && (
+              <button
+                onClick={() => setShowSummary(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                {noCoords.length.toLocaleString()} without coordinates
+                {showSummary ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              </button>
+            )}
           </div>
 
           {/* Status filter */}
@@ -225,6 +262,73 @@ const LiveMap: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* No-coordinates summary panel */}
+      {showSummary && (
+        <div className="flex-none bg-white border-b border-gray-200" style={{ maxHeight: '280px', display: 'flex', flexDirection: 'column' }}>
+          <div className="flex items-center justify-between px-6 py-2 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <span className="text-sm font-medium text-gray-700">
+                Sites without coordinates ({noCoords.length.toLocaleString()})
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={summaryFilter}
+                onChange={e => setSummaryFilter(e.target.value)}
+                className="text-xs border border-gray-300 rounded px-2 py-1 w-48 focus:outline-none focus:border-blue-400"
+              />
+              <button onClick={() => setShowSummary(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+          <div className="overflow-auto flex-1">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-50 sticky top-0">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500 whitespace-nowrap">Site Name</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500 whitespace-nowrap">Building</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500 whitespace-nowrap">City / Municipality</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500 whitespace-nowrap">Province</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-500 whitespace-nowrap">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredNoCoords.map(r => {
+                  const s = STATUS_BADGE_STYLE[r.project_status];
+                  return (
+                    <tr key={r.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-1.5 text-gray-800 font-medium">{r.site_name || '—'}</td>
+                      <td className="px-4 py-1.5 text-gray-600">{r.building_name || '—'}</td>
+                      <td className="px-4 py-1.5 text-gray-600">{r.city_municipality || '—'}</td>
+                      <td className="px-4 py-1.5 text-gray-600">{r.province || '—'}</td>
+                      <td className="px-4 py-1.5">
+                        {r.project_status ? (
+                          <span
+                            className="px-1.5 py-0.5 rounded text-xs font-medium"
+                            style={{ background: s?.bg ?? '#f3f4f6', color: s?.text ?? '#4b5563' }}
+                          >
+                            {r.project_status}
+                          </span>
+                        ) : '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredNoCoords.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-4 text-center text-gray-400">No results found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Map */}
       <div className="flex-1 relative">
