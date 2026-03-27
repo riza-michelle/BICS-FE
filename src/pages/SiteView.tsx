@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { bicsAPI, saqPersonnelAPI } from '../services/api';
+import { bicsAPI, saqPersonnelAPI, fcoPersonnelAPI } from '../services/api';
 import { BicsRecord } from '../types';
 import { Eye, ChevronLeft, ChevronRight, FileText, Edit, ChevronDown, Trash2, Download, Upload, Copy } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -46,10 +46,14 @@ const SiteView: React.FC = () => {
   const { hasPermission } = usePermissions();
 
   useEffect(() => {
-    saqPersonnelAPI.getList({ limit: 1000 }).then(res => {
-      if (res.success && res.data) {
-        setPersonnelList(res.data.personnel.map((p: any) => p.personnel_name));
-      }
+    Promise.all([
+      saqPersonnelAPI.getList({ limit: 1000 }),
+      fcoPersonnelAPI.getList({ limit: 1000 }),
+    ]).then(([saqRes, fcoRes]) => {
+      const saq = (saqRes.success && saqRes.data) ? saqRes.data.personnel.map((p: any) => p.personnel_name) : [];
+      const fco = (fcoRes.success && fcoRes.data) ? fcoRes.data.personnel.map((p: any) => p.personnel_name) : [];
+      const merged = Array.from(new Set([...saq, ...fco])).sort();
+      setPersonnelList(merged);
     }).catch(() => {});
     bicsAPI.getDistinctCities().then(res => {
       if (res.success && res.data) setCityList(res.data);
