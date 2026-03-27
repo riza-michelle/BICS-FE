@@ -1,10 +1,109 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { bicsAPI, pendingRecordsAPI, epcBatchAPI, vendorAPI, saqPersonnelAPI, fcoPersonnelAPI, topDeveloperAPI, relationshipManagerAPI, validatedByAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { BicsRecord } from '../types';
-import { Save, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Save, RotateCcw, ArrowLeft, ChevronDown, X } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
+
+const SearchableSelect: React.FC<{ label: string; value: string; options: string[]; onChange: (v: string) => void }> = ({ label, value, options, onChange }) => {
+  const [open, setOpen]       = useState(false);
+  const [query, setQuery]     = useState('');
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+  const inputWrapRef          = useRef<HTMLDivElement>(null);
+
+  const filtered = query.trim()
+    ? options.filter(o => o.toLowerCase().includes(query.toLowerCase()))
+    : options;
+
+  const updatePosition = useCallback(() => {
+    if (!inputWrapRef.current) return;
+    const rect = inputWrapRef.current.getBoundingClientRect();
+    setDropdownStyle({
+      position: 'fixed',
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 99999,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (open) updatePosition();
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const dropdownEl = document.getElementById('ss-dropdown');
+      if (
+        inputWrapRef.current && !inputWrapRef.current.contains(target) &&
+        !(dropdownEl && dropdownEl.contains(target))
+      ) {
+        setOpen(false);
+        setQuery('');
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSelect = (opt: string) => {
+    onChange(opt);
+    setOpen(false);
+    setQuery('');
+  };
+
+  const dropdown = open ? ReactDOM.createPortal(
+    <ul
+      id="ss-dropdown"
+      style={dropdownStyle}
+      className="bg-white border border-gray-200 rounded-md shadow-xl max-h-52 overflow-y-auto"
+    >
+      {filtered.length === 0 ? (
+        <li className="px-3 py-2 text-xs text-gray-400 text-center">No results</li>
+      ) : (
+        filtered.map(opt => (
+          <li
+            key={opt}
+            onMouseDown={() => handleSelect(opt)}
+            className={`px-3 py-1.5 text-xs cursor-pointer hover:bg-blue-50 hover:text-blue-700 ${value === opt ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'}`}
+          >
+            {opt}
+          </li>
+        ))
+      )}
+    </ul>,
+    document.body
+  ) : null;
+
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-1.5">{label}</label>
+      <div ref={inputWrapRef} className="relative flex items-center">
+        <input
+          type="text"
+          value={open ? query : (value || '')}
+          placeholder={`Select or search ${label}`}
+          onFocus={() => { setOpen(true); setQuery(''); updatePosition(); }}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          className="block w-full px-2.5 py-1.5 pr-14 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
+        />
+        <div className="absolute right-2 flex items-center gap-1">
+          {value && (
+            <X
+              className="h-3 w-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+              onMouseDown={e => { e.preventDefault(); onChange(''); setQuery(''); setOpen(false); }}
+            />
+          )}
+          <ChevronDown className={`h-3.5 w-3.5 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        </div>
+      </div>
+      {dropdown}
+    </div>
+  );
+};
 
 const DataEntry: React.FC = () => {
   const { user } = useAuth();
@@ -597,7 +696,19 @@ const DataEntry: React.FC = () => {
             {/* Contact Information */}
             {renderFormSection("Contact Information", (
               <>
-                {renderSelect('rm', 'RELATIONSHIP MANAGER', relationshipManagerList)}
+                <SearchableSelect
+                  label="RELATIONSHIP MANAGER"
+                  value={formData.rm || ''}
+                  options={relationshipManagerList}
+                  onChange={val => {
+                    if (val) {
+                      const matchingRM = relationshipManagerData.find(r => r.relationship_manager === val);
+                      setFormData(prev => ({ ...prev, rm: val, rm_group: matchingRM?.relationship_manager_group || '' }));
+                    } else {
+                      setFormData(prev => ({ ...prev, rm: '', rm_group: '' }));
+                    }
+                  }}
+                />
                 {renderReadOnlyInput('rm_group', 'RELATIONSHIP MANAGER GROUP')}
               </>
             ))}
