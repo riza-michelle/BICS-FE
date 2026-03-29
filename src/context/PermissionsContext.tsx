@@ -9,6 +9,7 @@ export const MENU_KEYS = [
   'bpt_view_live_site',
   'bpt_fco_update',
   'bpt_live_map',
+  'bpt_delete_all_records',
   'moa_uploader',
   'cdrf_routing',
   'config_epc_batch',

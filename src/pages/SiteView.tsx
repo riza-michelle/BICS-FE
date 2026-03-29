@@ -777,7 +777,7 @@ const SiteView: React.FC = () => {
             <p className="mt-0.5 text-xs text-gray-600">View all active sites records</p>
           </div>
           <div className="flex gap-2">
-            {user?.role === 'Super Admin' && (
+            {hasPermission(user?.role, 'bpt_delete_all_records') && (
               <button
                 onClick={() => { setShowDeleteAllModal(true); setDeleteAllConfirmText(''); }}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
