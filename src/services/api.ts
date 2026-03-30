@@ -190,6 +190,11 @@ export const bicsAPI = {
     return response.data;
   },
 
+  getSignedMoaReference: async (): Promise<ApiResponse<any[]>> => {
+    const response = await api.get('/bics/signed-moa-reference');
+    return response.data;
+  },
+
   duplicateRecord: async (id: number): Promise<ApiResponse<any>> => {
     const response = await api.post(`/bics/records/${id}/duplicate`);
     return response.data;

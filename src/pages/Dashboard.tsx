@@ -2292,155 +2292,223 @@ const Dashboard: React.FC = () => {
 
     const year = new Date().getFullYear();
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const SHEET_COLS = 20; // full-width span (title, chart, section headers)
-    const DATA_COLS  = 14; // personnel table width (1 name + 12 months + 1 total)
+    const COLS = 14; // 1 name + 12 months + 1 total
 
-    // ── Capture SVG chart as PNG ──
+    // ── Capture chart PNG ──
     let chartImageBase64: string | null = null;
-    let chartAspectRatio = 0.35;
     if (chartSvgRef.current) {
       try {
         const svgEl = chartSvgRef.current;
         const vb = svgEl.viewBox.baseVal;
-        chartAspectRatio = vb.height / vb.width;
+        const ratio = vb.height / vb.width;
         const svgStr = new XMLSerializer().serializeToString(svgEl);
-        const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(svgBlob);
+        const url = URL.createObjectURL(new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' }));
         await new Promise<void>((resolve) => {
           const img = new Image();
-          const W = 1800;
-          const H = Math.round(W * chartAspectRatio);
+          const W = 1800, H = Math.round(W * ratio);
           const canvas = document.createElement('canvas');
-          canvas.width = W;
-          canvas.height = H;
+          canvas.width = W; canvas.height = H;
           const ctx = canvas.getContext('2d')!;
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, W, H);
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, W, H);
-            URL.revokeObjectURL(url);
-            chartImageBase64 = canvas.toDataURL('image/png').split(',')[1];
-            resolve();
-          };
+          ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H);
+          img.onload = () => { ctx.drawImage(img, 0, 0, W, H); URL.revokeObjectURL(url); chartImageBase64 = canvas.toDataURL('image/png').split(',')[1]; resolve(); };
           img.onerror = () => { URL.revokeObjectURL(url); resolve(); };
           img.src = url;
         });
-      } catch (_) { /* chart capture failed, continue without image */ }
+      } catch (_) {}
     }
 
-    // ── Build ExcelJS workbook ──
+    // ── Workbook setup ──
     const workbook = new ExcelJS.Workbook();
-    const ws = workbook.addWorksheet(`Signed_MOA_${year}`);
+    workbook.creator = 'BICS System';
+    const ws = workbook.addWorksheet(`Signed MOA ${year}`, { views: [{ showGridLines: false }] });
 
-    // 20 columns: col1=name(22), cols2-13=months(10 each), col14=total(12), cols15-20=filler(10 each)
+    // Column widths: col1=personnel(24), cols2-13=months(8 each), col14=total(10)
     ws.columns = [
-      { width: 22 },
-      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
-      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
-      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
-      { width: 12 },
-      { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 }, { width: 10 },
+      { width: 24 },
+      ...Array(12).fill({ width: 8 }),
+      { width: 10 },
     ];
 
+    // ── Helper: set cell ──
     const sc = (r: number, c: number, value: any, opts?: {
       bold?: boolean; sz?: number; color?: string; bg?: string;
-      italic?: boolean; hAlign?: string; border?: 'thin' | 'header';
+      italic?: boolean; hAlign?: string; vAlign?: string;
+      border?: 'none' | 'light' | 'medium' | 'outer'; wrap?: boolean;
     }) => {
       const cell = ws.getCell(r, c);
       cell.value = value;
       if (!opts) return;
-      cell.font = { bold: opts.bold, size: opts.sz, italic: opts.italic, color: opts.color ? { argb: 'FF' + opts.color } : undefined };
+      cell.font = { name: 'Calibri', bold: opts.bold, size: opts.sz ?? 10, italic: opts.italic, color: opts.color ? { argb: 'FF' + opts.color } : { argb: 'FF1F2937' } };
       if (opts.bg) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + opts.bg } } as any;
-      cell.alignment = { horizontal: (opts.hAlign || 'left') as any, vertical: 'middle' };
-      if (opts.border === 'thin') cell.border = { top: { style: 'thin', color: { argb: 'FFE5E7EB' } }, bottom: { style: 'thin', color: { argb: 'FFE5E7EB' } }, left: { style: 'thin', color: { argb: 'FFE5E7EB' } }, right: { style: 'thin', color: { argb: 'FFE5E7EB' } } };
-      else if (opts.border === 'header') cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'medium', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } };
+      cell.alignment = { horizontal: (opts.hAlign ?? 'left') as any, vertical: (opts.vAlign ?? 'middle') as any, wrapText: opts.wrap };
+      const thin = { style: 'thin' as const, color: { argb: 'FFD1D5DB' } };
+      const med  = { style: 'medium' as const, color: { argb: 'FF9CA3AF' } };
+      const dark = { style: 'medium' as const, color: { argb: 'FF374151' } };
+      if (opts.border === 'light')  cell.border = { top: thin, bottom: thin, left: thin, right: thin };
+      else if (opts.border === 'medium') cell.border = { top: med, bottom: med, left: med, right: med };
+      else if (opts.border === 'outer')  cell.border = { top: dark, bottom: dark, left: dark, right: dark };
     };
     const mg = (r1: number, c1: number, r2: number, c2: number) => ws.mergeCells(r1, c1, r2, c2);
+    const row = (r: number, h: number) => { ws.getRow(r).height = h; };
 
-    // ── Row 1: Title ──
-    ws.getRow(1).height = 28;
-    sc(1, 1, `SIGNED MOA MONTHLY REPORT — ${year}`, { bold: true, sz: 14, color: 'FFFFFF', bg: '4338CA' });
-    mg(1, 1, 1, SHEET_COLS);
+    // ══════════════════════════════════════════
+    // SECTION 1 — HEADER BANNER
+    // ══════════════════════════════════════════
+    row(1, 36); row(2, 18); row(3, 8);
 
-    // ── Row 2: Generated date ──
-    ws.getRow(2).height = 16;
-    sc(2, 1, `Generated: ${new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}`, { sz: 10, italic: true, color: '6B7280' });
-    mg(2, 1, 2, SHEET_COLS);
+    sc(1, 1, `BICS — SIGNED MOA MONTHLY REPORT`, { bold: true, sz: 16, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', vAlign: 'middle' });
+    mg(1, 1, 1, COLS);
 
-    // ── Row 3: Spacer ──
-    ws.getRow(3).height = 6;
+    sc(2, 1,
+      `Year: ${year}     |     Generated: ${new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}     |     Exported by: ${user?.username || '—'}`,
+      { sz: 10, italic: true, color: 'F9FAFB', bg: '2D5986', hAlign: 'center' }
+    );
+    mg(2, 1, 2, COLS);
 
-    // ── Row 4: Monthly Summary header ──
-    ws.getRow(4).height = 20;
-    sc(4, 1, 'MONTH', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
-    mg(4, 1, 4, 4);
-    sc(4, 5, 'YEAR', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
-    mg(4, 5, 4, 8);
-    sc(4, 9, 'SIGNED MOA COUNT', { bold: true, sz: 11, color: 'FFFFFF', bg: '6366F1', hAlign: 'center', border: 'header' });
-    mg(4, 9, 4, SHEET_COLS);
+    // row 3 = spacer (light gray band)
+    for (let c = 1; c <= COLS; c++) { const cell = ws.getCell(3, c); cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF3F4F6' } } as any; }
+    mg(3, 1, 3, COLS);
 
-    // ── Rows 5–16: Monthly data ──
+    // ══════════════════════════════════════════
+    // SECTION 2 — MONTHLY SUMMARY TABLE
+    // ══════════════════════════════════════════
+    row(4, 22); row(5, 22);
+
+    sc(4, 1, '📅  MONTHLY SUMMARY', { bold: true, sz: 12, color: '1E3A5F', bg: 'E8F0FE', hAlign: 'left' });
+    mg(4, 1, 4, COLS);
+
+    // Sub-headers
+    sc(5, 1,  'MONTH',            { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(5, 1, 5, 4);
+    sc(5, 5,  'YEAR',             { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(5, 5, 5, 8);
+    sc(5, 9,  'NO. OF SIGNED MOA',{ bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(5, 9, 5, COLS);
+
     signedMoaMonthly.forEach((d, i) => {
-      const r = 5 + i;
-      ws.getRow(r).height = 18;
-      const bg = i % 2 === 0 ? 'FFFFFF' : 'EEF2FF';
-      sc(r, 1, d.month_label.split(' ')[0], { sz: 11, bg, hAlign: 'center', border: 'thin' });
-      mg(r, 1, r, 4);
-      sc(r, 5, year, { sz: 11, bg, hAlign: 'center', border: 'thin' });
-      mg(r, 5, r, 8);
-      sc(r, 9, d.count, { sz: 11, bold: true, color: d.count > 0 ? '4338CA' : '9CA3AF', bg, hAlign: 'center', border: 'thin' });
-      mg(r, 9, r, SHEET_COLS);
+      const r = 6 + i;
+      row(r, 18);
+      const isEven = i % 2 === 0;
+      const rowBg = isEven ? 'FFFFFF' : 'EFF6FF';
+      const hasCount = d.count > 0;
+      sc(r, 1, d.month_label.split(' ')[0].toUpperCase(), { sz: 11, bold: true, color: '374151', bg: rowBg, hAlign: 'center', border: 'light' }); mg(r, 1, r, 4);
+      sc(r, 5, year,    { sz: 11, color: '374151', bg: rowBg, hAlign: 'center', border: 'light' }); mg(r, 5, r, 8);
+      sc(r, 9, d.count, { sz: 13, bold: true, color: hasCount ? '1E40AF' : 'D1D5DB', bg: hasCount ? (isEven ? 'EFF6FF' : 'DBEAFE') : rowBg, hAlign: 'center', border: 'light' }); mg(r, 9, r, COLS);
     });
 
-    // ── Chart image section ──
-    const chartHeaderRow = 5 + signedMoaMonthly.length + 1;
-    ws.getRow(chartHeaderRow).height = 22;
-    sc(chartHeaderRow, 1, 'MONTHLY SIGNED MOA CHART', { bold: true, sz: 12, color: 'FFFFFF', bg: '312E81' });
-    mg(chartHeaderRow, 1, chartHeaderRow, SHEET_COLS);
+    // Monthly total row
+    const mTotalRow = 6 + signedMoaMonthly.length;
+    row(mTotalRow, 20);
+    const grandMonthTotal = signedMoaMonthly.reduce((s, d) => s + d.count, 0);
+    sc(mTotalRow, 1, 'TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1E40AF', hAlign: 'center', border: 'outer' }); mg(mTotalRow, 1, mTotalRow, 8);
+    sc(mTotalRow, 9, grandMonthTotal, { bold: true, sz: 13, color: 'FFFFFF', bg: '1E40AF', hAlign: 'center', border: 'outer' }); mg(mTotalRow, 9, mTotalRow, COLS);
 
-    const chartImgStartRow = chartHeaderRow + 1;
-    const CHART_ROW_COUNT = 18;
+    // ══════════════════════════════════════════
+    // SECTION 3 — CHART IMAGE
+    // ══════════════════════════════════════════
+    const chartSectionRow = mTotalRow + 2;
+    const CHART_ROWS = 20;
+    row(chartSectionRow, 22);
+    sc(chartSectionRow, 1, '📊  SIGNED MOA TREND CHART', { bold: true, sz: 12, color: '1E3A5F', bg: 'E8F0FE', hAlign: 'left' });
+    mg(chartSectionRow, 1, chartSectionRow, COLS);
+
+    const chartImgRow = chartSectionRow + 1;
     if (chartImageBase64) {
       const imageId = workbook.addImage({ base64: chartImageBase64, extension: 'png' });
-      ws.addImage(imageId, {
-        tl: { col: 0, row: chartImgStartRow - 1 },
-        br: { col: SHEET_COLS, row: chartImgStartRow - 1 + CHART_ROW_COUNT },
-        editAs: 'oneCell',
-      } as any);
-      for (let r = chartImgStartRow; r < chartImgStartRow + CHART_ROW_COUNT; r++) {
-        ws.getRow(r).height = 16;
-      }
+      ws.addImage(imageId, { tl: { col: 0, row: chartImgRow - 1 }, br: { col: COLS, row: chartImgRow - 1 + CHART_ROWS }, editAs: 'oneCell' } as any);
+      for (let r = chartImgRow; r < chartImgRow + CHART_ROWS; r++) row(r, 16);
     }
 
-    // ── Personnel Breakdown ──
-    const p2StartRow = chartImgStartRow + (chartImageBase64 ? CHART_ROW_COUNT : 0) + 2;
+    // ══════════════════════════════════════════
+    // SECTION 4 — BY BICS PERSONNEL
+    // ══════════════════════════════════════════
+    const personnelColors: Record<string, { bg: string; fg: string }> = {
+      'ADMARASIGAN':  { bg: 'DBEAFE', fg: '1E40AF' },
+      'APMORILLA':    { bg: 'D1FAE5', fg: '065F46' },
+      'CBTABINGA':    { bg: 'FEF3C7', fg: '92400E' },
+      'DFCAGADAS':    { bg: 'EDE9FE', fg: '5B21B6' },
+      'ELALIBO':      { bg: 'FCE7F3', fg: '9F1239' },
+      'FERUNTALAN':   { bg: 'FFF7ED', fg: '9A3412' },
+      'JDALVAREZ':    { bg: 'E0E7FF', fg: '3730A3' },
+      'JMBALAG':      { bg: 'CCFBF1', fg: '115E59' },
+      'JMBAUTISTA':   { bg: 'FFEDD5', fg: '9A3412' },
+      'LSAGAPITO':    { bg: 'ECFCCB', fg: '3F6212' },
+      'LTTEOVISIO':   { bg: 'FEF9C3', fg: '78350F' },
+      'MIDDELACRUZ':  { bg: 'D1FAE5', fg: '065F46' },
+      'MLCARANDANG':  { bg: 'EDE9FE', fg: '5B21B6' },
+      'NMNARCISO':    { bg: 'FAE8FF', fg: '86198F' },
+      'DBSOLLEZA':    { bg: 'CFFAFE', fg: '164E63' },
+      'AMGERBABUENA': { bg: 'ECFCCB', fg: '166534' },
+      'NACABILDO':    { bg: 'FEE2E2', fg: '991B1B' },
+      'JDSORIANO':    { bg: 'E0E7FF', fg: '312E81' },
+      'JMMARTINEZ':   { bg: 'FEF9C3', fg: '713F12' },
+      'PABARCIA':     { bg: 'F0FDF4', fg: '166534' },
+    };
 
-    ws.getRow(p2StartRow - 1).height = 22;
-    sc(p2StartRow - 1, 1, 'BY BICS PERSONNEL', { bold: true, sz: 12, color: 'FFFFFF', bg: '1F4788' });
-    mg(p2StartRow - 1, 1, p2StartRow - 1, SHEET_COLS);
+    const pSectionRow = chartImgRow + (chartImageBase64 ? CHART_ROWS : 0) + 1;
+    row(pSectionRow, 22);
+    sc(pSectionRow, 1, '👤  BY BICS PERSONNEL (MOA ACQUIRED BY)', { bold: true, sz: 12, color: '1E3A5F', bg: 'E8F0FE', hAlign: 'left' });
+    mg(pSectionRow, 1, pSectionRow, COLS);
 
-    ws.getRow(p2StartRow).height = 20;
-    sc(p2StartRow, 1, 'BICS PERSONNEL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' });
-    months.forEach((m, i) => sc(p2StartRow, 2 + i, m, { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' }));
-    sc(p2StartRow, DATA_COLS, 'TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1F4788', hAlign: 'center', border: 'header' });
+    const pHeaderRow = pSectionRow + 1;
+    row(pHeaderRow, 22);
+    sc(pHeaderRow, 1, 'BICS PERSONNEL', { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' });
+    months.forEach((m, i) => sc(pHeaderRow, 2 + i, m, { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }));
+    sc(pHeaderRow, COLS, 'TOTAL', { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' });
 
     signedMoaByPersonnel.forEach((p, i) => {
-      const r = p2StartRow + 1 + i;
-      ws.getRow(r).height = 18;
-      const bg = i % 2 === 0 ? 'FFFFFF' : 'EFF6FF';
-      sc(r, 1, p.personnel, { sz: 11, bold: true, bg, hAlign: 'left', border: 'thin' });
-      months.forEach((m, mi) => sc(r, 2 + mi, p.months[m] || 0, { sz: 11, bg, hAlign: 'center', border: 'thin' }));
-      sc(r, DATA_COLS, p.total, { sz: 11, bold: true, color: '1F4788', bg, hAlign: 'center', border: 'thin' });
+      const r = pHeaderRow + 1 + i;
+      row(r, 18);
+      const pc = personnelColors[p.personnel];
+      const bg = pc ? pc.bg : (i % 2 === 0 ? 'FFFFFF' : 'F8FAFC');
+      const fg = pc ? pc.fg : '1F2937';
+      sc(r, 1, p.personnel, { bold: true, sz: 10, color: fg, bg, hAlign: 'left', border: 'light' });
+      months.forEach((m, mi) => {
+        const val = p.months[m] || 0;
+        sc(r, 2 + mi, val > 0 ? val : '—', { sz: 10, color: val > 0 ? fg : 'D1D5DB', bg, hAlign: 'center', border: 'light' });
+      });
+      sc(r, COLS, p.total, { bold: true, sz: 11, color: fg, bg, hAlign: 'center', border: 'medium' });
     });
 
-    const gtRow = p2StartRow + 1 + signedMoaByPersonnel.length;
-    ws.getRow(gtRow).height = 20;
-    sc(gtRow, 1, 'GRAND TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+    const gtRow = pHeaderRow + 1 + signedMoaByPersonnel.length;
+    row(gtRow, 22);
+    sc(gtRow, 1, 'GRAND TOTAL', { bold: true, sz: 11, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'outer' });
     months.forEach((m, i) => {
-      const total = signedMoaByPersonnel.reduce((sum, p2) => sum + (p2.months[m] || 0), 0);
-      sc(gtRow, 2 + i, total, { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+      const t = signedMoaByPersonnel.reduce((s, p) => s + (p.months[m] || 0), 0);
+      sc(gtRow, 2 + i, t > 0 ? t : '—', { bold: true, sz: 10, color: t > 0 ? 'FFFFFF' : 'CBD5E1', bg: '1E3A5F', hAlign: 'center', border: 'outer' });
     });
-    sc(gtRow, DATA_COLS, signedMoaByPersonnel.reduce((sum, p2) => sum + p2.total, 0), { bold: true, sz: 11, color: 'FFFFFF', bg: '4338CA', hAlign: 'center', border: 'header' });
+    sc(gtRow, COLS, signedMoaByPersonnel.reduce((s, p) => s + p.total, 0), { bold: true, sz: 12, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'outer' });
+
+    // ══════════════════════════════════════════
+    // SECTION 5 — REFERENCE LIST
+    // ══════════════════════════════════════════
+    const refResponse = await bicsAPI.getSignedMoaReference();
+    if (refResponse.success && refResponse.data && refResponse.data.length > 0) {
+      const refSectionRow = gtRow + 2;
+      row(refSectionRow, 22);
+      sc(refSectionRow, 1, '📋  REFERENCE LIST', { bold: true, sz: 12, color: '1E3A5F', bg: 'E8F0FE', hAlign: 'left' });
+      mg(refSectionRow, 1, refSectionRow, COLS);
+
+      const refHeaderRow = refSectionRow + 1;
+      row(refHeaderRow, 22);
+      sc(refHeaderRow, 1,  'BICS PERSONNEL',  { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(refHeaderRow, 1, refHeaderRow, 2);
+      sc(refHeaderRow, 3,  'SITE NAME',        { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(refHeaderRow, 3, refHeaderRow, 6);
+      sc(refHeaderRow, 7,  'BUILDING NAME',    { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(refHeaderRow, 7, refHeaderRow, 10);
+      sc(refHeaderRow, 11, 'REF #',            { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(refHeaderRow, 11, refHeaderRow, 12);
+      sc(refHeaderRow, 13, 'PROJECT STATUS',   { bold: true, sz: 10, color: 'FFFFFF', bg: '1E3A5F', hAlign: 'center', border: 'medium' }); mg(refHeaderRow, 13, refHeaderRow, COLS);
+
+      refResponse.data.forEach((rec: any, i: number) => {
+        const r = refHeaderRow + 1 + i;
+        row(r, 16);
+        const name = (rec.moa_acquired_by || '').toUpperCase();
+        const pc = personnelColors[name];
+        const bg = pc ? pc.bg : (i % 2 === 0 ? 'FFFFFF' : 'F8FAFC');
+        const fg = pc ? pc.fg : '1F2937';
+        const statusColor = rec.project_status === 'ACTIVE' ? { bg: 'D1FAE5', fg: '065F46' } : rec.project_status === 'FALLOUT' ? { bg: 'FEE2E2', fg: '991B1B' } : { bg: 'FEF3C7', fg: '92400E' };
+        sc(r, 1,  name,                                     { sz: 10, bold: true, color: fg, bg, border: 'light' }); mg(r, 1, r, 2);
+        sc(r, 3,  (rec.site_name || '').toUpperCase(),     { sz: 10, color: '1F2937', bg, border: 'light' }); mg(r, 3, r, 6);
+        sc(r, 7,  (rec.building_name || '').toUpperCase(), { sz: 10, color: '374151', bg, border: 'light' }); mg(r, 7, r, 10);
+        sc(r, 11, rec.reference_number || '—',             { sz: 10, color: '374151', bg, hAlign: 'center', border: 'light' }); mg(r, 11, r, 12);
+        sc(r, 13, (rec.project_status || '').toUpperCase(),{ sz: 10, bold: true, color: statusColor.fg, bg: statusColor.bg, hAlign: 'center', border: 'light' }); mg(r, 13, r, COLS);
+      });
+    }
 
     // ── Download ──
     const buffer = await workbook.xlsx.writeBuffer();
@@ -2448,12 +2516,12 @@ const Dashboard: React.FC = () => {
     const dlUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = dlUrl;
-    a.download = `BICS_Signed_MOA_Monthly_${year}.xlsx`;
+    a.download = `BICS_Signed_MOA_${year}.xlsx`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(dlUrl);
-    showNotification('success', `Exported Signed MOA monthly data for ${year}`);
+    showNotification('success', `Exported Signed MOA report for ${year}`);
   };
 
   useEffect(() => {
