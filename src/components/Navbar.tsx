@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
   const configurationsDropdownRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => location.pathname === path;
-  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update') || isActive('/live-map');
+  const isActiveSiteActive = isActive('/data-entry') || isActive('/site-view') || isActive('/fco-update');
   const isConfigurationsActive = isActive('/users') || isActive('/user-logs') || isActive('/epc-batch') || isActive('/vendor') || isActive('/saq-personnel') || isActive('/fco-personnel') || isActive('/top-developer') || isActive('/relationship-manager') || isActive('/validated-by') || isActive('/online-users');
 
   const handleLogout = () => {
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
               )}
 
               {/* BPT Dropdown */}
-              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site') || hasPermission(user?.role, 'bpt_fco_update') || hasPermission(user?.role, 'bpt_live_map')) && (
+              {(hasPermission(user?.role, 'bpt_add_live_site') || hasPermission(user?.role, 'bpt_view_live_site') || hasPermission(user?.role, 'bpt_fco_update')) && (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsActiveSiteOpen(!isActiveSiteOpen)}
@@ -167,24 +167,25 @@ const Navbar: React.FC = () => {
                         <span>FCO Update</span>
                       </Link>
                       )}
-                      {hasPermission(user?.role, 'bpt_live_map') && (
-                      <Link
-                        to="/live-map"
-                        onClick={() => setIsActiveSiteOpen(false)}
-                        className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors ${
-                          isActive('/live-map')
-                            ? 'bg-primary-50 text-primary-700'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <MapPin className="h-4 w-4" />
-                        <span>Live Map</span>
-                      </Link>
-                      )}
                     </div>
                   </div>
                 )}
               </div>
+              )}
+
+              {/* Live Map - standalone menu */}
+              {hasPermission(user?.role, 'bpt_live_map') && (
+                <Link
+                  to="/live-map"
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 transition-colors ${
+                    isActive('/live-map')
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <MapPin className="h-4 w-4" />
+                  <span>Live Map</span>
+                </Link>
               )}
 
               {/* My Submissions - permission controlled */}
