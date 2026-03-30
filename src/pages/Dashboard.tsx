@@ -73,58 +73,59 @@ const Dashboard: React.FC = () => {
       const records = response.data.records;
 
       // Prepare data for Excel export
+      const u = (v: any) => (v ? String(v).toUpperCase() : '');
       const exportData = records.map(record => ({
         // Basic Information
-        'EPC BATCH': record.epc_batch || '',
-        'VENDOR': record.vendor || '',
-        'SNAP ID/BLDG TAG': record.snap_id_bldg_tag || '',
-        'PCN': record.pcn || '',
-        'BICS PERSONNEL': record.bcsi_aor || '',
-        'PROJECT SCHEME': record.project_scheme || '',
-        'BID': record.bid || '',
+        'EPC BATCH': u(record.epc_batch),
+        'VENDOR': u(record.vendor),
+        'SNAP ID/BLDG TAG': u(record.snap_id_bldg_tag),
+        'PCN': u(record.pcn),
+        'BICS PERSONNEL': u(record.bcsi_aor),
+        'PROJECT SCHEME': u(record.project_scheme),
+        'BID': u(record.bid),
 
         // Site Information
-        'SITE NAME': record.site_name || '',
-        'BUILDING NAME': record.building_name || '',
-        'ADDRESS': record.address || '',
-        'BRGY': record.brgy || '',
-        'CITY/MUNICIPALITY': record.city_municipality || '',
-        'PROVINCE': record.province || '',
+        'SITE NAME': u(record.site_name),
+        'BUILDING NAME': u(record.building_name),
+        'ADDRESS': u(record.address),
+        'BRGY': u(record.brgy),
+        'CITY/MUNICIPALITY': u(record.city_municipality),
+        'PROVINCE': u(record.province),
         'COORDINATES': record.coordinates || '',
-        'DISTRICT': record.district || '',
-        'ZONE': record.zone || '',
-        'AREA': record.area || '',
-        'MARKET SEGMENT': record.market_segment || '',
+        'DISTRICT': u(record.district),
+        'ZONE': u(record.zone),
+        'AREA': u(record.area),
+        'MARKET SEGMENT': u(record.market_segment),
 
         // Building Details
-        'BUILDING STATUS': record.building_status || '',
-        'USAGE': record.usage_type || '',
+        'BUILDING STATUS': u(record.building_status),
+        'USAGE': u(record.usage_type),
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
-        'DEVELOPER': record.developer || '',
-        'TOP DEV': record.top_dev || '',
+        'DEVELOPER': u(record.developer),
+        'TOP DEV': u(record.top_dev),
 
         // Contact Information
-        'RM': record.rm || '',
-        'RM GROUP': record.rm_group || '',
+        'RM': u(record.rm),
+        'RM GROUP': u(record.rm_group),
 
         // Project Information
-        'PROJECT STATUS': record.project_status || '',
-        'PROJECT STAGE': record.project_stage || '',
-        'PROJECT MILESTONE': record.project_milestone || '',
+        'PROJECT STATUS': u(record.project_status),
+        'PROJECT STAGE': u(record.project_stage),
+        'PROJECT MILESTONE': u(record.project_milestone),
         'WORKING LINES': record.working_lines || '',
         'ROLLOUT PORTS': record.rollout_ports || '',
         'MRC': record.mrc || '',
 
         // SAQ Information
-        'SAQ MILESTONE': record.saq_milestone || '',
-        'COMMERCIAL SCHEME': record.commercial_scheme || '',
-        'COL TOR STATUS': record.col_tor_status || '',
+        'SAQ MILESTONE': u(record.saq_milestone),
+        'COMMERCIAL SCHEME': u(record.commercial_scheme),
+        'COL TOR STATUS': u(record.col_tor_status),
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
-        'MOA ACQUIRED BY': record.moa_acquired_by || '',
-        'MOA UPLOADING STATUS': record.moa_uploading_status || '',
+        'MOA ACQUIRED BY': u(record.moa_acquired_by),
+        'MOA UPLOADING STATUS': u(record.moa_uploading_status),
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
-        'VALIDATED BY': record.validated_by || '',
+        'VALIDATED BY': u(record.validated_by),
 
         // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
@@ -133,39 +134,39 @@ const Dashboard: React.FC = () => {
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
 
         // Remarks
-        'SIGNIFICANT REMARKS': record.significant_remarks || '',
+        'SIGNIFICANT REMARKS': u(record.significant_remarks),
 
         // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'REF ID': record.ref_id || '',
+        'PRODUCTIVITY': u(record.productivity),
+        'REF ID': u(record.ref_id),
 
         // Replacement Information
-        'REPLACEMENT SITE': record.replacement_site || '',
+        'REPLACEMENT SITE': u(record.replacement_site),
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
 
         // Status Information (continued)
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
+        'MOA STATUS': u(record.moa_status),
+        'PROFILE STATUS': u(record.profile_status),
         'REFERENCE #': record.reference_number || '',
         'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
-        'PREV BATCH': record.prev_batch || '',
-        'FL ID': record.fl_id || '',
-        'PO STATUS': record.po_status || '',
+        'PREV BATCH': u(record.prev_batch),
+        'FL ID': u(record.fl_id),
+        'PO STATUS': u(record.po_status),
 
         // Replacement Information (continued)
-        'GO-NOGO': record.go_nogo || '',
-        'QUICK BASHING': record.quick_bashing || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
+        'GO-NOGO': u(record.go_nogo),
+        'QUICK BASHING': u(record.quick_bashing),
+        'REPLACEMENTS GROUPINGS': u(record.replacements_groupings),
+        'TAGGING TEMP': u(record.tagging_temp),
 
         // Status Information (continued)
-        'BUDGET STATUS': record.budget_status || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'IMPLEM STATUS': record.implementation_status || '',
+        'BUDGET STATUS': u(record.budget_status),
+        'PROJECT PHASE': u(record.project_phase),
+        'IMPLEM STATUS': u(record.implementation_status),
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -173,28 +174,28 @@ const Dashboard: React.FC = () => {
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'ACTUAL TA': record.actual_ta || '',
         'ACTUAL FA': record.actual_fa || '',
-        'WARPP PCN': record.warpp_pcn || '',
-        'MDU/ONU': record.mdu_onu || '',
+        'WARPP PCN': u(record.warpp_pcn),
+        'MDU/ONU': u(record.mdu_onu),
         'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
         'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
-        'SCHEME DESIGN': record.scheme_design || '',
-        'FCO AOR': record.fco_aor || '',
+        'SCHEME DESIGN': u(record.scheme_design),
+        'FCO AOR': u(record.fco_aor),
 
         // FTTB Information
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
-        'FTTB CIP': record.fttb_cip || '',
+        'FTTB CIP': u(record.fttb_cip),
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'ROLLOUT SOLUTION': record.rollout_solution || '',
+        'ROLLOUT SOLUTION': u(record.rollout_solution),
 
         // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        'BASH-PREWORKS (LOUIE)': u(record.bash_preworks),
+        'BASH-NETWORK (JARROD)': u(record.bash_network),
+        'BASH-HALLWAY (VIDAL)': u(record.bash_hallway),
+        'BASH-MIGRATION (JAYR)': u(record.bash_migration),
       }));
 
       // Create title row with metadata
@@ -484,58 +485,59 @@ const Dashboard: React.FC = () => {
       const records = response.data.records;
 
       // Prepare data for Excel export
+      const u = (v: any) => (v ? String(v).toUpperCase() : '');
       const exportData = records.map(record => ({
         // Basic Information
-        'EPC BATCH': record.epc_batch || '',
-        'VENDOR': record.vendor || '',
-        'SNAP ID/BLDG TAG': record.snap_id_bldg_tag || '',
-        'PCN': record.pcn || '',
-        'BICS PERSONNEL': record.bcsi_aor || '',
-        'PROJECT SCHEME': record.project_scheme || '',
-        'BID': record.bid || '',
+        'EPC BATCH': u(record.epc_batch),
+        'VENDOR': u(record.vendor),
+        'SNAP ID/BLDG TAG': u(record.snap_id_bldg_tag),
+        'PCN': u(record.pcn),
+        'BICS PERSONNEL': u(record.bcsi_aor),
+        'PROJECT SCHEME': u(record.project_scheme),
+        'BID': u(record.bid),
 
         // Site Information
-        'SITE NAME': record.site_name || '',
-        'BUILDING NAME': record.building_name || '',
-        'ADDRESS': record.address || '',
-        'BRGY': record.brgy || '',
-        'CITY/MUNICIPALITY': record.city_municipality || '',
-        'PROVINCE': record.province || '',
+        'SITE NAME': u(record.site_name),
+        'BUILDING NAME': u(record.building_name),
+        'ADDRESS': u(record.address),
+        'BRGY': u(record.brgy),
+        'CITY/MUNICIPALITY': u(record.city_municipality),
+        'PROVINCE': u(record.province),
         'COORDINATES': record.coordinates || '',
-        'DISTRICT': record.district || '',
-        'ZONE': record.zone || '',
-        'AREA': record.area || '',
-        'MARKET SEGMENT': record.market_segment || '',
+        'DISTRICT': u(record.district),
+        'ZONE': u(record.zone),
+        'AREA': u(record.area),
+        'MARKET SEGMENT': u(record.market_segment),
 
         // Building Details
-        'BUILDING STATUS': record.building_status || '',
-        'USAGE': record.usage_type || '',
+        'BUILDING STATUS': u(record.building_status),
+        'USAGE': u(record.usage_type),
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
-        'DEVELOPER': record.developer || '',
-        'TOP DEV': record.top_dev || '',
+        'DEVELOPER': u(record.developer),
+        'TOP DEV': u(record.top_dev),
 
         // Contact Information
-        'RM': record.rm || '',
-        'RM GROUP': record.rm_group || '',
+        'RM': u(record.rm),
+        'RM GROUP': u(record.rm_group),
 
         // Project Information
-        'PROJECT STATUS': record.project_status || '',
-        'PROJECT STAGE': record.project_stage || '',
-        'PROJECT MILESTONE': record.project_milestone || '',
+        'PROJECT STATUS': u(record.project_status),
+        'PROJECT STAGE': u(record.project_stage),
+        'PROJECT MILESTONE': u(record.project_milestone),
         'WORKING LINES': record.working_lines || '',
         'ROLLOUT PORTS': record.rollout_ports || '',
         'MRC': record.mrc || '',
 
         // SAQ Information
-        'SAQ MILESTONE': record.saq_milestone || '',
-        'COMMERCIAL SCHEME': record.commercial_scheme || '',
-        'COL TOR STATUS': record.col_tor_status || '',
+        'SAQ MILESTONE': u(record.saq_milestone),
+        'COMMERCIAL SCHEME': u(record.commercial_scheme),
+        'COL TOR STATUS': u(record.col_tor_status),
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
-        'MOA ACQUIRED BY': record.moa_acquired_by || '',
-        'MOA UPLOADING STATUS': record.moa_uploading_status || '',
+        'MOA ACQUIRED BY': u(record.moa_acquired_by),
+        'MOA UPLOADING STATUS': u(record.moa_uploading_status),
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
-        'VALIDATED BY': record.validated_by || '',
+        'VALIDATED BY': u(record.validated_by),
 
         // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
@@ -544,39 +546,39 @@ const Dashboard: React.FC = () => {
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
 
         // Remarks
-        'SIGNIFICANT REMARKS': record.significant_remarks || '',
+        'SIGNIFICANT REMARKS': u(record.significant_remarks),
 
         // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'REF ID': record.ref_id || '',
+        'PRODUCTIVITY': u(record.productivity),
+        'REF ID': u(record.ref_id),
 
         // Replacement Information
-        'REPLACEMENT SITE': record.replacement_site || '',
+        'REPLACEMENT SITE': u(record.replacement_site),
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
 
         // Status Information (continued)
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
+        'MOA STATUS': u(record.moa_status),
+        'PROFILE STATUS': u(record.profile_status),
         'REFERENCE #': record.reference_number || '',
         'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
-        'PREV BATCH': record.prev_batch || '',
-        'FL ID': record.fl_id || '',
-        'PO STATUS': record.po_status || '',
+        'PREV BATCH': u(record.prev_batch),
+        'FL ID': u(record.fl_id),
+        'PO STATUS': u(record.po_status),
 
         // Replacement Information (continued)
-        'GO-NOGO': record.go_nogo || '',
-        'QUICK BASHING': record.quick_bashing || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
+        'GO-NOGO': u(record.go_nogo),
+        'QUICK BASHING': u(record.quick_bashing),
+        'REPLACEMENTS GROUPINGS': u(record.replacements_groupings),
+        'TAGGING TEMP': u(record.tagging_temp),
 
         // Status Information (continued)
-        'BUDGET STATUS': record.budget_status || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'IMPLEM STATUS': record.implementation_status || '',
+        'BUDGET STATUS': u(record.budget_status),
+        'PROJECT PHASE': u(record.project_phase),
+        'IMPLEM STATUS': u(record.implementation_status),
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -584,28 +586,28 @@ const Dashboard: React.FC = () => {
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'ACTUAL TA': record.actual_ta || '',
         'ACTUAL FA': record.actual_fa || '',
-        'WARPP PCN': record.warpp_pcn || '',
-        'MDU/ONU': record.mdu_onu || '',
+        'WARPP PCN': u(record.warpp_pcn),
+        'MDU/ONU': u(record.mdu_onu),
         'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
         'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
-        'SCHEME DESIGN': record.scheme_design || '',
-        'FCO AOR': record.fco_aor || '',
+        'SCHEME DESIGN': u(record.scheme_design),
+        'FCO AOR': u(record.fco_aor),
 
         // FTTB Information
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
-        'FTTB CIP': record.fttb_cip || '',
+        'FTTB CIP': u(record.fttb_cip),
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'ROLLOUT SOLUTION': record.rollout_solution || '',
+        'ROLLOUT SOLUTION': u(record.rollout_solution),
 
         // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        'BASH-PREWORKS (LOUIE)': u(record.bash_preworks),
+        'BASH-NETWORK (JARROD)': u(record.bash_network),
+        'BASH-HALLWAY (VIDAL)': u(record.bash_hallway),
+        'BASH-MIGRATION (JAYR)': u(record.bash_migration),
       }));
 
       const currentDateTime = new Date().toLocaleString('en-US', {
@@ -908,58 +910,59 @@ const Dashboard: React.FC = () => {
       const records = response.data.records;
 
       // Prepare data for Excel export (same structure as SiteView)
+      const u = (v: any) => (v ? String(v).toUpperCase() : '');
       const exportData = records.map(record => ({
         // Basic Information
-        'EPC BATCH': record.epc_batch || '',
-        'VENDOR': record.vendor || '',
-        'SNAP ID/BLDG TAG': record.snap_id_bldg_tag || '',
-        'PCN': record.pcn || '',
-        'BICS PERSONNEL': record.bcsi_aor || '',
-        'PROJECT SCHEME': record.project_scheme || '',
-        'BID': record.bid || '',
+        'EPC BATCH': u(record.epc_batch),
+        'VENDOR': u(record.vendor),
+        'SNAP ID/BLDG TAG': u(record.snap_id_bldg_tag),
+        'PCN': u(record.pcn),
+        'BICS PERSONNEL': u(record.bcsi_aor),
+        'PROJECT SCHEME': u(record.project_scheme),
+        'BID': u(record.bid),
 
         // Site Information
-        'SITE NAME': record.site_name || '',
-        'BUILDING NAME': record.building_name || '',
-        'ADDRESS': record.address || '',
-        'BRGY': record.brgy || '',
-        'CITY/MUNICIPALITY': record.city_municipality || '',
-        'PROVINCE': record.province || '',
+        'SITE NAME': u(record.site_name),
+        'BUILDING NAME': u(record.building_name),
+        'ADDRESS': u(record.address),
+        'BRGY': u(record.brgy),
+        'CITY/MUNICIPALITY': u(record.city_municipality),
+        'PROVINCE': u(record.province),
         'COORDINATES': record.coordinates || '',
-        'DISTRICT': record.district || '',
-        'ZONE': record.zone || '',
-        'AREA': record.area || '',
-        'MARKET SEGMENT': record.market_segment || '',
+        'DISTRICT': u(record.district),
+        'ZONE': u(record.zone),
+        'AREA': u(record.area),
+        'MARKET SEGMENT': u(record.market_segment),
 
         // Building Details
-        'BUILDING STATUS': record.building_status || '',
-        'USAGE': record.usage_type || '',
+        'BUILDING STATUS': u(record.building_status),
+        'USAGE': u(record.usage_type),
         'FLOORS': record.floors || '',
         'UNITS': record.units || '',
-        'DEVELOPER': record.developer || '',
-        'TOP DEV': record.top_dev || '',
+        'DEVELOPER': u(record.developer),
+        'TOP DEV': u(record.top_dev),
 
         // Contact Information
-        'RM': record.rm || '',
-        'RM GROUP': record.rm_group || '',
+        'RM': u(record.rm),
+        'RM GROUP': u(record.rm_group),
 
         // Project Information
-        'PROJECT STATUS': record.project_status || '',
-        'PROJECT STAGE': record.project_stage || '',
-        'PROJECT MILESTONE': record.project_milestone || '',
+        'PROJECT STATUS': u(record.project_status),
+        'PROJECT STAGE': u(record.project_stage),
+        'PROJECT MILESTONE': u(record.project_milestone),
         'WORKING LINES': record.working_lines || '',
         'ROLLOUT PORTS': record.rollout_ports || '',
         'MRC': record.mrc || '',
 
         // SAQ Information
-        'SAQ MILESTONE': record.saq_milestone || '',
-        'COMMERCIAL SCHEME': record.commercial_scheme || '',
-        'COL TOR STATUS': record.col_tor_status || '',
+        'SAQ MILESTONE': u(record.saq_milestone),
+        'COMMERCIAL SCHEME': u(record.commercial_scheme),
+        'COL TOR STATUS': u(record.col_tor_status),
         'SIGNED TOR/MOA DATE': record.signed_tor_moa_date ? new Date(record.signed_tor_moa_date).toLocaleDateString() : '',
-        'MOA ACQUIRED BY': record.moa_acquired_by || '',
-        'MOA UPLOADING STATUS': record.moa_uploading_status || '',
+        'MOA ACQUIRED BY': u(record.moa_acquired_by),
+        'MOA UPLOADING STATUS': u(record.moa_uploading_status),
         'VALIDATED DATE': record.validated_date ? new Date(record.validated_date).toLocaleDateString() : '',
-        'VALIDATED BY': record.validated_by || '',
+        'VALIDATED BY': u(record.validated_by),
 
         // Important Dates
         'SITE VISITED DATE': record.site_visited_date ? new Date(record.site_visited_date).toLocaleDateString() : '',
@@ -968,39 +971,39 @@ const Dashboard: React.FC = () => {
         'DATE OF RECENT ENGAGEMENT': record.date_of_recent_engagement ? new Date(record.date_of_recent_engagement).toLocaleDateString() : '',
 
         // Remarks
-        'SIGNIFICANT REMARKS': record.significant_remarks || '',
+        'SIGNIFICANT REMARKS': u(record.significant_remarks),
 
         // Status Information
-        'PRODUCTIVITY': record.productivity || '',
-        'REF ID': record.ref_id || '',
+        'PRODUCTIVITY': u(record.productivity),
+        'REF ID': u(record.ref_id),
 
         // Replacement Information
-        'REPLACEMENT SITE': record.replacement_site || '',
+        'REPLACEMENT SITE': u(record.replacement_site),
         'DATE ENDORSE REPLACEMENT': record.date_endorse_replacement ? new Date(record.date_endorse_replacement).toLocaleDateString() : '',
         'DATE ACCEPTED': record.date_accepted ? new Date(record.date_accepted).toLocaleDateString() : '',
         'DATE REJECTED': record.date_rejected ? new Date(record.date_rejected).toLocaleDateString() : '',
 
         // Status Information (continued)
-        'MOA STATUS': record.moa_status || '',
-        'PROFILE STATUS': record.profile_status || '',
+        'MOA STATUS': u(record.moa_status),
+        'PROFILE STATUS': u(record.profile_status),
         'REFERENCE #': record.reference_number || '',
         'SITE ENTRY DATE': record.site_entry_date ? new Date(record.site_entry_date).toLocaleDateString() : '',
 
         // Additional Information
-        'PREV BATCH': record.prev_batch || '',
-        'FL ID': record.fl_id || '',
-        'PO STATUS': record.po_status || '',
+        'PREV BATCH': u(record.prev_batch),
+        'FL ID': u(record.fl_id),
+        'PO STATUS': u(record.po_status),
 
         // Replacement Information (continued)
-        'GO-NOGO': record.go_nogo || '',
-        'QUICK BASHING': record.quick_bashing || '',
-        'REPLACEMENTS GROUPINGS': record.replacements_groupings || '',
-        'TAGGING TEMP': record.tagging_temp || '',
+        'GO-NOGO': u(record.go_nogo),
+        'QUICK BASHING': u(record.quick_bashing),
+        'REPLACEMENTS GROUPINGS': u(record.replacements_groupings),
+        'TAGGING TEMP': u(record.tagging_temp),
 
         // Status Information (continued)
-        'BUDGET STATUS': record.budget_status || '',
-        'PROJECT PHASE': record.project_phase || '',
-        'IMPLEM STATUS': record.implementation_status || '',
+        'BUDGET STATUS': u(record.budget_status),
+        'PROJECT PHASE': u(record.project_phase),
+        'IMPLEM STATUS': u(record.implementation_status),
 
         // Revenue & Capacity Metrics
         'BASED REVENUE (EXISTING CIRCUITS HW TRACKER)': record.based_revenue_existing_circuits_hw_tracker || '',
@@ -1008,28 +1011,28 @@ const Dashboard: React.FC = () => {
         'ACTUAL TAD PORTS/PAIRS PROVISIONED': record.actual_tad_ports_pairs_provisioned || '',
         'ACTUAL TA': record.actual_ta || '',
         'ACTUAL FA': record.actual_fa || '',
-        'WARPP PCN': record.warpp_pcn || '',
-        'MDU/ONU': record.mdu_onu || '',
+        'WARPP PCN': u(record.warpp_pcn),
+        'MDU/ONU': u(record.mdu_onu),
         'MIGRATED LINES': record.migrated_lines || '',
         'ACTUAL REMAINING PORTS': record.actual_remaining_ports || '',
         'ACTUAL READY TO SELL PORTS': record.actual_ready_to_sell_ports || '',
         'POTENTIAL REVENUE GROWTH': record.potential_revenue_growth || '',
 
         // Design & Planning
-        'SCHEME DESIGN': record.scheme_design || '',
-        'FCO AOR': record.fco_aor || '',
+        'SCHEME DESIGN': u(record.scheme_design),
+        'FCO AOR': u(record.fco_aor),
 
         // FTTB Information
         'FTTB PO RELEASE': record.fttb_po_release ? new Date(record.fttb_po_release).toLocaleDateString() : '',
-        'FTTB CIP': record.fttb_cip || '',
+        'FTTB CIP': u(record.fttb_cip),
         'FTTB TARGET COMPLETION': record.fttb_target_completion ? new Date(record.fttb_target_completion).toLocaleDateString() : '',
-        'ROLLOUT SOLUTION': record.rollout_solution || '',
+        'ROLLOUT SOLUTION': u(record.rollout_solution),
 
         // BASH Section
-        'BASH-PREWORKS (LOUIE)': record.bash_preworks || '',
-        'BASH-NETWORK (JARROD)': record.bash_network || '',
-        'BASH-HALLWAY (VIDAL)': record.bash_hallway || '',
-        'BASH-MIGRATION (JAYR)': record.bash_migration || '',
+        'BASH-PREWORKS (LOUIE)': u(record.bash_preworks),
+        'BASH-NETWORK (JARROD)': u(record.bash_network),
+        'BASH-HALLWAY (VIDAL)': u(record.bash_hallway),
+        'BASH-MIGRATION (JAYR)': u(record.bash_migration),
       }));
 
       // Create title row with metadata
